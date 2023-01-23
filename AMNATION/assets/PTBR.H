@@ -1,0 +1,7 @@
+#define MSGMSX1 "> DETECTADO MSX 1\n"
+#define MSGMSX2 "> DETECTADO MSX 2\n"
+#define MSGMSX2P "> DETECTADO MSX 2+\n"
+#define MSGMSXTR "> DETECTADO MSX TR\n"
+#define MSGINICIOJOGO "Digite <ENTER> para jogar.\n"
+#define MSGNIVEL "Nivel:"
+#define MSGINIMIGOS "Inimigos:"
