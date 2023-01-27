@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "SPRITES.C": "cpp"
+        "SPRITES.C": "cpp",
+        "TREVAS.C": "cpp"
     }
 }

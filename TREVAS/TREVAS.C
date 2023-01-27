@@ -18,7 +18,6 @@ int intVelAlien,intNumAliens;
 int intNivel;
 int intPosXTorpedo,intPosYTorpedo,intNumTorpedos,intVelTorpedo;
 int intMsxType;
-int intXAlienInicial,intYAlienInicial;
 int Aliens[8][2];
 char chrOpcao;
 static FCB file;
@@ -80,6 +79,11 @@ void SetName(FCB *p_fcb, const char *p_name)
   }
 }
 
+/// @brief Carrega Tela Screen 5 na VRAM
+/// @param nome do arquivo
+/// @param start_Y 
+/// @param buffer 
+/// @return int
 int LoadSc5Image(char *file_name, unsigned int start_Y, char *buffer)
 {
     int rd=2304;
@@ -101,6 +105,7 @@ int LoadSc5Image(char *file_name, unsigned int start_Y, char *buffer)
     fcb_close(&file);
     return(1);
 }
+
 // =====================================
 // INICIALIZACAO DO JOGO
 // =====================================
@@ -116,8 +121,6 @@ void Inicializar()
     intVelTorpedo=2;
     intNivel=1;
     intNumTorpedos=0;
-    intYAlienInicial = 118;
-    intYAlienInicial = 88;
 
     intMsxType=ReadMSXtype();
     switch(intMsxType)
@@ -135,8 +138,6 @@ void Inicializar()
             PrintString(MSGMSXTR);
         break;
     }
-    PrintString(MSGINICIOJOGO);
-    chrOpcao=WaitKey();
 }
 
 void DesenharCanhao(int x,int y)
@@ -167,9 +168,11 @@ void ProximoNivel()
 // ================================
 // DESENHA UM ALIEN NA TELA
 // ================================
-void DesenharAlien(int n,int x,int y)
+void DesenharAlien(int intSprintIndex,int x,int y)
 {
-    PutSprite(n,2,x,y,12);
+    PrintString("Desenhei alien ");
+    PrintNumber(intSprintIndex);
+    PutSprite(intSprintIndex,2,x,y,12);
 }
 
 // =====================================
@@ -177,13 +180,15 @@ void DesenharAlien(int n,int x,int y)
 // =====================================
 void GerarAliens()
 {
-    int i;
+    int i=0;
+    int intXAlienInicial=118,intYAlienInicial=88;
+
     for(i=2;i<10;++i)
     {
         intXAlienInicial=+8;
         Aliens[i-2][0]=intXAlienInicial;
         Aliens[i-2][1]=intYAlienInicial;
-        PutSprite(i,2,Aliens[i-2][0],Aliens[i-2][1],12);
+        DesenharAlien(i,Aliens[i-2][0],Aliens[i-2][1]);
     }
 }
 
@@ -195,8 +200,8 @@ void MoverAliens()
     int i;
     for(i=2;i<10;i++)
     {
-        Aliens[i][0]=Aliens[i][0]+intVelAlien;
-        Aliens[i][1]=Aliens[i][1]+intVelAlien;
+        Aliens[i-2][0]=Aliens[i-2][0]+intVelAlien;
+        Aliens[i-2][1]=Aliens[i-2][1]+intVelAlien;
         DesenharAlien(i,Aliens[i][0],Aliens[i][1]);
     }
 }
@@ -313,14 +318,14 @@ void TestaNovoNivel()
 void main(void) 
 {
     Inicializar();   
-    TelaInicial();       
+    //TelaInicial();       
 	GerarAliens();      
     
     // Game Loop
     while(1)
     {
         MoverTorpedo(); 
-	    MoverAliens();
+	    //MoverAliens();
         PegarComandos();
         MoverCanhao(); 
         ChecarColisao(); 
