@@ -7,29 +7,20 @@
 #include <string.h>
 #include "fusion-c/header/msx_fusion.h"
 #include "fusion-c/header/vdp_graph2.h"
-#include "fusion-c/header/vdp_SPRITES.h"
+#include "fusion-c/header/vdp_sprites.h"
 #include "assets/PTBR.H"
 #include "assets/SPRITES.C"
 
 int intPosXCanhao,intPosYCanhao,intVelCanhao;
 int intXColisao,intYColisao;
-int intCidades;
-int intVelAlien,intNumAliens;
-int intNivel;
+int intVelXAlien,intVelYAlien,intNumAliens;
+int intXAlienInicial,intYAlienInicial;
+int intNivel,i,j;
 int intPosXTorpedo,intPosYTorpedo,intNumTorpedos,intVelTorpedo;
 int intMsxType;
-int Aliens[8][2];
+int intAliens[8][2];
 char chrOpcao;
-static FCB file;
-unsigned char LDbuffer[2200];
 
-// =====================================
-// Seta os sprites criados no asset 
-// SPRITES.C
-// Pattern 0=>Canhao
-// Pattern 1=>Torpedo
-// Pattern 2=>Alien  
-// =====================================
 void LoadSpritesTable()
 {
     SetSpritePattern(0,Canhao,8);
@@ -40,199 +31,50 @@ void LoadSpritesTable()
     SC5SpriteColors(2,AlienColors);
 }
 
-// =====================================
-// Carrega dados de uma tela em SC5 
-// =====================================
-void SC5Data(char *buffer, int y, int nbl)
+void DesenharAlien(int intAlien,int x,int y)
 {
-    int i,s;
-    s=0;
-    for (i=0;i<nbl*128;++i)
-    {
-        Vpoke(y*128+s,buffer[i]);
-        s=s+1;
-    }
+    PutSprite(intAlien,2,x,y,15);
 }
 
-// =====================================
-// Prepara uma estrutura de arquivo
-// =====================================
-void SetName(FCB *p_fcb, const char *p_name) 
+void DesenharCanhao()
 {
-  char i, j;
-  memset(p_fcb, 0, sizeof(FCB));
-  for(i = 0; i < 11; i++) 
-  {
-    p_fcb->name[i] = ' ';
-  }
-  for(i = 0; (i < 8) && (p_name[i] != 0) && (p_name[i] != '.'); i++ ) 
-  {
-    p_fcb->name[i] =  p_name[i];
-  }
-  if( p_name[i] == '.' ) 
-  {
-    i++;
-    for( j = 0; (j < 3) && (p_name[i + j] != 0) && (p_name[i + j] != '.'); j++ ) 
-    {
-      p_fcb->ext[j] =  p_name[i + j] ;
-    }
-  }
+    PutSprite(9,0,intPosXCanhao,intPosYCanhao,1);
 }
 
-/// @brief Carrega Tela Screen 5 na VRAM
-/// @param nome do arquivo
-/// @param start_Y 
-/// @param buffer 
-/// @return int
-int LoadSc5Image(char *file_name, unsigned int start_Y, char *buffer)
-{
-    int rd=2304;
-    int nbl=0;
-    InitPSG();
-    SetName(&file,file_name);
-    fcb_open(&file);
-    fcb_read(&file,buffer,7);  // Skip 7 first bytes of the file
-    while(rd!=0)
-    {
-        rd = fcb_read(&file,buffer,2176);
-        if (rd!=0)
-        {
-            nbl=rd/128;
-            SC5Data(buffer,start_Y,nbl);
-            start_Y=start_Y+nbl; 
-        }
-    }
-    fcb_close(&file);
-    return(1);
-}
-
-// =====================================
-// INICIALIZACAO DO JOGO
-// =====================================
-void Inicializar()
-{
-    VDP60Hz();
-    intPosXCanhao=120;
-    intPosYCanhao=190;
-    intVelCanhao=2;
-    intCidades=4;
-    intVelAlien=1;
-    intNumAliens=0;
-    intVelTorpedo=2;
-    intNivel=1;
-    intNumTorpedos=0;
-
-    intMsxType=ReadMSXtype();
-    switch(intMsxType)
-    {
-        case 0:
-           PrintString(MSGMSX1);
-        break;
-        case 1:
-           PrintString(MSGMSX2);
-        break;
-        case 2:
-            PrintString(MSGMSX2P);
-        break;
-        case 3:
-            PrintString(MSGMSXTR);
-        break;
-    }
-}
-
-void DesenharCanhao(int x,int y)
-{
-    PutSprite(0,0,x,y,1);
-}
-
-void TelaInicial()
-{
-    Screen(5);
-    Cls();
-    LoadSc5Image("SPLASH.SC5",0,LDbuffer);  
-    chrOpcao=WaitKey();
-    Cls(); 
-    SpriteReset();
-    LoadSpritesTable();
-    SpriteOn();
-    Sprite8();
-    SpriteDouble();
-    DesenharCanhao(intPosXCanhao,intPosYCanhao);
-}
-
-void ProximoNivel()
-{
-    intNivel++;
-}
-
-// ================================
-// DESENHA UM ALIEN NA TELA
-// ================================
-void DesenharAlien(int intSprintIndex,int x,int y)
-{
-    PrintString("Desenhei alien ");
-    PrintNumber(intSprintIndex);
-    PutSprite(intSprintIndex,2,x,y,12);
-}
-
-// =====================================
-// Cria a matriz de Aliens 
-// =====================================
-void GerarAliens()
-{
-    int i=0;
-    int intXAlienInicial=118,intYAlienInicial=88;
-
-    for(i=2;i<10;++i)
-    {
-        intXAlienInicial=+8;
-        Aliens[i-2][0]=intXAlienInicial;
-        Aliens[i-2][1]=intYAlienInicial;
-        DesenharAlien(i,Aliens[i-2][0],Aliens[i-2][1]);
-    }
-}
-
-// ===============================
-// MOVE OS ALIENS 
-// ===============================
-void MoverAliens()
-{
-    int i;
-    for(i=2;i<10;i++)
-    {
-        Aliens[i-2][0]=Aliens[i-2][0]+intVelAlien;
-        Aliens[i-2][1]=Aliens[i-2][1]+intVelAlien;
-        DesenharAlien(i,Aliens[i][0],Aliens[i][1]);
-    }
-}
-
-// ============================================
-// MOVER O CANHAO NA TELA 
-// ============================================
-void MoverCanhao()
-{
-    DesenharCanhao(intPosXCanhao,intPosYCanhao);
-}
-
-// =====================================
-// Desenhar o torpedo na tela
-// =====================================
 void DesenharTorpedo(int x,int y)
 {
-    PutSprite(1,1,x,y,1);
+    PutSprite(10,1,x,y,1);
 }
 
-// =====================================
-// Remover o torpedo
-// =====================================
+void MoverAliens()
+{
+    for(i=1;i<8;i++)
+    {
+        for(j=0;j<i;j++)
+        {
+            if((intAliens[j][0] >= 247)||(intAliens[j][0] <= 8)) intVelXAlien = intVelXAlien*-1;
+            if((intAliens[j][1] >= 181)||(intAliens[j][1] <= 8)) intVelYAlien = intVelYAlien*-1;
+
+            intAliens[j][0] = intAliens[j][0]+intVelXAlien;
+            if (j%2==0)
+            {
+                intAliens[j][1] = intAliens[j][1]-intVelYAlien;
+            }
+            else
+            {
+                intAliens[j][1] = intAliens[j][1]+intVelYAlien;
+            }
+            //chrOpcao=WaitKey();
+            DesenharAlien(j,intAliens[j][0],intAliens[j][1]);
+        }
+    }
+}
+
 void RemoverTorpedo()
 {
     intNumTorpedos=0;
 }
 
-// =====================================
-// Criar um torpedo
-// =====================================
 void CriarTorpedo()
 {
     if(intNumTorpedos==0)
@@ -244,28 +86,13 @@ void CriarTorpedo()
     }
 }
 
-// =====================================
-// Move o torpedo quando na tela
-// =====================================
 void MoverTorpedo()
 {
     intPosYTorpedo=intPosYTorpedo-intVelTorpedo;
-    if(intPosYTorpedo<=1) RemoverTorpedo();
+    if(intPosYTorpedo<=2) RemoverTorpedo();
     if(intNumTorpedos==1) DesenharTorpedo(intPosXTorpedo,intPosYTorpedo);
 }
 
-// =====================================
-// CHECA AS COLISOES DE SPRITES
-// =====================================
-void ChecarColisao()
-{
-    intXColisao = SpriteCollisionX();
-    intYColisao = SpriteCollisionY();
-}
-
-// =====================================
-// Pega os comandos do jogador 
-// =====================================
 void PegarComandos()
 {
     int intMove=JoystickRead(0);
@@ -302,35 +129,64 @@ void PegarComandos()
     if(intFire==255 && intNumTorpedos==0) CriarTorpedo();
 }
 
-void TestaFimJogo()
+void Inicializar()
 {
-
+    VDP60Hz();
+    intPosXCanhao=120;
+    intPosYCanhao=190;
+    intVelCanhao=2;
+    intVelXAlien=1;
+    intVelYAlien=1;
+    intXAlienInicial=175;
+    intYAlienInicial=88;
+    intAliens[0][0] = intXAlienInicial;
+    intAliens[0][1] = intYAlienInicial;
+    intVelTorpedo=2;
+    intNivel=1;
+    intNumTorpedos=0;
+    intMsxType=ReadMSXtype();
+    
+    switch(intMsxType)
+    {
+        case 0:
+           PrintString(MSGMSX1);
+        break;
+        case 1:
+           PrintString(MSGMSX2);
+        break;
+        case 2:
+            PrintString(MSGMSX2P);
+        break;
+        case 3:
+            PrintString(MSGMSXTR);
+        break;
+    }
 }
 
-void TestaNovoNivel()
+void TelaInicial()
 {
-
+    Screen(5);
+    Cls(); 
+    SpriteReset();
+    LoadSpritesTable();
+    SpriteOn();
+    Sprite8();
+    SpriteDouble();
+    DesenharAlien(0,intAliens[0][0],intAliens[0][1]);
+    DesenharCanhao();
 }
 
-// =====================================
-// MAIN
-// =====================================
 void main(void) 
 {
     Inicializar();   
-    //TelaInicial();       
-	GerarAliens();      
-    
+    TelaInicial();       
+	
     // Game Loop
     while(1)
     {
         MoverTorpedo(); 
-	    //MoverAliens();
-        PegarComandos();
-        MoverCanhao(); 
-        ChecarColisao(); 
-        TestaNovoNivel();
-        ProximoNivel();
-        TestaFimJogo(); 
+	    PegarComandos();
+        DesenharCanhao(); 
+        MoverAliens();
     }
 }

@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "SCROLL.C": "cpp",
-        "TREVAS.C": "cpp"
+        "TREVAS.C": "cpp",
+        "SPRITES.C": "cpp"
     }
 }
