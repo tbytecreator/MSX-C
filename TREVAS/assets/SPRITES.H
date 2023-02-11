@@ -4,6 +4,7 @@
 // (C) 2023 Manoel Neto - tbytecreator@gmail.com
 // Definicao dos sprites usados no jogo
 // =============================================
+
 char Canhao[] =
 {
     0b00000000,
@@ -15,7 +16,6 @@ char Canhao[] =
     0b01111110,
     0b11111111
 };
-unsigned char CanhaoColors[8]= {15,11,11,11,11,11,11,15};
 
 char Torpedo[] =
 {
@@ -28,7 +28,6 @@ char Torpedo[] =
     0b00000000,
     0b00000000
 };
-unsigned char TorpedoColors[8]= {15,8,8,8,8,8,8,15};
 
 char Alien[] =
 {
@@ -41,4 +40,3 @@ char Alien[] =
     0b00000000,
     0b00000000
 };
-unsigned char AlienColors[8]= {15,8,8,8,8,8,8,15};

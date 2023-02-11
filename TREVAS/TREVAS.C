@@ -6,67 +6,77 @@
 
 #include <string.h>
 #include "fusion-c/header/msx_fusion.h"
-#include "fusion-c/header/vdp_graph2.h"
+#include "fusion-c/header/vdp_graph1.h"
 #include "fusion-c/header/vdp_sprites.h"
 #include "assets/PTBR.H"
-#include "assets/SPRITES.C"
+#include "assets/SPRITES.H"
 
-int intPosXCanhao,intPosYCanhao,intVelCanhao;
+int intMsxType,intBordaSuperior,intBordaInferior;
 int intXColisao,intYColisao;
-int intVelXAlien,intVelYAlien,intNumAliens;
-int intXAlienInicial,intYAlienInicial;
-int intNivel,i,j;
+int intPosXCanhao,intPosYCanhao,intVelCanhao;
+int intPosXAlien,intPosYAlien,intVelXAlien,intVelYAlien,intNumAliens;
 int intPosXTorpedo,intPosYTorpedo,intNumTorpedos,intVelTorpedo;
-int intMsxType;
+int intNivel,i,j;
 int intAliens[8][2];
 char chrOpcao;
 
 void LoadSpritesTable()
 {
     SetSpritePattern(0,Canhao,8);
-    SC5SpriteColors(0,CanhaoColors);
     SetSpritePattern(1,Torpedo,8);
-    SC5SpriteColors(1,TorpedoColors);
     SetSpritePattern(2,Alien,8);
-    SC5SpriteColors(2,AlienColors);
-}
-
-void DesenharAlien(int intAlien,int x,int y)
-{
-    PutSprite(intAlien,2,x,y,15);
 }
 
 void DesenharCanhao()
 {
-    PutSprite(9,0,intPosXCanhao,intPosYCanhao,1);
+    PutSprite(8,0,intPosXCanhao,intPosYCanhao,8);
 }
 
 void DesenharTorpedo(int x,int y)
 {
-    PutSprite(10,1,x,y,1);
+    PutSprite(9,1,x,y,8);
+}
+
+void DesenharAlien(int intAlien,int x,int y)
+{
+    PutSprite(intAlien,2,x,y,2);
 }
 
 void MoverAliens()
 {
-    for(i=1;i<8;i++)
-    {
-        for(j=0;j<i;j++)
+    for(i=0;i<8;i++)
+    {   
+        // checa a borda horizontal esquerda
+        if(intAliens[i][0] < 16)
         {
-            if((intAliens[j][0] >= 247)||(intAliens[j][0] <= 8)) intVelXAlien = intVelXAlien*-1;
-            if((intAliens[j][1] >= 181)||(intAliens[j][1] <= 8)) intVelYAlien = intVelYAlien*-1;
-
-            intAliens[j][0] = intAliens[j][0]+intVelXAlien;
-            if (j%2==0)
-            {
-                intAliens[j][1] = intAliens[j][1]-intVelYAlien;
-            }
-            else
-            {
-                intAliens[j][1] = intAliens[j][1]+intVelYAlien;
-            }
-            //chrOpcao=WaitKey();
-            DesenharAlien(j,intAliens[j][0],intAliens[j][1]);
+            intVelXAlien = intVelXAlien*-1;
+            intAliens[i][0] = 16;
         }
+
+        // checa a borda horizontal direita
+        if(intAliens[i][0] > 239)
+        {
+            intVelXAlien = intVelXAlien*-1;
+            intAliens[i][0] = 239;
+        } 
+
+        // checa a borda vertical superior
+        if(intAliens[i][1]<intBordaSuperior)
+        {
+            intVelYAlien = intVelYAlien*-1;
+            intAliens[i][1]=intBordaSuperior;
+        }
+
+        // checa a borda vertical inferior
+        if(intAliens[i][1]>intBordaInferior)
+        {
+            intVelYAlien = intVelYAlien*-1;
+            intAliens[i][1]=intBordaInferior;
+        } 
+
+        intAliens[i][0] = intAliens[i][0]+intVelXAlien;
+        intAliens[i][1] = intAliens[i][1]+intVelYAlien;
+        DesenharAlien(i,intAliens[i][0],intAliens[i][1]);
     }
 }
 
@@ -88,9 +98,12 @@ void CriarTorpedo()
 
 void MoverTorpedo()
 {
-    intPosYTorpedo=intPosYTorpedo-intVelTorpedo;
-    if(intPosYTorpedo<=2) RemoverTorpedo();
-    if(intNumTorpedos==1) DesenharTorpedo(intPosXTorpedo,intPosYTorpedo);
+    if(intNumTorpedos==1)
+    {
+        intPosYTorpedo=intPosYTorpedo-intVelTorpedo;
+        if(intPosYTorpedo<=2) RemoverTorpedo();
+        DesenharTorpedo(intPosXTorpedo,intPosYTorpedo);
+    }
 }
 
 void PegarComandos()
@@ -129,50 +142,65 @@ void PegarComandos()
     if(intFire==255 && intNumTorpedos==0) CriarTorpedo();
 }
 
-void Inicializar()
+void CriarAliens()
 {
-    VDP60Hz();
-    intPosXCanhao=120;
-    intPosYCanhao=190;
+    // criar os 8 alienigenas do jogo
+    // sprites de 0 a 7  
+    for(i=0;i<8;i++)
+    {
+        // a posicao x do alien 
+        intAliens[i][0]=intPosXAlien+16*i;
+
+        // a posicao y do alien
+        if(i%2==0)
+        {
+            intAliens[i][1]=intPosYAlien+6;
+        }
+        else 
+        {
+            intAliens[i][1]=intPosYAlien-6;
+        }
+        
+        // adiciona um alien na contagem
+        intNumAliens++;
+
+        // move o alien 
+        DesenharAlien(i,intAliens[i][0],intAliens[i][1]);
+    }
+}
+
+void Inicializar()
+{   
+    intBordaInferior=80;
+    intBordaSuperior=16;
+    intPosXCanhao=128;
+    intPosYCanhao=176;
     intVelCanhao=2;
     intVelXAlien=1;
-    intVelYAlien=1;
-    intXAlienInicial=175;
-    intYAlienInicial=88;
-    intAliens[0][0] = intXAlienInicial;
-    intAliens[0][1] = intYAlienInicial;
+    intVelYAlien=5;
+    intPosXAlien=105;
+    intPosYAlien=60;
     intVelTorpedo=2;
     intNivel=1;
+    intNumAliens=0;
     intNumTorpedos=0;
     intMsxType=ReadMSXtype();
-    
-    switch(intMsxType)
-    {
-        case 0:
-           PrintString(MSGMSX1);
-        break;
-        case 1:
-           PrintString(MSGMSX2);
-        break;
-        case 2:
-            PrintString(MSGMSX2P);
-        break;
-        case 3:
-            PrintString(MSGMSXTR);
-        break;
-    }
 }
 
 void TelaInicial()
 {
-    Screen(5);
+    VDP60Hz();
+    // 256 x 192
+    Screen(2);
+    //branco, preto, preto
+    SetColors(15,1,1);
     Cls(); 
     SpriteReset();
     LoadSpritesTable();
     SpriteOn();
     Sprite8();
     SpriteDouble();
-    DesenharAlien(0,intAliens[0][0],intAliens[0][1]);
+    CriarAliens();
     DesenharCanhao();
 }
 
@@ -184,9 +212,9 @@ void main(void)
     // Game Loop
     while(1)
     {
+        MoverAliens();
         MoverTorpedo(); 
 	    PegarComandos();
         DesenharCanhao(); 
-        MoverAliens();
     }
 }
