@@ -10,7 +10,8 @@
             "name": "Launch in Emulicious",
             "program": "${workspaceFolder}/${command:AskForProgramName}",
             "port": 58870,
-            "stopOnEntry": true
+            "stopOnEntry": true,
+            "emuliciousPath":"C:/Users/tremy/Documents/Emulicious"
         }
     ]
 }
