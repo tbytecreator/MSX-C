@@ -1,4 +1,4 @@
- machine Philips_NMS_8255 
+machine Philips_NMS_8255 
 ext msxdos2 
 ext gfx9000 
 bind F12 cycle videosource
