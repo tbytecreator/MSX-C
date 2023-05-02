@@ -1,0 +1,15 @@
+------------------------------------ FUSION-C
+Ven 30 aoû 2019 18:12:15 CEST
+------------------------------------
+printf.c:110: warning 196: pointer target lost const qualifier
+printf.c:111: warning 196: pointer target lost const qualifier
+------------------------------------ FUSION-C
+Ven 30 aoû 2019 19:49:09 CEST
+------------------------------------
+printf.c:110: warning 196: pointer target lost const qualifier
+printf.c:111: warning 196: pointer target lost const qualifier
+------------------------------------ FUSION-C
+Lun  2 sep 2019 17:10:01 CEST
+------------------------------------
+printf.c:110: warning 196: pointer target lost const qualifier
+printf.c:111: warning 196: pointer target lost const qualifier

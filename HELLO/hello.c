@@ -14,5 +14,8 @@ void main(void)
   detect = G9Detect();
   PrintNumber(detect);
 
+   //G9SpritesEnable();
+   //G9SpritesDisable();
+
 }
  
