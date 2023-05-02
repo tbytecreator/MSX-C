@@ -2,6 +2,7 @@
     "files.associations": {
         "SCROLL.C": "cpp",
         "TREVAS.C": "cpp",
-        "SPRITES.C": "cpp"
+        "SPRITES.C": "cpp",
+        "msx_fusion.h": "c"
     }
 }

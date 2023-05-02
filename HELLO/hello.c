@@ -3,10 +3,16 @@
 // My First Program in C
 //
 #include "fusion-c/header/msx_fusion.h"
+#include "fusion-c/header/g9klib.h"
+
 #define  __SDK_MSXVERSION__ 2
 
 void main(void) 
 {
-  Print("Oi, eu sou o MSX C!");
+  unsigned char detect;
+
+  detect = G9Detect();
+  PrintNumber(detect);
+
 }
  
