@@ -4,5 +4,6 @@
         "TREVAS.C": "cpp",
         "SPRITES.C": "cpp",
         "msx_fusion.h": "c"
-    }
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }
