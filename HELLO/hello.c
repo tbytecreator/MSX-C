@@ -1,21 +1,15 @@
 //
 // Fusion-C
-// My First Program in C
+// Meu primeiro programa
 //
+//#include "<stdio.h>"
 #include "fusion-c/header/msx_fusion.h"
-#include "fusion-c/header/g9klib.h"
 
-#define  __SDK_MSXVERSION__ 2
-
-void main(void) 
+int main(void) 
 {
-  unsigned char detect;
-
-  detect = G9Detect();
-  PrintNumber(detect);
-
-   //G9SpritesEnable();
-   //G9SpritesDisable();
-
+  /* Meu primeiro programa em C*/
+  //printf("Oi Mundo!\n");
+  Print("Oi Mundo!\n");
+  return 0;
 }
  
