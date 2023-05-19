@@ -29,13 +29,9 @@
 #define PLTLN 192
 
 static FCB file;
-
 static SPRITE_ATTR spr1;
-
 const unsigned char space_tile[1]={47};
-
 const unsigned char first_line[2]={37,38};
-
 const unsigned char zero_line[1]={43};
 
 /* 0 1 2 3 4 5 6 7 8 9 */
@@ -56,7 +52,8 @@ unsigned char buffer[MAXBF];
 
 unsigned int k,posy;
 
-int LoadBufferFromFile(char * fileName, char * fileExt, int readLen) {
+int LoadBufferFromFile(char * fileName, char * fileExt, int readLen) 
+{
 	int retc,retd;
 	file.cluster_offset=0;
 	file.current_record=0;
@@ -75,7 +72,6 @@ int main(void)
 {
 	/* declarations */
 	int i,j;
-
 	int x,y;
 	unsigned char c;
 
@@ -83,25 +79,22 @@ int main(void)
 
 //	getchar();
 
-	if (G9Detect()) {
+	if (G9Detect()) 
+	{
 		printf("GFX9000 detect failed\n\r");
 		return 1;
 	}
 
 	G9Reset();
 
-/* Init. palettes */
-
+	/* Init. palettes */
 	// set default disk drive
 	file.drive_no = 0;
-
 	// Load 4 palettes in V9990
 	LoadBufferFromFile("palettes","pal",PLTLN);
 	G9InitPalette(buffer,PLTLN);
-
 	printf("palette loaded\n\r");
-
-//	G9DisplayDisable();
+	//	G9DisplayDisable();
 
 	/* SCREEN P1		  : Pattern Mode 1
 	 * Display resolution : 32x26.5 patterns (256x212 pixels)
@@ -113,35 +106,29 @@ int main(void)
 	 * Number of patterns : Layer "A": 8160 units / Layer "B": 7680 units
 	 */
 	G9SetScreenMode(G9MODE_P1,G9SCR0_2BIT,G9SCR0_XIM256,0,4);
-
 	G9InitSpritePattern(4);
-
 	G9InitPatternMode();
-
 	G9DisplayDisable();
 
-/* Init. sprites */
+	/* Init. sprites */
 	// load sprites to VRAM
 	LoadBufferFromFile("sprites ","sc5",SPRLN);
 	G9SetVramWrite(1,0); // sprite pattern starts at $10000
 	G9CopyRamToVram(buffer, SPRLN);
-
 	printf("sprites loaded\n\r");
 
-/* Init. tiles A */
+	/* Init. tiles A */
 	// load tiles layer A to VRAM
 	LoadBufferFromFile("tiles   ","sc5",TL1LN);
 	G9SetVramWrite(0,0); // tiles layer A at $00000
 	G9CopyRamToVram(buffer, TL1LN);
-
 	printf("tilesA loaded\n\r");
 
-/* Init. tiles B */
+	/* Init. tiles B */
 	// load tiles layer B to VRAM
 	LoadBufferFromFile("tilesB  ","sc5",TL2LN);
 	G9SetVramWrite(4,0); // tiles layer B at $40000
 	G9CopyRamToVram(buffer, TL2LN);
-
 	printf("tilesB loaded\n\r");
 
 /*

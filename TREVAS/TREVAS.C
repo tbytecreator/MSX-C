@@ -4,7 +4,6 @@
 // POR MANOEL NETO
 // ========================
 
-#include <string.h>
 #include "fusion-c/header/msx_fusion.h"
 #include "fusion-c/header/vdp_graph1.h"
 #include "fusion-c/header/vdp_sprites.h"
