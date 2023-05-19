@@ -8,8 +8,7 @@ char sc=0;
 void TilesCreation(void)
 {
 	char i;
-
-	for ( i = 0; i < 15; ++i)
+    for ( i = 0; i < 15; ++i)
 	{
 		BoxFill(0,256+i*8,8,256+8+i*8,i,0);
 		BoxLine(0,256+i*8,8,256+8+i*8,15,0);
@@ -19,7 +18,6 @@ void TilesCreation(void)
 void PrintTiles(void)
 {
 	char i=0;
-
 	char y=0;
 	unsigned int sx,sy,dx,dy;
 	while (i<24)
@@ -45,6 +43,7 @@ void PrintTiles(void)
 		i++;
 	}
 }
+
 void Scroll(void)
 {
 	sc++;
@@ -57,10 +56,10 @@ void Scroll(void)
 	}
 
 }
+
 void main (void)
 {
-
-	SetColors(15,0,1);
+    SetColors(15,0,1);
 	Screen(5);
 	Cls();
 	KeySound(0);			
@@ -74,7 +73,5 @@ void main (void)
 	while (1)
 	{
 	    	Scroll();
-
 	}
-
 }
