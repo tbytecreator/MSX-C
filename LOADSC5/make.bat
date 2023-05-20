@@ -1,8 +1,5 @@
 
 @echo off
-echo -------- Compilation of : 
-echo %1
-echo .
 SET HEX2BINDIR=
 SET HEX2BIN=hex2bin.exe 
 SET ASM=sdasz80 
@@ -10,7 +7,7 @@ SET CC=sdcc
 SET DEST=dsk\
 SET INCLUDEDIR=fusion-c\include\
 SET LIBDIR=fusion-c\lib\
-SET proga=%1
+SET proga="loadsc5"
 SET INC1=%INCLUDEDIR%crt0_msxdos.rel
 REM SET INC2=%INCLUDEDIR
 REM SET INC3=%INCLUDEDIR
