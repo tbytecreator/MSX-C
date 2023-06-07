@@ -1,7 +1,7 @@
-//
-// Fusion-C
-// Meu primeiro programa
-//
+/*
+Fusion-C
+Meu primeiro programa
+*/
 //#include "<stdio.h>"
 #include "fusion-c/header/msx_fusion.h"
 
