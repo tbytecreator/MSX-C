@@ -1,13 +1,11 @@
 
 @echo off
 echo -------- Compilation of : 
-echo %1
-echo .
 SET HEX2BINDIR=
 SET HEX2BIN=hex2bin.exe 
 SET ASM=sdasz80 
 SET CC=sdcc 
-SET DEST=dsk\
+SET DEST=dsk\dska\
 SET INCLUDEDIR=fusion-c\include\
 SET LIBDIR=fusion-c\lib\
 SET proga="SCROLL"
@@ -35,7 +33,7 @@ echo ... Compilation OK
 @echo on
 hex2bin -e com %proga%.ihx
 @echo off
-copy %proga%.com DSK\%proga%.com /y
+copy %proga%.com dsk\dska\%proga%.com /y
 del %proga%.com
 del %proga%.asm
 del %proga%.ihx
