@@ -1,2 +1,0 @@
-CNode.o: CNode.cpp CNode.h
-CNode.cpp CNode.h :

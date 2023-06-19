@@ -1,3 +1,0 @@
-{
-	"cmd": ["compil.bat", "$file_base_name"]
-}
