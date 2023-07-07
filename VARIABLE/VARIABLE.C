@@ -50,22 +50,9 @@ unsigned long inteiroDeQuatroBytesSemSinal;//4 bytes (até 4 bilhões)
 //------------------------------------------------------------------------------------------
 float precisaoSimples;         // 4 bytes  | 1.2E-38 a 3.4E+38     | 6 casas decimais
 // para usar os tipos abaixo, compilar com a opção "model-Large"
-//double precisaoDupla;        // 8 bytes  | 2.3E-308 a 1.7E+308   | 15 casas decimais
-//long double precisaoLonga;   // 10 bytes | 3.4E-4932 a 1.1E+4932 | 19 casas decimais
+// double precisaoDupla;        // 8 bytes  | 2.3E-308 a 1.7E+308   | 15 casas decimais
+// long double precisaoLonga;   // 10 bytes | 3.4E-4932 a 1.1E+4932 | 19 casas decimais
 //------------------------------------------------------------------------------------------
- 
-void ImprimirValores(void)
-{
-  float fltMax = FLT_MAX;
-
-  Print("Valores Maximos");Print("\n");
-  Print("------------------------");Print("\n");
-  PrintNumber(fltMax);
-  printf("FLT_MIN     :   %g\n", (float) FLT_MIN);
-  printf("-FLT_MAX    :   %g\n", (float) -FLT_MAX);
-  printf("-FLT_MIN    :   %g\n", (float) -FLT_MIN);
-  Print("------------------------");Print("\n");
-}
 
 int main(void) 
 { 
