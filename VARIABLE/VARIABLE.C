@@ -29,6 +29,8 @@ inteiros e de ponto flutuante
 */
 
 //------------------------------------------------------------------------------------------
+// Tipos Inteiros  
+//------------------------------------------------------------------------------------------
 char caracter;                             //1 byte 
 unsigned char caracterSemSinal;            //1 byte (0 a 255)
 signed char caracterComSinal;              //1 byte (-128 ate 127)
@@ -40,16 +42,29 @@ long  inteiroDeQuatroBytes;                //4 bytes (de menos 2 bilhões a mais
 unsigned long inteiroDeQuatroBytesSemSinal;//4 bytes (até 4 bilhões)
 //------------------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------------------
+// Tipos Ponto Flutuante   
+//------------------------------------------------------------------------------------------
+float precisaoSimples;         // 4 bytes  | 1.2E-38 a 3.4E+38     | 6 casas decimais
+// para usar os tipos abaixo, compilar com a opção "model-Large"
+//double precisaoDupla;        // 8 bytes  | 2.3E-308 a 1.7E+308   | 15 casas decimais
+//long double precisaoLonga;   // 10 bytes | 3.4E-4932 a 1.1E+4932 | 6 casas decimais
+//------------------------------------------------------------------------------------------
+ 
 int main(void) 
 { 
-  PrintNumber(sizeof(caracter));
-  PrintNumber(sizeof(caracterSemSinal));
-  PrintNumber(sizeof(caracterComSinal));
-  PrintNumber(sizeof(numeroInteiro));
-  PrintNumber(sizeof(inteiroSemSinal));
-  PrintNumber(sizeof(inteiroDeDoisBytes));
-  PrintNumber(sizeof(inteiroDeDoisBytesSemSinal));
-  PrintNumber(sizeof(inteiroDeQuatroBytes));
-  PrintNumber(sizeof(inteiroDeQuatroBytesSemSinal));
+  // Tipos Inteiros
+  Print("caracter:");PrintNumber(sizeof(caracter));Print("\n");
+  Print("caracterSemSinal:");PrintNumber(sizeof(caracterSemSinal));Print("\n");
+  Print("caracterComSinal:");PrintNumber(sizeof(caracterComSinal));Print("\n");
+  Print("numeroInteiro:");PrintNumber(sizeof(numeroInteiro));Print("\n");
+  Print("inteiroSemSinal:");PrintNumber(sizeof(inteiroSemSinal));Print("\n");
+  Print("inteiroDeDoisBytes:");PrintNumber(sizeof(inteiroDeDoisBytes));Print("\n");
+  Print("inteiroDeDoisBytesSemSinal:");PrintNumber(sizeof(inteiroDeDoisBytesSemSinal));Print("\n");
+  Print("inteiroDeQuatroBytes:");PrintNumber(sizeof(inteiroDeQuatroBytes));Print("\n");
+  Print("inteiroDeQuatroBytesSemSinal:");PrintNumber(sizeof(inteiroDeQuatroBytesSemSinal));Print("\n");
+
+  // Tipos Ponto Flutuante
+  Print("precisaoSimples:");PrintNumber(sizeof(precisaoSimples));Print("\n");
   return 0; 
 }
