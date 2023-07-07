@@ -75,6 +75,5 @@ int main(void)
   Print("------------------------");Print("\n");
   Print("precisaoSimples:");PrintNumber(sizeof(precisaoSimples));Print("\n");
   Print("\n");
-  ImprimirValores();
   return 0; 
 }
