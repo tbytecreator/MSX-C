@@ -4,9 +4,9 @@ EXEMPLO DE VARIAVEIS EM C
 ----------------------------------
 */
 #include "fusion-c/header/msx_fusion.h"
-#include <C:\Program Files\SDCC\include\stdio.h>
-#include <C:\Program Files\SDCC\include\limits.h>
-#include <C:\Program Files\SDCC\include\float.h>
+#include <stdio.h>
+#include <limits.h>
+#include <float.h>
 
 /*
 ----------------------------------
@@ -60,7 +60,7 @@ void ImprimirValores(void)
 
   Print("Valores Maximos");Print("\n");
   Print("------------------------");Print("\n");
-  Print("%2.6f\n",fltMax);
+  PrintNumber(fltMax);
   printf("FLT_MIN     :   %g\n", (float) FLT_MIN);
   printf("-FLT_MAX    :   %g\n", (float) -FLT_MAX);
   printf("-FLT_MIN    :   %g\n", (float) -FLT_MIN);
