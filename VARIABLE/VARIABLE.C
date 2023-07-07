@@ -4,6 +4,9 @@ EXEMPLO DE VARIAVEIS EM C
 ----------------------------------
 */
 #include "fusion-c/header/msx_fusion.h"
+#include <C:\Program Files\SDCC\include\stdio.h>
+#include <C:\Program Files\SDCC\include\limits.h>
+#include <C:\Program Files\SDCC\include\float.h>
 
 /*
 ----------------------------------
@@ -48,12 +51,27 @@ unsigned long inteiroDeQuatroBytesSemSinal;//4 bytes (até 4 bilhões)
 float precisaoSimples;         // 4 bytes  | 1.2E-38 a 3.4E+38     | 6 casas decimais
 // para usar os tipos abaixo, compilar com a opção "model-Large"
 //double precisaoDupla;        // 8 bytes  | 2.3E-308 a 1.7E+308   | 15 casas decimais
-//long double precisaoLonga;   // 10 bytes | 3.4E-4932 a 1.1E+4932 | 6 casas decimais
+//long double precisaoLonga;   // 10 bytes | 3.4E-4932 a 1.1E+4932 | 19 casas decimais
 //------------------------------------------------------------------------------------------
  
+void ImprimirValores(void)
+{
+  float fltMax = FLT_MAX;
+
+  Print("Valores Maximos");Print("\n");
+  Print("------------------------");Print("\n");
+  Print("%2.6f\n",fltMax);
+  printf("FLT_MIN     :   %g\n", (float) FLT_MIN);
+  printf("-FLT_MAX    :   %g\n", (float) -FLT_MAX);
+  printf("-FLT_MIN    :   %g\n", (float) -FLT_MIN);
+  Print("------------------------");Print("\n");
+}
+
 int main(void) 
 { 
   // Tipos Inteiros
+  Print("Tipos Inteiros");Print("\n");
+  Print("------------------------");;Print("\n");
   Print("caracter:");PrintNumber(sizeof(caracter));Print("\n");
   Print("caracterSemSinal:");PrintNumber(sizeof(caracterSemSinal));Print("\n");
   Print("caracterComSinal:");PrintNumber(sizeof(caracterComSinal));Print("\n");
@@ -63,8 +81,13 @@ int main(void)
   Print("inteiroDeDoisBytesSemSinal:");PrintNumber(sizeof(inteiroDeDoisBytesSemSinal));Print("\n");
   Print("inteiroDeQuatroBytes:");PrintNumber(sizeof(inteiroDeQuatroBytes));Print("\n");
   Print("inteiroDeQuatroBytesSemSinal:");PrintNumber(sizeof(inteiroDeQuatroBytesSemSinal));Print("\n");
-
+  Print("------------------------");Print("\n");
+  Print("\n");
   // Tipos Ponto Flutuante
+  Print("Tipos Ponto Flutuante");Print("\n");
+  Print("------------------------");Print("\n");
   Print("precisaoSimples:");PrintNumber(sizeof(precisaoSimples));Print("\n");
+  Print("\n");
+  ImprimirValores();
   return 0; 
 }
