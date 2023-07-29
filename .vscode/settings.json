@@ -3,7 +3,8 @@
         "SCROLL.C": "cpp",
         "TREVAS.C": "cpp",
         "SPRITES.C": "cpp",
-        "msx_fusion.h": "c"
+        "msx_fusion.h": "c",
+        "PSEUDO3D.C": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
