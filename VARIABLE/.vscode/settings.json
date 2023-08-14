@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "VARIABLE.C": "cpp"
+        "VARIABLE.C": "cpp",
+        "float.h": "c"
     }
 }

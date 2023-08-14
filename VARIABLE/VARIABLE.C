@@ -3,10 +3,10 @@
 EXEMPLO DE VARIAVEIS EM C
 ----------------------------------
 */
-#include "fusion-c/header/msx_fusion.h"
 #include <stdio.h>
 #include <limits.h>
 #include <float.h>
+#include "fusion-c/header/msx_fusion.h"
 
 /*
 ----------------------------------
