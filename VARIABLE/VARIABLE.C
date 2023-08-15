@@ -3,10 +3,9 @@
 EXEMPLO DE VARIAVEIS EM C
 ----------------------------------
 */
-#include "fusion-c/header/msx_fusion.h"
+#include <stdlib.h>
 #include <stdio.h>
-#include <limits.h>
-#include <float.h>
+#include "fusion-c/header/msx_fusion.h"
 
 /*
 ----------------------------------
@@ -54,6 +53,65 @@ float precisaoSimples;         // 4 bytes  | 1.2E-38 a 3.4E+38     | 6 casas dec
 // long double precisaoLonga;   // 10 bytes | 3.4E-4932 a 1.1E+4932 | 19 casas decimais
 //------------------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------------------
+// O Tipo Void
+//------------------------------------------------------------------------------------------
+// O tipo void tem 3 funções básicas no C 
+// 1. Funções que retornam void (procedimentos): usado como tipo de retorno para funções 
+//    que não devolvem um valor para seu ponto chamador.
+// 2. Em funções que não possuam um argumento de chamada ou parâmetro
+// 3. Ponteiros para vazio: Um ponteiro do tipo void * representa o endereço para um objeto
+//    mas não para o seu tipo. Um exemplo é a função void *malloc(size_t size), que retorna 
+//    um ponteiro para void que pode ser convertido para qualquer tipo de dados
+//------------------------------------------------------------------------------------------
+
+void EscreveOlaMundo(void)
+{
+  Print("Ola Mundo!");
+  Print("\n");
+}
+
+int ExemploAlocacaoDinimica()
+{
+    // Esse ponteiro contera o endereco base do bloco criado
+    int* ptr;
+    int n, i;
+ 
+    // Pega o numero de elementos do arry
+    Print("Enter number of elements:");
+    scanf("%d");
+    printf("Entered number of elements: %d\n", n);
+ 
+    // Aloca a memória dinamicamente usando malloc()
+    ptr = (int*)malloc(n * sizeof(int));
+ 
+    // Checa se a memoria foi ou nao alocada
+    if (ptr == NULL) 
+    {
+        printf("Memória não alocada.\n");
+        exit();
+    }
+    else 
+    {
+        // Memoria foi alocada corretamente 
+        printf("Memoria alocada usando malloc.\n");
+ 
+        // Pega os elementos do array
+        for(i = 0; i<n;++i) 
+        {
+            ptr[i] = i + 1;
+        }
+ 
+        // Imprime os elementos do array
+        printf("Esses são os elementoa do array: ");
+        for (i = 0; i < n; ++i) 
+        {
+            printf("%d, ", ptr[i]);
+        }
+    }
+  return 0;
+}
+
 int main(void) 
 { 
   // Tipos Inteiros
@@ -75,5 +133,8 @@ int main(void)
   Print("------------------------");Print("\n");
   Print("precisaoSimples:");PrintNumber(sizeof(precisaoSimples));Print("\n");
   Print("\n");
+  // Tipos Void 
+  EscreveOlaMundo();
+  ExemploAlocacaoDinimica();
   return 0; 
 }
