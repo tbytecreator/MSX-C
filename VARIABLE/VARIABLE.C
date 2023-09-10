@@ -90,7 +90,7 @@ void ImprimeTiposFlutuantes(void)
   Print("------------------------");Print("\n");
 }
 
-void LiteraisInteiros(void)
+void ImprimeLiteraisInteiros(void)
 {
   //------------------------------------------------------------------------------------------
   // Uma constante literal inteira pode ser um decimal, octal ou hexadecimal  
@@ -118,7 +118,7 @@ void LiteraisInteiros(void)
   Print("------------------------");Print("\n");
 }
 
-void LiteraisFlutuantes(void)
+void ImprimeLiteraisFlutuantes(void)
 {
   //------------------------------------------------------------------------------------------
   // Um literal de ponto flutuante tem uma parte inteira antes do ponto decimal
@@ -148,7 +148,7 @@ int main(void)
   EscreveOlaMundo();
   ImprimeTiposInteiros();
   ImprimeTiposFlutuantes();
-  LiteraisInteiros();
-  LiteraisFlutuantes();
+  ImprimeLiteraisInteiros();
+  ImprimeLiteraisFlutuantes();
   return 0; 
 }
