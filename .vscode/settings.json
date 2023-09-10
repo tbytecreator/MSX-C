@@ -6,7 +6,8 @@
         "msx_fusion.h": "c",
         "PSEUDO3D.C": "cpp",
         "CONSOLE.C": "cpp",
-        "VARIABLE.C": "cpp"
+        "VARIABLE.C": "cpp",
+        "fstream": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

@@ -1,34 +1,28 @@
-/* 
-----------------------------------
-EXEMPLO DE VARIAVEIS EM C
-----------------------------------
-*/
+// ----------------------------------
+// EXEMPLO DE VARIAVEIS EM C
+// ----------------------------------
 #include <stdlib.h>
 #include <stdio.h>
 #include "fusion-c/header/msx_fusion.h"
 
-/*
-----------------------------------
-OS TIPOS DO C SE DIVIDEM EM DOIS
-. FUNCTION TYPES
-. OBJECT TYPES 
-OBJETO NO C ANSI SIGNIFICA UMA 
-PARTE DA MEMORIA NO AMBIENTE DE 
-EXECUCAO QUE REPRESENTA UM VALOR.
-QUANDO UM OBJETO E REFERENCIADO 
-CONSIDERA-SE QUE ELE TEM UM TIPO
-(TIPAGEM). NO C, UMA VARIAVEL E 
-UM EXEMPLO DE OBJETO
-----------------------------------
-*/
+// ----------------------------------
+//  OS TIPOS DO C SE DIVIDEM EM DOIS
+//  . FUNCTION TYPES
+//  . OBJECT TYPES 
+//  OBJETO NO C ANSI SIGNIFICA UMA 
+//  PARTE DA MEMORIA NO AMBIENTE DE 
+//  EXECUCAO QUE REPRESENTA UM VALOR.
+//  QUANDO UM OBJETO E REFERENCIADO 
+//  CONSIDERA-SE QUE ELE TEM UM TIPO
+//  (TIPAGEM). NO C, UMA VARIAVEL E 
+//  UM EXEMPLO DE OBJETO
+//----------------------------------
 
-/*
--------- Tipos basicos -----------
-Os tipos basicos são tipos 
-aritimeticos e se classificam em 
-inteiros e de ponto flutuante
-----------------------------------
-*/
+//  -------- Tipos basicos -----------
+//  Os tipos basicos são tipos 
+//  aritimeticos e se classificam em 
+//  inteiros e de ponto flutuante
+//  ----------------------------------
 
 //------------------------------------------------------------------------------------------
 // O Tipo Void
@@ -41,6 +35,13 @@ inteiros e de ponto flutuante
 //    mas não para o seu tipo. Um exemplo é a função void *malloc(size_t size), que retorna 
 //    um ponteiro para void que pode ser convertido para qualquer tipo de dados
 //------------------------------------------------------------------------------------------
+
+void EscreveOlaMundo(void)
+{
+  Print("\n");
+  Print("Ola Mundo!");
+  Print("\n");
+}
 
 void ImprimeTiposInteiros(void)
 {
@@ -57,7 +58,6 @@ void ImprimeTiposInteiros(void)
   long  inteiroDeQuatroBytes;                //4 bytes (de menos 2 bilhões a mais 2 bilhões)
   unsigned long inteiroDeQuatroBytesSemSinal;//4 bytes (até 4 bilhões)
   //------------------------------------------------------------------------------------------
-
   Print("\n");
   Print("Tipos Inteiros");Print("\n");
   Print("------------------------");;Print("\n");
@@ -70,13 +70,11 @@ void ImprimeTiposInteiros(void)
   Print("inteiroDeDoisBytesSemSinal:");PrintNumber(sizeof(inteiroDeDoisBytesSemSinal));Print("\n");
   Print("inteiroDeQuatroBytes:");PrintNumber(sizeof(inteiroDeQuatroBytes));Print("\n");
   Print("inteiroDeQuatroBytesSemSinal:");PrintNumber(sizeof(inteiroDeQuatroBytesSemSinal));Print("\n");
-  Print("------------------------");
-  Print("\n");
+  Print("------------------------");Print("\n");
 }
 
 void ImprimeTiposFlutuantes(void)
 {
-  Print("\n");
   //------------------------------------------------------------------------------------------
   // Tipos Ponto Flutuante   
   //------------------------------------------------------------------------------------------
@@ -85,20 +83,11 @@ void ImprimeTiposFlutuantes(void)
   // double precisaoDupla;        // 8 bytes  | 2.3E-308 a 1.7E+308   | 15 casas decimais
   // long double precisaoLonga;   // 10 bytes | 3.4E-4932 a 1.1E+4932 | 19 casas decimais
   //------------------------------------------------------------------------------------------
-  
-  // Tipos Ponto Flutuante
+  Print("\n");
   Print("Tipos Ponto Flutuante");Print("\n");
   Print("------------------------");Print("\n");
   Print("precisaoSimples:");PrintNumber(sizeof(precisaoSimples));Print("\n");
   Print("------------------------");Print("\n");
-  Print("\n");
-}
-
-void EscreveOlaMundo(void)
-{
-  Print("\n");
-  Print("Ola Mundo!");
-  Print("\n");
 }
 
 void LiteraisInteiros(void)
@@ -115,22 +104,43 @@ void LiteraisInteiros(void)
   int v1=212;         /* Legal */
   int v2=215u;        /* Legal */
   int v3=0xFeeL;      /* Legal */
-  int v4=077;         /* Illegal: 8 is not an octal digit */
-  int v5=032U;       /* Illegal: cannot repeat a suffix */
-
+  //int v4=078;         /* Ilegal: 8 nao eh um digito valido */
+  //int v5=032UU;        /* Ilegal: vc nao pode repetir um sufixo */
+  //------------------------------------------------------------------------------------------
+  Print("\n");
   Print("Os Literais Inteiros");Print("\n");
   Print("------------------------");Print("\n");
-  PrintNumber(v1);
+  PrintNumber(v1);Print("\n");
+  PrintNumber(v2);Print("\n");
+  PrintNumber(v3);Print("\n");
+  //PrintNumber(v4);Print("\n");
+  //PrintNumber(v5);Print("\n");
+  Print("------------------------");Print("\n");
+}
+
+void LiteraisFlutuantes(void)
+{
+  //------------------------------------------------------------------------------------------
+  // Um literal de ponto flutuante tem uma parte inteira antes do ponto decimal
+  // um ponto decimal e uma parte fracionaria depois do ponto decimal.
+  // O numero pode estar escrito tambem em notacao cientifica.
+  // Voce pode usar os sufixos U e L 
+  //------------------------------------------------------------------------------------------
+  float f1 = 3.14159;         /* Legal */
+  float f2 = 314159E-5L;      /* Legal */
+  //float f3 = 510E;          /* Illegal: incomplete exponent */
+  //float f4 = 210f;          /* Illegal: no decimal or exponent */
+  //float f5 = .e55           /* Illegal: missing integer or fraction */
+
   Print("\n");
-  PrintNumber(v2);
-  Print("\n");
-  PrintNumber(v3);
-  Print("\n");
-  PrintNumber(v4);
-  Print("\n");
-  PrintNumber(v5);
-  Print("\n");
-  Print("------------------------");
+  Print("Os Literais Flutuantes  ");Print("\n");
+  Print("------------------------");Print("\n");
+  printf("Numero 1: %f",f1);Print("\n");
+  printf("Numero 2: %f",f2);Print("\n");
+  //PrintNumber(v3);Print("\n");
+  //PrintNumber(v4);Print("\n");
+  //PrintNumber(v5);Print("\n");
+  Print("------------------------");Print("\n");
 }
 
 int main(void) 
@@ -139,5 +149,6 @@ int main(void)
   ImprimeTiposInteiros();
   ImprimeTiposFlutuantes();
   LiteraisInteiros();
+  LiteraisFlutuantes();
   return 0; 
 }
