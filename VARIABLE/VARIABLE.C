@@ -70,7 +70,8 @@ void ImprimeTiposInteiros(void)
   Print("inteiroDeDoisBytesSemSinal:");PrintNumber(sizeof(inteiroDeDoisBytesSemSinal));Print("\n");
   Print("inteiroDeQuatroBytes:");PrintNumber(sizeof(inteiroDeQuatroBytes));Print("\n");
   Print("inteiroDeQuatroBytesSemSinal:");PrintNumber(sizeof(inteiroDeQuatroBytesSemSinal));Print("\n");
-  Print("------------------------");Print("\n");
+  Print("------------------------");
+  Print("\n");
 }
 
 void ImprimeTiposFlutuantes(void)
@@ -89,19 +90,54 @@ void ImprimeTiposFlutuantes(void)
   Print("Tipos Ponto Flutuante");Print("\n");
   Print("------------------------");Print("\n");
   Print("precisaoSimples:");PrintNumber(sizeof(precisaoSimples));Print("\n");
+  Print("------------------------");Print("\n");
+  Print("\n");
 }
 
 void EscreveOlaMundo(void)
 {
   Print("\n");
   Print("Ola Mundo!");
+  Print("\n");
+}
+
+void LiteraisInteiros(void)
+{
+  //------------------------------------------------------------------------------------------
+  // Uma constante literal inteira pode ser um decimal, octal ou hexadecimal  
+  // Um prefixo determina a base: 0x ou 0X para hexadecimal, 0 para octal, 
+  // e nada quando for decimal.
+  // Ele tambem pode ter um sufixo que é uma combinação de  U e L, 
+  // para sem sinal e longo, respectivamente. 
+  // o sufixo pode ser maiusculo ou minusculo
+  // e pode estar em qualquer ordem.
+  //------------------------------------------------------------------------------------------
+  int v1=212;         /* Legal */
+  int v2=215u;        /* Legal */
+  int v3=0xFeeL;      /* Legal */
+  int v4=077;         /* Illegal: 8 is not an octal digit */
+  int v5=032U;       /* Illegal: cannot repeat a suffix */
+
+  Print("Os Literais Inteiros");Print("\n");
+  Print("------------------------");Print("\n");
+  PrintNumber(v1);
+  Print("\n");
+  PrintNumber(v2);
+  Print("\n");
+  PrintNumber(v3);
+  Print("\n");
+  PrintNumber(v4);
+  Print("\n");
+  PrintNumber(v5);
+  Print("\n");
+  Print("------------------------");
 }
 
 int main(void) 
 { 
+  EscreveOlaMundo();
   ImprimeTiposInteiros();
   ImprimeTiposFlutuantes();
-  EscreveOlaMundo();
-  Print("\n");
+  LiteraisInteiros();
   return 0; 
 }
