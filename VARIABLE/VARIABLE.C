@@ -102,7 +102,7 @@ void ImprimeLiteraisInteiros(void)
   // e pode estar em qualquer ordem.
   //------------------------------------------------------------------------------------------
   int v1=212;         /* Legal */
-  int v2=215u;        /* Legal */
+  int v2=215U;        /* Legal */
   int v3=0xFeeL;      /* Legal */
   //int v4=078;         /* Ilegal: 8 nao eh um digito valido */
   //int v5=032UU;        /* Ilegal: vc nao pode repetir um sufixo */
@@ -128,9 +128,9 @@ void ImprimeLiteraisFlutuantes(void)
   //------------------------------------------------------------------------------------------
   float f1 = 3.14159;         /* Legal */
   float f2 = 314159E-5L;      /* Legal */
-  //float f3 = 510E;          /* Illegal: incomplete exponent */
-  //float f4 = 210f;          /* Illegal: no decimal or exponent */
-  //float f5 = .e55           /* Illegal: missing integer or fraction */
+  //float f3 = 510E;          /* Illegal: expoente incompleto */
+  //float f4 = 210f;          /* Illegal: sem decimal ou expoente */
+  //float f5 = .e55           /* Illegal: sem parte inteira ou fracionaria */
 
   Print("\n");
   Print("Os Literais Flutuantes  ");Print("\n");
@@ -148,7 +148,7 @@ int main(void)
   EscreveOlaMundo();
   ImprimeTiposInteiros();
   ImprimeTiposFlutuantes();
-  ImprimeLiteraisInteiros();
+  //ImprimeLiteraisInteiros();
   ImprimeLiteraisFlutuantes();
   return 0; 
 }
