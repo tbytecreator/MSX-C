@@ -143,12 +143,56 @@ void ImprimeLiteraisFlutuantes(void)
   Print("------------------------");Print("\n");
 }
 
+void ImprimeLiteraisCaracter(void)
+{
+  //------------------------------------------------------------------------------------------
+  // Os literais do tipo caracter são definidos entre aspas simples, exemplo 'x' 
+  // Eles podem ser guardados em uma variavel simples do tipo char
+  // Um literal caracter pode ser um caracter comum, uma sequencia de escape (ex,'\t'), 
+  // ou um caracter universal (ex,'\u02C0')
+  //------------------------------------------------------------------------------------------
+
+  //------------------------------------------------------------------------------------------
+  // Tabela de sequencias de escape
+  //------------------------------------------------------------------------------------------
+  //  \\	\ character
+  //  \'	' character
+  //  \"	" character
+  //  \?	? character
+  //  \a	Alert or bell
+  //  \b	Backspace
+  //  \f	Form feed
+  //  \n	Newline
+  //  \r	Carriage return
+  //  \t	Horizontal tab
+  //  \v	Vertical tab
+  //  \ooo	Octal number of one to three digits
+  //  \xhh . . .	Hexadecimal number of one or more digits
+  //------------------------------------------------------------------------------------------
+  char letra = 'a';
+
+  printf("imprime uma barra     :\\ \n");
+  printf("imprime um plique     :\' \n");
+  printf("imprime aspas         :\" \n");
+  printf("imprime interrogação  :\? \n");
+  printf("toca o alarme         :\a \n");
+  printf("faz um backspace      :A\b \n");
+  //printf("alimenta o formulário :\t \f \n");
+  printf("faz uma nova linha    :\n");
+  printf("faz o retorno do carro:\r\n");
+  printf("faz tab horizontal    :1\t8\n");
+  printf("faz tab vertical      :1\v8\n");
+  printf("Numero Octal          :\0136\n");
+  printf("Numero Hexadecimal    :\x5e\n");
+}
+
 int main(void) 
 { 
-  EscreveOlaMundo();
-  ImprimeTiposInteiros();
-  ImprimeTiposFlutuantes();
-  ImprimeLiteraisInteiros();
-  ImprimeLiteraisFlutuantes();
+  //EscreveOlaMundo();
+  //ImprimeTiposInteiros();
+  //ImprimeTiposFlutuantes();
+  //ImprimeLiteraisInteiros();
+  //ImprimeLiteraisFlutuantes();
+  ImprimeLiteraisCaracter();
   return 0; 
 }
