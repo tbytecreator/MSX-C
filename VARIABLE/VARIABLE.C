@@ -18,23 +18,36 @@
 //  UM EXEMPLO DE OBJETO
 //----------------------------------
 
-//  -------- Tipos basicos -----------
+//-------- Tipos basicos -------------
 //  Os tipos basicos são tipos 
 //  aritimeticos e se classificam em 
 //  inteiros e de ponto flutuante
-//  ----------------------------------
+//------------------------------------
 
-//------------------------------------------------------------------------------------------
+//------------------------------------
 // O Tipo Void
-//------------------------------------------------------------------------------------------
-// O tipo void tem 3 funções básicas no C 
-// 1. Funções que retornam void (procedimentos): usado como tipo de retorno para funções 
-//    que não devolvem um valor para seu ponto chamador.
-// 2. Em funções que não possuam um argumento de chamada ou parâmetro
-// 3. Ponteiros para vazio: Um ponteiro do tipo void * representa o endereço para um objeto
-//    mas não para o seu tipo. Um exemplo é a função void *malloc(size_t size), que retorna 
-//    um ponteiro para void que pode ser convertido para qualquer tipo de dados
-//------------------------------------------------------------------------------------------
+//------------------------------------
+// O tipo void tem 3 funções básicas 
+// no C 
+// 1. Funções que retornam void 
+//    (procedimentos): usado como tipo
+//    de retorno para funções 
+//    que não devolvem um valor para 
+//    seu ponto chamador.
+// 2. Em funções que não possuam um 
+//    argumento de chamada ou 
+//    parâmetro
+// 3. Ponteiros para vazio: Um 
+//    ponteiro do tipo void * 
+//    representa o 
+//    endereço para um objeto
+//    mas não para o seu tipo. 
+//    Um exemplo é a função void 
+//    *malloc(size_t size), que 
+//    retorna um ponteiro para 
+//    void que pode ser convertido 
+//    para qualquer tipo de dados
+//------------------------------------
 
 void EscreveOlaMundo(void)
 {
@@ -145,45 +158,85 @@ void ImprimeLiteraisFlutuantes(void)
 
 void ImprimeLiteraisCaracter(void)
 {
-  //------------------------------------------------------------------------------------------
-  // Os literais do tipo caracter são definidos entre aspas simples, exemplo 'x' 
-  // Eles podem ser guardados em uma variavel simples do tipo char
-  // Um literal caracter pode ser um caracter comum, uma sequencia de escape (ex,'\t'), 
-  // ou um caracter universal (ex,'\u02C0')
-  //------------------------------------------------------------------------------------------
+  //----------------------------------
+  // Os literais do tipo caracter são 
+  // definidos entre aspas simples, 
+  // exemplo 'x'. Eles podem ser 
+  // guardados em uma variavel simples 
+  // do tipo char. Um literal caracter 
+  // pode ser um caracter comum, uma 
+  // sequencia de escape ('\t'), ou 
+  // um caracter universal('\u02C0')
+  //----------------------------------
 
-  //------------------------------------------------------------------------------------------
+  //----------------------------------
   // Tabela de sequencias de escape
-  //------------------------------------------------------------------------------------------
-  //  \\	\ character
-  //  \'	' character
-  //  \"	" character
-  //  \?	? character
-  //  \a	Alert or bell
+  //----------------------------------
+  //  \\	\ 
+  //  \'	' 
+  //  \"	" 
+  //  \?	? 
+  //  \a	toca um alerta
   //  \b	Backspace
-  //  \f	Form feed
-  //  \n	Newline
-  //  \r	Carriage return
-  //  \t	Horizontal tab
-  //  \v	Vertical tab
-  //  \ooo	Octal number of one to three digits
-  //  \xhh . . .	Hexadecimal number of one or more digits
-  //------------------------------------------------------------------------------------------
-  char letra = 'a';
+  //  \f	Alimenta o formulario
+  //  \n	Nova linha
+  //  \r	Retorno do carro
+  //  \t	Tabulacao Horizontal
+  //  \v	Tabulacao Vertical 
+  //  \ooo	Codigo ASCII em Octal
+  //  \xhh  Codigo ASCII em Hexa
+  //----------------------------------
+  
+  // Variaveis
+  char primeiroNome[20];
+  char idade[4];
+  DATE mydate;
 
-  printf("imprime uma barra     :\\");
-  printf("imprime um plique     :\'");
-  printf("imprime aspas         :\" ");
-  printf("imprime interrogacao  :\? ");
-  printf("toca o alarme         :\a ");
-  printf("faz um backspace      :A\b ");
+  // Pepara a tela
+  Width(40);
+  Cls();
+
+  // Pega a data de hoje
+  GetDate(&mydate);
+  Locate(0,0);
+  Print("Data de hoje: ");
+  PrintDec(mydate.year);
+  PrintChar('-');
+  PrintDec(mydate.month);
+  PrintChar('-');
+  PrintDec(mydate.day);
+
+  // Faz a saudação
+  Print("\nOla ...");
+  Locate (0,3);
+  Print("Qual o seu nome? ");
+  
+  // Strings terminam com um caracter
+  // de controle
+  InputString(primeiroNome,19);
+  Beep();
+  Print("Prazer em te conhecer ");
+  Print(primeiroNome);
+  Print("\nQuantos anos voce tem? ");
+  InputString(idade,4);
+  PrintDec(atoi(idade));
+  Print("...");
+  PrintChar('?');
+  Print("\nVoce e velho!!\n");
+  Print("imprime uma barra:\\\n");
+  Print("imprime um plique:\'\n");
+  Print("imprime aspas:\"\n");
+  Print("imprime interrogacao:\?\n");
+  Print("toca o alarme:\a\n");
+  Print("faz um backspace:A\b\n");
+  Print("Numero Octal:\076\n");
+  Print("Numero Hexadecimal:\x3E\n");
+  Print("faz tab horizontal:1\t8\n");
+  Print("\n\n\n\n\n\n\n\n");
+  Print("faz tab vertical:1\v8\n");
   //printf("alimenta o formulário :\t \f \n");
   //printf("faz uma nova linha    :\n");
   //printf("faz o retorno do carro:\r\n");
-  //printf("faz tab horizontal    :1\t8\n");
-  //printf("faz tab vertical      :1\v8\n");
-  //printf("Numero Octal          :\0136\n");
-  //printf("Numero Hexadecimal    :\x5e\n");
 }
 
 int main(void) 
