@@ -171,19 +171,19 @@ void ImprimeLiteraisCaracter(void)
   //------------------------------------------------------------------------------------------
   char letra = 'a';
 
-  printf("imprime uma barra     :\\ \n");
-  printf("imprime um plique     :\' \n");
-  printf("imprime aspas         :\" \n");
-  printf("imprime interrogação  :\? \n");
-  printf("toca o alarme         :\a \n");
-  printf("faz um backspace      :A\b \n");
+  printf("imprime uma barra     :\\");
+  printf("imprime um plique     :\'");
+  printf("imprime aspas         :\" ");
+  printf("imprime interrogacao  :\? ");
+  printf("toca o alarme         :\a ");
+  printf("faz um backspace      :A\b ");
   //printf("alimenta o formulário :\t \f \n");
-  printf("faz uma nova linha    :\n");
-  printf("faz o retorno do carro:\r\n");
-  printf("faz tab horizontal    :1\t8\n");
-  printf("faz tab vertical      :1\v8\n");
-  printf("Numero Octal          :\0136\n");
-  printf("Numero Hexadecimal    :\x5e\n");
+  //printf("faz uma nova linha    :\n");
+  //printf("faz o retorno do carro:\r\n");
+  //printf("faz tab horizontal    :1\t8\n");
+  //printf("faz tab vertical      :1\v8\n");
+  //printf("Numero Octal          :\0136\n");
+  //printf("Numero Hexadecimal    :\x5e\n");
 }
 
 int main(void) 
