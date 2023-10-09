@@ -189,7 +189,7 @@ void ImprimeLiteraisCaracter(void)
   
   // Variaveis
   char primeiroNome[20];
-  char idade[4];
+  char idade[5];
   DATE mydate;
 
   // Pepara a tela
@@ -228,7 +228,7 @@ void ImprimeLiteraisCaracter(void)
   Print("imprime aspas:\"\n");
   Print("imprime interrogacao:\?\n");
   Print("toca o alarme:\a\n");
-  Print("faz um backspace:A\b\n");
+  Print("faz um backspace:A\bB\n");
   Print("Numero Octal:\076\n");
   Print("Numero Hexadecimal:\x3E\n");
   Print("faz tab horizontal:1\t8\n");
