@@ -18,13 +18,13 @@
 // ===================================
 struct GheaClass 
 {   
-  char name[20];
-  char fileName[8];                  
+  char name[21];
+  char fileName[9];                  
 }; 
 
 // globals
 static FCB file;
-GheaClass currentClass;
+struct GheaClass caracterClass; 
 
 // ===================================
 // FUSION-C FILENAME
@@ -107,29 +107,24 @@ void ListClasses()
 void CreateClass()
 {
     // VARIABLESS
-    char name[21];
-    char fileName[9];
-    char MaxToRead;
 	char MaxToWrite=17;
-	char buffer[17];
-    
+  
     // GET USER INPUT 
     Print(MSGMCREATE1);
-    InputString(name,20);
+    InputString(caracterClass.name,20);
     Print(MSGMCREATE2);
-    InputString(name,8);
-    currentClass.name = name;
-    currentClass.fileName = fileName+".CLS";
+    InputString(caracterClass.fileName,8);
+    strcat(caracterClass.fileName,".CLS");
     
     // CREATE FILENAME
-    FT_SetName(&file,currentClass.fileName);
+    FT_SetName(&file,caracterClass.fileName);
     if(FcbCreate(&file)!=FCB_SUCCESS) 
     {
-        FT_errorHandler(4,currentClass.fileName);
+        FT_errorHandler(4,caracterClass.fileName);
     } 
-    FcbWrite(&file,currentClass.name+"\n",MaxToWrite);        
+    FcbWrite(&file,strcat(caracterClass.name,"\n"),MaxToWrite);        
     FcbClose(&file);
-    Print(MSGMCREATE3,currentClass.fileName);
+    Print(MSGMCREATE3);
 }
 
 // ===================================
@@ -171,7 +166,7 @@ void main(void)
         PrintMenu();
         option = InputChar();
         if(option == '1') ListClasses();
-        if(option == '2') CreateClass(&currentClass);
+        if(option == '2') CreateClass();
         if(option == '3') RetriveClass();
         if(option == '4') UpdateClass();
         if(option == '5') DeleteClass();

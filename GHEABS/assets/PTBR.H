@@ -8,4 +8,4 @@
 #define MSGMENU16 "6.Finalizar           \n"
 #define MSGMCREATE1 "\nNome da Classe:"
 #define MSGMCREATE2 "\nNome do arquivo:"
-#define MSGMCREATE3 "\nArquivo %s gravado com sucesso."
+#define MSGMCREATE3 "\nArquivo gravado com sucesso."
