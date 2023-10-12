@@ -7,9 +7,9 @@ SET HEX2BINDIR=
 SET HEX2BIN=hex2bin.exe 
 SET ASM=sdasz80 
 SET CC=sdcc 
-SET DEST=dsk\
-SET INCLUDEDIR=fusion-c\include\
-SET LIBDIR=fusion-c\lib\
+SET DEST=..\dsk\
+SET INCLUDEDIR=..\fusion-c\include\
+SET LIBDIR=..\fusion-c\lib\
 SET proga="CLASCRUD"
 SET INC1=%INCLUDEDIR%crt0_msxdos.rel
 REM SET INC2=%INCLUDEDIR
@@ -35,7 +35,7 @@ echo ... Compilation OK
 @echo on
 hex2bin -e com %proga%.ihx
 @echo off
-copy %proga%.com DSK\%proga%.com /y
+copy %proga%.com ..\DSK\%proga%.COM /y
 del %proga%.com
 del %proga%.asm
 del %proga%.ihx
@@ -48,5 +48,5 @@ del %proga%.rel
 echo Done.
 :Emulator
 Set MyProcess=openmsx.exe
-tasklist | find /i "%MyProcess%">nul  && (echo %MyProcess% Already running) || start openmsx.exe -script openMSX\emul_start_config.txt
+tasklist | find /i "%MyProcess%">nul  && (echo %MyProcess% Already running) || start openmsx.exe -script ..\openMSX\emul_start_config.txt
 :_end_

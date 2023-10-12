@@ -6,11 +6,11 @@
 // MODULE
 // Manoel Neto - 2023-10-11
 // ===================================
-#include "fusion-c/header/msx_fusion.h"
-#include "fusion-c/header/io.h"
+#include "../fusion-c/header/msx_fusion.h"
+#include "../fusion-c/header/io.h"
 #include <string.h>
 #include <stdio.h>
-#include "assets/PTBR.H"
+#include "PTBR.H"
 
 // ===================================
 // Essa estrutura define uma classe 
@@ -29,7 +29,7 @@ struct GheaClass caracterClass;
 // ===================================
 // FUSION-C FILENAME
 // ===================================
-void FT_SetName( FCB *p_fcb, const char *p_name ) 
+void FT_SetName(FCB *p_fcb, const char *p_name) 
 {
   char i, j;
   memset( p_fcb, 0, sizeof(FCB) );
@@ -90,7 +90,7 @@ void PrintMenu()
     Print(MSGMENU15);
     Print(MSGMENU16);
     Print(MSGLINE11);
-    Print(">");
+    Print("\n>");
 }
 
 // ===================================
@@ -98,7 +98,21 @@ void PrintMenu()
 // ===================================
 void ListClasses()
 {
-
+  // Variable
+  char sbuf[255];
+  int n;
+  
+  // User interface 
+  Print(MSGLIST1);
+  Print("\n");
+  n=FindFirst("*.cls",sbuf,0);
+  for(;!n;)
+  {
+    Print("\n");
+    Print(sbuf);
+    n=FindNext(sbuf);
+  }
+  Print("\n");
 }
 
 // ===================================
@@ -106,25 +120,26 @@ void ListClasses()
 // ===================================
 void CreateClass()
 {
-    // VARIABLESS
+  // VARIABLESS
 	char MaxToWrite=17;
   
-    // GET USER INPUT 
-    Print(MSGMCREATE1);
-    InputString(caracterClass.name,20);
-    Print(MSGMCREATE2);
-    InputString(caracterClass.fileName,8);
-    strcat(caracterClass.fileName,".CLS");
+  // GET USER INPUT
+  ListClasses();
+  Print(MSGMCREATE1);
+  InputString(caracterClass.name,20);
+  Print(MSGMCREATE2);
+  InputString(caracterClass.fileName,8);
+  strcat(caracterClass.fileName,".CLS");
     
-    // CREATE FILENAME
-    FT_SetName(&file,caracterClass.fileName);
-    if(FcbCreate(&file)!=FCB_SUCCESS) 
-    {
-        FT_errorHandler(4,caracterClass.fileName);
-    } 
-    FcbWrite(&file,strcat(caracterClass.name,"\n"),MaxToWrite);        
-    FcbClose(&file);
-    Print(MSGMCREATE3);
+  // CREATE FILENAME
+  FT_SetName(&file,caracterClass.fileName);
+  if(FcbCreate(&file)!=FCB_SUCCESS) 
+  {
+     FT_errorHandler(4,caracterClass.fileName);
+  } 
+  FcbWrite(&file,strcat(caracterClass.name,"\n"),MaxToWrite);        
+  FcbClose(&file);
+  Print(MSGMCREATE3);
 }
 
 // ===================================
@@ -140,7 +155,36 @@ void UpdateClass()
 // ===================================
 void RetriveClass()
 {
+  char MaxToRead=21;
+	char buffer[21];
 
+  // User input
+  ListClasses(); 
+  Print("\n");
+  Print(MSGRETRIVE1);
+  InputString(caracterClass.fileName,8);
+  StrConcat(caracterClass.fileName,".CLS");
+  
+  // Open file 
+  FT_SetName( &file,caracterClass.fileName);
+  if(FcbOpen(&file)!=FCB_SUCCESS) 
+  {
+    FT_errorHandler(1,caracterClass.fileName);
+  }
+  FcbRead(&file,buffer,MaxToRead);
+
+  // Transfer buffer to structure 
+  StrCopy(caracterClass.name,buffer);
+
+  // Print data to user 
+  Print(MSGRETRIVE3);
+  Print("\n");
+  Print(caracterClass.name);
+  Print("\n");
+
+  // Close file 
+  FcbClose(&file);
+  Print(MSGRETRIVE2);
 }
 
 // ===================================
@@ -156,8 +200,10 @@ void DeleteClass()
 // ===================================
 void main(void) 
 {  			
-    char option;
+    // Variables 
+    char option=0;
 
+    // User Screen
     Screen(0);
     SetColors(15,1,1);
     Width(80);
@@ -171,4 +217,5 @@ void main(void)
         if(option == '4') UpdateClass();
         if(option == '5') DeleteClass();
     }
+    Print("\n");
 }

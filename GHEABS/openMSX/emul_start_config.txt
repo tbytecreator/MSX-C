@@ -4,4 +4,4 @@ ext gfx9000
 bind F12 cycle videosource
 plug joyporta mouse 
 plug printerport simpl 
-diska dsk/ 
+diska ../dsk/ 
