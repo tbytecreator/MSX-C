@@ -11,26 +11,27 @@
 #include "assets/SPRITES.H"
 
 // cores 
-skyblue = {135, 206, 235}; 
-darkgray = {169, 169, 169}; 
-greenmedium = {10, 111, 10}; 
-whitesmoke = {245, 245, 245}; 
-darkgreen = { 0, 100, 0};
-white = {255, 255, 255};
+int skyblue[3] = {135, 206, 235}; 
+int darkgray[3] = {169, 169, 169}; 
+int greenmedium[3] = {10, 111, 10}; 
+int whitesmoke[3] = {245, 245, 245}; 
+int darkgreen[3] = { 0, 100, 0};
+int white[3] = {255, 255, 255};
 
 // esquema de cores 
-COLORS = { 
-    SKY = skyblue, 
+struct Colors   
+{ 
+    int sky[3] , 
     LIGHT = {road=darkgray,grass=greenmedium,lane=whitesmoke},
     DARK = {road=darkgray,grass=darkgreen},
     START = {road=white,grass=greenmedium}
 }
 
+= skyblue
+
 void LoadSpritesTable()
 {
-    SetSpritePattern(0,Canhao,8);
-    SetSpritePattern(1,Torpedo,8);
-    SetSpritePattern(2,Alien,8);
+    
 }
 
 int RandomColorLightness(n)

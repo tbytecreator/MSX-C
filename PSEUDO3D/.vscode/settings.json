@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "SPRITES.C": "cpp",
-        "TREVAS.C": "cpp"
+        "TREVAS.C": "cpp",
+        "PSEUDO3D.C": "cpp"
     }
 }
