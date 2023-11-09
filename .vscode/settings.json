@@ -8,7 +8,8 @@
         "CONSOLE.C": "cpp",
         "VARIABLE.C": "cpp",
         "fstream": "cpp",
-        "CLASCRUD.C": "cpp"
+        "CLASCRUD.C": "cpp",
+        "CONST.C": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
