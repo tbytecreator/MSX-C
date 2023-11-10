@@ -15,6 +15,42 @@
 #define SC2COLUNAS 255  
 #define NEWLINE "\n"
 
+// ----------------------------------
+// Uma storage class define o escopo 
+// (visibilidade) e o tempo de 
+// existência de variaveis e funções
+// de um programa C.
+// Elas precedem o tipo que modificam
+// Existem 4 tipos de storage class:
+// ----------------------------------
+
+// ----------------------------------
+// auto
+// ----------------------------------
+// Eh a storage class padrão de todas 
+// as variaáveis do C
+// ----------------------------------
+int mount;
+auto int month;
+
+// ----------------------------------
+// register (registrador)
+// ----------------------------------
+// Eh a storage class padrão de todas 
+// as variaáveis do C
+// ----------------------------------
+register int  miles;
+
+// ----------------------------------
+// static (estatica)
+// ----------------------------------
+static int count = 5; /* Variavel Global */
+
+// ----------------------------------
+// extern (externa)
+// ----------------------------------
+extern void write_extern();
+
 int main() 
 {
     // ----------------------------------
