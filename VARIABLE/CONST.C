@@ -36,18 +36,27 @@ auto int month;
 // ----------------------------------
 // register (registrador)
 // ----------------------------------
-// Eh a storage class padrão de todas 
-// as variaáveis do C
+// usada quando quermos usar um  
+// registrador como armazenamento 
+// no lugar da RAM 
 // ----------------------------------
 register int  miles;
 
 // ----------------------------------
 // static (estatica)
 // ----------------------------------
-static int count = 5; /* Variavel Global */
+// uma variavel estatica nunca e 
+// destruida ou reconstruida durante 
+// a vida do aplicativo
+// ----------------------------------
+static int count = 5;
 
 // ----------------------------------
 // extern (externa)
+// ----------------------------------
+// esta variavel existe no escopo nao 
+// so desse arquivo, mas tambem em 
+// todos os arquivos do projeto
 // ----------------------------------
 extern void write_extern();
 
