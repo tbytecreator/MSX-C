@@ -31,7 +31,6 @@
 // as variaáveis do C
 // ----------------------------------
 int mount;
-auto int month;
 
 // ----------------------------------
 // register (registrador)
@@ -40,7 +39,7 @@ auto int month;
 // registrador como armazenamento 
 // no lugar da RAM 
 // ----------------------------------
-register int  miles;
+//register int  miles;
 
 // ----------------------------------
 // static (estatica)
@@ -79,6 +78,9 @@ int main()
     Print("Valor da area SC2: ");
     PrintNumber(areaSC2);
     Print(NEWLINE);
+
+    count = 5;
+    write_extern();
 
     return 0;
 }
