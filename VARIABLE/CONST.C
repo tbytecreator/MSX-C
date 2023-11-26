@@ -14,6 +14,7 @@
 #define SC2LINHAS 191   
 #define SC2COLUNAS 255  
 #define NEWLINE "\n"
+#define PI 3.14 
 
 // ----------------------------------
 // Uma storage class define o escopo 
