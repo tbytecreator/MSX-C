@@ -1,5 +1,5 @@
 // ========================
-// ALIEMINATION
+// SENHOR DAS TREVAS MSX
 // UM JOGO EM FUSION - C 
 // POR MANOEL NETO
 // ========================
