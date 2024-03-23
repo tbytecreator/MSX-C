@@ -16,20 +16,25 @@
 ;|                                                           |
 ;\___________________________________________________________/
 ;
+; Call DOS functions
+; 1995, SOLID MSX C & SDCC port 2015
+; 2019-2020 Eric Boez
 ;
-;	setdate 
-;	Definitions for dealing with MSXDOS
 ;
-;	(C) 1995, SOLID MSX C
-;
-;	SDCC port 2015
-;
-	.area _CODE
+;	SetDate
 
-;--- proc 	SetDate
-;
+
+;----------------------------
+;   MODULE  SetDate
+;   
 ;	int	SetDate(DATE *date)
+;	Set MSX-DOS Date from Structure address
 ;
+;
+;
+ .area _CODE
+ 
+ 
 _SetDate::
 	push	ix
 	ld ix,#0
@@ -44,5 +49,3 @@ _SetDate::
 	ld	l,a
 	ld	h,#0
 	ret
-
-;--- end of proc 

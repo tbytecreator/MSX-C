@@ -107,10 +107,11 @@ extern	void	GetCol8px( int X,  int Y, pxColor *C ); 		/* get colours of 8-pixel 
 extern	void	SetCol8px( int X,  int Y, pxColor *C ); 		/* sets new colour in (X,Y) for 8-pixel pattern */
 	
 /* functions that we know, by ignoring same 8-pixel pattern */
-extern	int		SC2Point( int X,  int Y ); 											/* gets colour 0..15 of pixel at (X,Y), the same for 8-pixel pattern  */
-extern	void	SC2Pset( int X,  int Y, int color ); 								/* puts pixel in (X,Y), sets colour of whole 8-pixel pattern */
-extern	void	SC2Line( int X,  int Y, int X2,  int Y2, int color ); 				/* draws line (X,Y)-(X2,Y2), sets pixels, sets colour, does not change background colour */
-extern	void	SC2Rect( int X1, int Y1, int X2, int Y2, int colour, int OP ); 		/* draws rectangle (X,Y)-(X2,Y2), with filling operation, fills if OP is FILL_ALL */
+extern	char 	SC2Point(unsigned int x, unsigned int y); 											/* gets colour 0..15 of pixel at (X,Y) */						
+extern	void	SC2Pset( char X,  char Y, char color );													/* Set a pixel color */
+extern	void 	SC2Line( unsigned int x1,  unsigned int y1,  unsigned int x2,  unsigned int y2, char color); 				/* draws line (X1,Y1)-(X2,Y2), sets pixels, sets colour, does not change background colour */
+extern  void    SC2BoxFill (unsigned int x1, unsigned int y1, unsigned int x2, int y2, char color );						/* draw a box filled with color */
+extern  void 	SC2BoxLine( unsigned int x1,  unsigned int y1,  unsigned int x2,  unsigned int y2, char color );			/* draw an empty box */
 
 /* Paint for small regions. Split them if large.
 	It is not the BASIC-subROM paint! Kind of bugPaint.
@@ -118,7 +119,6 @@ extern	void	SC2Rect( int X1, int Y1, int X2, int Y2, int colour, int OP ); 		/* 
 	Paint stops when "set" pixel is reached, not exact colour. Sets colour for whole pattern.*/
 	
 extern	void	SC2Paint( int X, int Y, int colour );
-extern	void	SC2Draw( char *drawcommands );						/* Remake of BASICs "draw" with original commands (except A,X) syntax. */
 
 
 

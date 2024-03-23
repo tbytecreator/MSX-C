@@ -84,21 +84,6 @@ void Sound(char reg, char value);
 ============================================================================= */
 void SoundFX(char channel, FX *soundat);
 
-
-
-/* =============================================================================
- SetChannel
-
- Function : Enable/disable Tone and Noise channels.
- Input    : [char] channel (0, 1 or 2)
-            [boolean] tone state
-            [boolean] noise state
- Output   : -
-============================================================================= */
-void SetChannelA(char channel, boolean isTone, boolean isNoise);
-
-
-
 /* =============================================================================
  SilencePSG
 

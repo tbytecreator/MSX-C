@@ -21,30 +21,7 @@
 * 
 *  definitions & descriptions by MSX Assembly Page
 *  For details see the WEB document at:  http://map.grauw.nl/resources/dos2_functioncalls.php
-*/
-
-#ifndef __MSXSCOLORS_H__
-#define __MSXSCOLORS_H__
-
-#define TRANSPARENT   0
-#define BLACK         1
-#define GREEN         2
-#define LIGHT_GREEN   3
-#define DARK_BLUE     4
-#define LIGHT_BLUE    5
-#define DARK_RED      6
-#define CYAN          7
-#define RED           8
-#define LIGHT_RED     9
-#define DARK_YELLOW  10
-#define LIGHT_YELLOW 11
-#define DARK_GREEN   12
-#define MAGENTA      13
-#define GRAY         14
-#define GREY         14
-#define WHITE        15
-
-#endif
+*/ 
 
 
 // MSX System Variables v0.9 17/05/2018
@@ -191,26 +168,64 @@
 #define ASPCT1	0xF40B	//2	Horizontal / Vertical aspect for CIRCLE command
 #define ASPCT2	0xF40D	//2	Horizontal / Vertical aspect for CIRCLE command
 #define ENDPRG	0xF40F	//5	Pointer for the RESUME NEXT command
+
 #define ERRFLG	0xF414	//1	Basic Error code
 #define LPTPOS	0xF415	//1	Position of the printer head
-//Is read by Basic function LPOS and used by LPRINT Basic command
+                        //Is read by Basic function LPOS and used by LPRINT Basic command
 #define PRTFLG	0xF416	//1	Printer output flag is read by OUTDO
-//=0 to print to screen
-//=1 to print to printer
+                        //=0 to print to screen
+                        //=1 to print to printer
 #define NTMSXP	0xF417	//1	Printer type is read by OUTDO. SCREEN ,,,n writes to this address
-//=0 for MSX printer
-//=1 for non-MSX printer
+                        //=0 for MSX printer
+                        //=1 for non-MSX printer
 #define RAWPRT	0xF418	//1	Raw printer output is read by OUTDO
-//=0 to convert tabs and unknown characters to spaces and remove graphical headers
-//=1 to send data just like it gets it
+                        //=0 to convert tabs and unknown characters to spaces and remove graphical headers
+                        //=1 to send data just like it gets it
 #define VLZADR	0xF419	//2	Address of data that is temporarilly replaced by ‘O’ when Basic function VAL("") is running
 #define VLZDAT	0xF41B	//1	Original value that was in the address pointed to with VLZADR
 #define CURLIN	0xF41C	//2	Line number the Basic interpreter is working on, in direct mode it will be filled with #FFFF
-//#F91F	1	Character set SlotID
-//#F920	2	Character set address
-#define EXBRSA	0xFAF8	//1	Slot address of the SUBROM (EXtended Bios-Rom Slot Address)
+                        //#F91F	1	Character set SlotID
+                        //#F920	2	Character set address
+#define KBUF    0xF41F  // Crunch buffer
+#define MEMSIZ  0xF672  // Basic Highest adress of used memory
+#define TXTTAB  0xF676  // Basic Text area start adress 
 
-#define DRVINF	0xFB21	//(1B)	Nr. of drives connected to disk interface 1
+#define MAXFIL  0xF85F  //  Maximum file number (set by MAXFILES)
+#define FILTAB  0xF860  //  file data start address
+#define NULBUF  0xF862  //  buffer pointer ( used by SAVE / LOAD)
+#define PTRFIL  0xF864  //  specified file file data location
+//#define RUNFLG  0xF866  //  0 ≠ Execute after reading (used with LOAD, R)
+#define FILNAM  0xF866  //  Save file name (11 bytes area)
+#define FILNM2  0xF871  //  Save File name (11 bytes area)
+#define NLONLY  0xF87C  //  0 ≠ The program is loaded
+#define SAVEND  0xF87D  //  Last address of machine language program (used by BSAVE)
+
+#define FNKSTR  0xF87F  //  Texts for function keys. (it's a 160 bytes area)
+#define CGPNT   0xF91F  //  Location of the character font used to initialise screen. Font storage slot / address on CGPNT ROM
+
+#define NAMBAS  0xF922  //  Base address of current pattern name table
+#define CGPBAS  0xF924  //  Current pattern generator table address.
+#define PATBAS  0xF926  //  Base address of current sprite generator table
+#define ATRBAS  0xF928  //  Base address of current sprite attribute table
+#define CLOC    0xF92A  //  Internally used by CLOC graphic routine. Cursor location.
+#define CMASK   0xF92C  //  Graphic routine used internally. Graphic cursor mask (SCREEN 2 to 4) or ordinate (SCREEN 5 to 12)
+#define MINDEL  0xF92D  //  Work area used by instruction LINE of Basic
+#define MAXDEL  0xF92F  //  End of the work area used by instruction LINE of Basic
+
+
+
+
+#define DPPAGE 0xFAF5  // MSX2 display page number
+#define ACPAGE 0xFAF6  // MSX2 active page number
+#define AVCSAV 0xFAF7  // MSX2 Save AV control port
+#define EXBRSA 0xFAF8	 // MSX2 SUB-ROM slot address
+#define XSAVE  0xFAFE  // MSX2 light pen bit0 ~ 7 X coordinate bit15 = 1 at interrupt
+#define YSAVE  0xFB00  // MSX2 light pen bit0 ~ 7 Y coordinate
+#define LOGOPR 0xFB02  // MSX2 logical operation code
+
+
+
+#define DRVINF 0xFB21	  //(1B)	Nr. of drives connected to disk interface 1
               //0xFB22	  (1B)	Slot address of disk interface 1
               //0xFB23	  (1B)	Nr. of drives connected to disk interface 2
               //0xFB24	  (1B)	Slot address of disk interface 2
@@ -218,6 +233,42 @@
               //0xFB26	  (1B)	Slot address of disk interface 3
               //0xFB27	  (1B)	Nr. of drives connected to disk interface 4
               //0xFB28	  (1B)	Slot address of disk interface 4
+
+#define TRPTBL  0xFC4C  //  Tables for each of the following instructions: (78 bytes)
+#define RTYCNT  0xFC9A  //  Interrupt control
+#define INTFLG  0xFC9B  //  This flag is set if STOP or CTRL+STOP is pressed.
+#define PADY    0xFC9C  //  Y-coordinate of a connected touch pad. (Until MSX2+)
+#define PADX    0xFC9D  //  X-coordinate of a connected touch pad. (Until MSX2+)
+#define JIFFY   0xFC9E  //  Contains value of the software clock, each interrupt of the VDP it is increased by 1. The contents can be read or changed by the function 'TIME' or instruction 'TIME'
+#define INTVAL  0xFCA0  //  Contains length of the interval when the ON INTERVAL routine was established.
+#define INTCNT  0xFCA2  //  ON INTERVAL counter (counts backwards).
+
+#define LOWLIM  0xFCA4  //  Used by the Cassette system (minimal length of startbit).
+#define WINWID  0xFCA5  //  Used by the Cassette system (store the difference between a low-and high-cycle).
+
+#define GRPHED  0xFCA6  //  Heading for the output of graphic characters
+#define ESCCNT  0xFCA7  //  Escape sequence counter
+#define INSFLG  0xFCA8  //  Insert mode flag
+#define CSRSW   0xFCA9  //  Cursor display switch
+#define CSTYLE  0xFCAA  //  Cursor style i.e. Used if INS Key is used. ( 0 = Full Cursor / other = Halve Cursor )
+#define CAPST   0xFCAB  //  Capital status. ( 0 = Off / other = On )
+#define KANAST  0xFCAC  //  Kana mode flags for MSX Japanese, Russian key status ou "Dead Key" status. 0 = OFF 1 = ON
+#define KANAMD  0xFCAD  //  Flag to know if the keyboard type is "KANA" (0) or "JIS" (other value). (Japanese MSX only)
+#define FLBMEM  0xFCAE  //  0 if loading basic program.
+#define SCRMOD  0xFCAF  //  Current screen mode 
+#define OLDSCR  0xFCB0  //  Old screen mode.
+#define CASPRV  0xFCB1  //  Work area for the cassette (until MSX2+). On MSX turbo R, bit 0 indicates the status of the Pause LED and bit 7 indicates the status of the R800 LED.
+#define BRDATR  0xFCB2  //  Border color for paint.
+#define GXPOS   0xFCB3  //  X-position of graphic cursor.
+#define GYPOS   0xFCB5  //  Y-position of graphic cursor.  
+#define GRPACX  0xFCB7  //  X Graphics Accumulator.
+#define GRPACY  0xFCB9  //  Y Graphics Accumulator.
+
+
+
+
+
+
 
 #define EXPTBL	0xFCC1	//(1B)	Slot 0: #80 = expanded, 0 = not expanded. Also slot address of the main BIOS-ROM.
               //0xFCC2	  (1B)	Slot 1: #80 = expanded, 0 = not expanded.
@@ -229,28 +280,29 @@
                 //0xFCC7    (1B)	Mirror of slot 2 secondary slot selection register.
                 //0xFCC8    (1B)	Mirror of slot 3 secondary slot selection register.
 
-#define RG08SAV   0xFFE7    //Content of VDP(09) register (R#08)
-#define RG09SAV   0xFFE8    //Content of VDP(10) register (R#09)
-#define RG10SAV   0xFFE9    //Content of VDP(11) register (R#10)
-#define RG11SAV   0xFFEA    //Content of VDP(12) register (R#11)
-#define RG12SAV   0xFFEB    //Content of VDP(13) register (R#12)
-#define RG13SAV   0xFFEC    //Content of VDP(14) register (R#13)
-#define RG14SAV   0xFFED    //Content of VDP(15) register (R#14)
-#define RG15SAV   0xFFEE    //Content of VDP(16) register (R#15)
-#define RG16SAV   0xFFEF    //Content of VDP(17) register (R#16)
-#define RG17SAV   0xFFF0    //Content of VDP(18) register (R#17)
-#define RG18SAV   0xFFF1    //Content of VDP(19) register (R#18)
-#define RG19SAV   0xFFF2    //Content of VDP(20) register (R#19)
-#define RG20SAV   0xFFF3    //Content of VDP(21) register (R#20)
-#define RG21SAV   0xFFF4    //Content of VDP(22) register (R#21)
-#define RG22SAV   0xFFF5    //Content of VDP(23) register (R#22)
-#define RG23SAV   0xFFF6    //Content of VDP(24) register (R#23)
-#define ROMSLT    0xFFF7    //Slotadress of Main-ROM
-//#define 0xFFF8                     Reserved
-#define RG25SAV   0xFFFA    //Content of VDP(26) register (R#25) MSX2+
-#define RG26SAV   0xFFFB    //Content of VDP(27) register (R#26) MSX2+
-#define RG27SAV   0xFFFC    //Content of VDP(28) register (R#27) MSX2+
-//#define 0xFFFD              Temporary stack pointer storage
+#define RG08SAV   0xFFE7    //  Content of VDP(09) register (R#08)
+#define RG09SAV   0xFFE8    //  Content of VDP(10) register (R#09)
+#define RG10SAV   0xFFE9    //  Content of VDP(11) register (R#10)
+#define RG11SAV   0xFFEA    //  Content of VDP(12) register (R#11)
+#define RG12SAV   0xFFEB    //  Content of VDP(13) register (R#12)
+#define RG13SAV   0xFFEC    //  Content of VDP(14) register (R#13)
+#define RG14SAV   0xFFED    //  Content of VDP(15) register (R#14)
+#define RG15SAV   0xFFEE    //  Content of VDP(16) register (R#15)
+#define RG16SAV   0xFFEF    //  Content of VDP(17) register (R#16)
+#define RG17SAV   0xFFF0    //  Content of VDP(18) register (R#17)
+#define RG18SAV   0xFFF1    //  Content of VDP(19) register (R#18)
+#define RG19SAV   0xFFF2    //  Content of VDP(20) register (R#19)
+#define RG20SAV   0xFFF3    //  Content of VDP(21) register (R#20)
+#define RG21SAV   0xFFF4    //  Content of VDP(22) register (R#21)
+#define RG22SAV   0xFFF5    //  Content of VDP(23) register (R#22)
+#define RG23SAV   0xFFF6    //  Content of VDP(24) register (R#23)
+#define MINROM    0xFFF7    //  Slot address of Main-ROM. Use EXPTBL+0 to know slot ID of the internal Main-ROM. (MSX2~)
+
+//#define 0xFFFB                     Reserved
+#define RG25SAV   0xFFFA    //  Content of VDP(26) register (R#25) MSX2+   
+#define RG26SAV   0xFFFB    //  Content of VDP(27) register (R#26) MSX2+   
+#define RG27SAV   0xFFFC    //  Content of VDP(28) register (R#27) MSX2+  
+//#define 0xFFFD            //  Temporary stack pointer storage
 
 
 #define SLTSL   0xFFFF //(all slots)	1	Secondary slot select register. Reading returns the inverted previously written value.

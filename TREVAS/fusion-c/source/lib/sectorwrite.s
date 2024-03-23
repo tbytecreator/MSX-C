@@ -7,7 +7,7 @@
 ;|             |_|  \__,_|___/_|\___/|_| |_| *               |
 ;|                                                           |
 ;|               The MSX C Library for SDCC                  |
-;|                     V1.1 -  03-2019                       |
+;|                   V1.0 - 09-10-11 2018                    |
 ;|                                                           |
 ;|                Eric Boez &  Fernando Garcia               |
 ;|                                                           |
@@ -16,19 +16,21 @@
 ;|                                                           |
 ;\___________________________________________________________/
 ;
+; Call DOS functions
+; 1995, SOLID MSX C & SDCC port 2015
+; 2019-2020 Eric Boez
+;
 ;
 ;	SectorWrite
-;	Definitions for dealing with MSXDOS
-;
-;	Eric Boez 2019
-;
-;
-	.area _CODE
 
-;--- proc 	SectorWrite
+;----------------------------
+;    MODULE 	SectorWrite
 ;
 ;	unsigned  char SectorWrite(unsigned int SectorStart, unsigned char drive, unsigned char NbSectors);
 ;
+ .area _CODE
+ 
+ 
 _SectorWrite::
 	push	ix
 	ld ix,#0
@@ -39,9 +41,7 @@ _SectorWrite::
 	ld h,7(ix)
 	ld	c,#0x30
 	call	#5
+	pop	ix
 	ld h,#0
 	ld l,a
-	pop	ix
 	ret
-
-;--- end of proc 

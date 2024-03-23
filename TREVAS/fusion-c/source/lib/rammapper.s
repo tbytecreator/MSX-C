@@ -23,7 +23,15 @@
 ;	info at
 ;	http://map.grauw.nl/resources/dos2_environment.php#c5
 ;
-
+;	InitRamMapperInfo
+;	GetRamMapperBaseTable
+;	AllocateSegment
+;	FreeSegment
+;	Get_PN
+;	Put_PN
+;
+;
+;
 
 
 	.area	CODE

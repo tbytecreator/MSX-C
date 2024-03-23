@@ -7,7 +7,7 @@
 ;|             |_|  \__,_|___/_|\___/|_| |_| *               |
 ;|                                                           |
 ;|               The MSX C Library for SDCC                  |
-;|                   V1.0 - 09-10-11 2018                    |
+;|                   V1.3 -  03-04 2020                      |
 ;|                                                           |
 ;|                Eric Boez &  Fernando Garcia               |
 ;|                                                           |
@@ -15,16 +15,57 @@
 ;|                                                           |
 ;|                                                           |
 ;\___________________________________________________________/
-; VDPwrite
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;	vdp_write.s for MSX														;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;	2006/11/25	t.hara														;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; VDPwrite Functions
+;
+;	VDPwriteNi
+;	VDPwrite
 
-		.area _CODE
 
-;;	void vdp_write( unsigned char vdpreg, unsigned char data );
+
+RG1SAV = 0xF3E0 
+DPPAGE = 0xFAF5 
+ATRBAS = 0xF928 
+RG25SAV = 0xFFFA
+RG2SAV = 0xF3E1
+RG8SAV = 0xFFE7
+RG9SAV = 0xFFE8 
+
+
+	.area _CODE
+;----------------------------
+;   MODULE  VDPwriteNi
+;
+;   void VDPwriteNi( unsigned char vdpreg, unsigned char data );
+;   
+;   Write to the VDP with no Disabled interrupt
+;   
+;
+
+_VDPwriteNi::
+	ld		hl, #2
+	add		hl, sp
+
+	ld		a, (hl)			;;	port
+	or		#0x80
+	inc		hl
+	ld		b, (hl)			;;	parameter
+_DoWriteNI:
+	ld		c, #0x99		;;	VDP port #1 (unsupport "MSX1 adapter")
+	out		(c), b			;;	out data
+	out		(c), a			;;	out VDP register number
+	ret
+
+
+
+;----------------------------
+;   MODULE  VDPwrite
+;
+;   void VDPwrite( unsigned char vdpreg, unsigned char data );
+;   
+;   Write to the VDP with   interrupt disabled
+;   
+;
+
 _VDPwrite::
 	ld		hl, #2
 	add		hl, sp
@@ -33,10 +74,45 @@ _VDPwrite::
 	or		#0x80
 	inc		hl
 	ld		b, (hl)			;;	parameter
-
+_DoWrite:
 	ld		c, #0x99		;;	VDP port #1 (unsupport "MSX1 adapter")
 	di
 	out		(c), b			;;	out data
 	out		(c), a			;;	out VDP register number
 	ei
 	ret
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

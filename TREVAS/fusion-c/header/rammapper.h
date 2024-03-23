@@ -43,27 +43,27 @@ address			function
 #define  __MEMORY_MAPPER_H__
 
 typedef struct {
-	unsigned char slot;
-	unsigned char number16KBSegments;
-	unsigned char numberFree16KBSegments;
-	unsigned char numberAllocatedSystem16KBSegments;
-	unsigned char numberUser16KBSegments;
-	unsigned char notInUse0;
-	unsigned char notInUse1;	
-	unsigned char notInUse2;	
+	char slot;
+	char number16KBSegments;
+	char numberFree16KBSegments;
+	char numberAllocatedSystem16KBSegments;
+	char numberUser16KBSegments;
+	char notInUse0;
+	char notInUse1;	
+	char notInUse2;	
 } MAPPERINFOBLOCK;
 
 
 typedef struct {
-	unsigned char allocatedSegmentNumber;
-	unsigned char slotAddressOfMapper;
-	unsigned char carryFlag;			//0->off 1->on
+	char allocatedSegmentNumber;
+	char slotAddressOfMapper;
+	char carryFlag;			//0->off 1->on
 } SEGMENTSTATUS;
 
 
 /* Devices Ids at https://www.msx.org/forum/msx-talk/software-and-gaming/extbio-device-identifiers */
 /*;parm 
-;	unsigned char deviceId
+;	char deviceId
 ;								;devices list 
 								;
 								;00h  reserved for broadcasts
@@ -77,7 +77,7 @@ typedef struct {
 								;		
 ;usually 04h
 */
-extern void					InitRamMapperInfo( unsigned char deviceId );
+extern void					InitRamMapperInfo( char deviceId );
 
 extern MAPPERINFOBLOCK		*_GetRamMapperBaseTable( void );
 
@@ -98,7 +98,7 @@ extern MAPPERINFOBLOCK		*_GetRamMapperBaseTable( void );
 ;                                       A=new segment number
 ;                                       B=slot address of mapper slot (0 if called as B=0)
 */
-extern SEGMENTSTATUS		*AllocateSegment( unsigned char segmentType, unsigned char slotAddress );
+extern SEGMENTSTATUS		*AllocateSegment( char segmentType, char slotAddress );
 
 
 /*
@@ -110,10 +110,10 @@ extern SEGMENTSTATUS		*AllocateSegment( unsigned char segmentType, unsigned char
 ;          Returns:      Carry set => error
 ;                        Carry clear => segment freed OK 
 */
-extern SEGMENTSTATUS		*FreeSegment( unsigned char segmentType, unsigned char slotAddress );
+extern SEGMENTSTATUS		*FreeSegment( char segmentType, char slotAddress );
 
-extern unsigned char		Get_PN ( unsigned char page );
+extern char		Get_PN ( char page );
 
-extern void					Put_PN ( unsigned char page, unsigned char segment);
+extern void					Put_PN ( char page, char segment);
 
 #endif

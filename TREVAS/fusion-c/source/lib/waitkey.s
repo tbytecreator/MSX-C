@@ -7,7 +7,7 @@
 ;|             |_|  \__,_|___/_|\___/|_| |_| *               |
 ;|                                                           |
 ;|               The MSX C Library for SDCC                  |
-;|                      V1.1 - 03-2019                       |
+;|                   V1.0 - 09-10-11 2018                    |
 ;|                                                           |
 ;|                Eric Boez &  Fernando Garcia               |
 ;|                                                           |
@@ -16,30 +16,30 @@
 ;|                                                           |
 ;\___________________________________________________________/
 ;
+; Call Bios functions
 ;
-;	WaitKey 
-;	Calling Bios Function Chget 0x009f
-;
-;	Eric Boez 2019
-;
-	.area _CODE
+;    WaitKey
 
-;--- proc 	WaitKey
+
+
+ .area _CODE
+
+;----------------------------
+;   MODULE  WaitKey
 ;
-;	unsigned char	WaitKey(void)
+;   char WaitKey(void)
+;   
+;   
+;   
 ;
+
 _WaitKey::
-   push ix
-   push iy
-   ld   ix,#0x009f    ; chget bios function 
-   ld   iy,(0xFCC0)	 ; mainrom slotaddress
-   call 0x001c		    ; interslotcall
-   ei
-   
-   ld l,a			 ; Return to register L
-   ld	h,#0
-   pop iy
-   pop  ix
-   ret
-
-;--- end of proc 
+	push ix
+	ld ix, #0x09F 	;chget bios function 
+    ld iy, (0xFCC0)	; mainrom slotaddress 
+  	call 0x001c		; interslotcall
+  	ei
+  	ld   l,a 			; Return value to L 
+  	ld   h,#0
+  	pop  ix
+  	ret

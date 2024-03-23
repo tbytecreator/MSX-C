@@ -15,10 +15,16 @@
 ;|                                                           |
 ;|                                                           |
 ;\___________________________________________________________/
-; VDPstatus
-
+;
+; 	VDPstatus
+;	VDPStatusNi
+;
+;
+;
+;
+;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;	vdp_status.s for MSX													;;
+;;	vdp_status for MSX			   											;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;	2006/11/25	t.hara														;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -44,5 +50,23 @@ _VDPstatus::
 	ld		a, #0x8F		;;	VDP register R#15
 	out		(c), a			;;	out VDP register number
 	ei
+	ret
+
+_VDPstatusNi::
+	ld		hl, #2
+	add		hl, sp
+
+	ld		a, (hl)			;;	port
+	and		#0x0F
+
+	ld		c, #0x99		;;	VDP port #1 (unsupport "MSX1 adapter")
+	out		(c), a			;;	status register number
+	ld		a, #0x8F		;;	VDP register R#15
+	out		(c), a			;;	out VDP register number
+	in		l, (c)			;;	read VDP S#n
+	xor		a
+	out		(c), a
+	ld		a, #0x8F		;;	VDP register R#15
+	out		(c), a			;;	out VDP register number
 	ret
 

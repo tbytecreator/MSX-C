@@ -16,18 +16,25 @@
 ;|                                                           |
 ;\___________________________________________________________/
 ;
+; Call DOS functions
+; 1995, SOLID MSX C & SDCC port 2015
+; 2019-2020 Eric Boez
 ;
-;	settime 
-;	Definitions for dealing with MSXDOS
 ;
-;	(C) 1995, SOLID MSX C
+;	SetTime
+
+
+;----------------------------
+;   MODULE  SetTime
+;   
+;	void	SetTime(TIME *time);
+;	Set MSX-DOS Time from Structure address
 ;
-;	SDCC port 2015
 ;
-	.area _CODE
 ;
-;	int	SetTime(TIME *time)
-;
+ .area _CODE
+ 
+ 
 _SetTime::
 	push	ix
 	ld ix,#0
@@ -42,4 +49,3 @@ _SetTime::
 	ld	l,a
 	ld	h,#0
 	ret
-;--- end of proc 

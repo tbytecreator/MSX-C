@@ -8,15 +8,17 @@
 ;|                                                           |
 ;|               The MSX C Library for SDCC                  |
 ;|                   V1.0 - 09-10-11 2018                    |
+;|                   V1.2 - 14/04/2020                       |
 ;|                                                           |
 ;|                Eric Boez &  Fernando Garcia               |
+;|                V1.2 - Oduvaldo Pavan Junior               |
 ;|                                                           |
 ;|               A S M  S O U R C E   C O D E                |
 ;|                                                           |
 ;|                                                           |
 ;\___________________________________________________________/
 ;
-;
+; 
 ;	IO.H
 ;	Disk operations
 ;	
@@ -26,9 +28,38 @@
 ;
 ;	MSXDOS1, MSXDOS2 disk operations
 ;
+;	V1.2
+;
+;	OPJ - Added Ensure function, will perform ensure on DOS2 and return 0 if 
+;	succesful or a negative value if error (-1 if not DOS2)
+;
+;	OPJ - Fixed LSeek on DOS2, it was crazy wrong
+;
+;	
+;	FCBs
+;	setupfcb
+;	get_fd
+;	Open
+;	OpenAttrib
+;	Close
+;	Create
+;	CreateAttrib 
+;	Read
+;	Write
+;	Lseek 
+;	ltell
+;	GetCWD
+;	Remove 
+;	Rename 
+;	ChangeDir
+;	MakeDir 
+;	Removedir
+;	FindFirst
+;	FindNext 
+;
+; 
 
 	.area _CODE
-	
 ;--- proc FCBs
 ;
 ;  INIT for IO operations
@@ -45,16 +76,9 @@ _FCBs::
 
 ;--- proc  GET_OS_VERSION
 ;
-;	int	GetOSVersion( )
 ;
 ;
-_GetOSVersion::
-	call	_OS_version
-	ld	h, #0
-	ld	a,(#__os_ver)
-	ld	l, a
-	ret
-	
+
 _OS_version:	
 	ld	c,#0xC
 	call	#5
@@ -64,7 +88,7 @@ lb_va:
 	ld	bc,#0x6F
 	call	#5
 	ld	(#__mx_ver),de	;MSXDOS2.SYS version number
-	ld	a,b		;MSX-DOS kernel version
+	ld	a,b				;MSX-DOS kernel version
 	cp	#2
 	jr	c,lb_v1
 	ld	a,#2
@@ -468,6 +492,41 @@ lb_fdd:
 ;--- end of proc 
 
 	.area _CODE
+	
+;--- proc  ensure
+;
+;	int Ensure(FD fd);	-- DOS2
+;
+_Ensure::
+	
+	push	ix
+	ld ix,#0
+	add ix,sp
+	ld l,4(ix)
+	ld h,5(ix)	
+	ld	h,#0
+	ld	a,(#__os_ver)
+	cp	#2
+	jr	z,ens_cl0	; MSXDOS2 only
+	ld	hl,#0xffff
+	pop	ix
+	ret
+ens_cl0:
+	ld	b,l
+	ld	c,#0x46
+	call	#5
+	pop	ix
+	or	a
+	ld	hl,#0
+	ld	(#__io_errno),a
+	ret	z
+	dec	hl
+	ret
+
+	
+;--- end of proc 
+
+	.area _CODE
 
 ;--- proc  create
 ;
@@ -630,6 +689,27 @@ lb_wr2:
 ;
 
 _Lseek::
+	ld	a,(#__os_ver)
+	cp	#2
+	jr	nz,_old_Lseek
+	push ix
+	ld ix,#0
+	add ix,sp
+	ld b,4(ix)
+	ld l,6(ix)
+	ld h,7(ix)
+	ld e,8(ix)
+	ld d,9(ix)
+	ld a,10(ix)
+	ld c,#0x4A
+	call	#5
+	pop	ix
+	ld	(#__io_errno),a
+	ld	l,a
+	ld	h,#0
+	ret
+	
+_old_Lseek:	
 	push ix
 	ld ix,#0
 	add ix,sp
@@ -640,19 +720,11 @@ _Lseek::
 	ld c,8(ix)
 	ld b,9(ix)
 	pop ix
-	call _ilseek
+	xor	a
+	call lb_sk1		; MSXDOS1
 	ld	l,a
 	ld	h,#0
 	ret
-	
-_ilseek::	
-	push	ix
-	ld	a,(#__os_ver)
-	dec	a
-	dec	a
-	jr	z,lb_sk2	; MSXDOS2 can do the same as MSXDOS1
-	xor	a
-	jr	lb_sk1		; MSXDOS1
 
 lb_sk0:
 	call	#5
@@ -660,19 +732,6 @@ lb_sk0:
 	ld	(#__io_errno),a
 	ret
 	
-;
-lb_sk2:
-
-	ld	a,c
-	ld	b,l
-	push	de
-	pop	ix
-	ld	l,0(ix)
-	ld	h,1(ix)
-	ld	e,2(ix)
-	ld	d,3(ix)
-	ld	c,#0x4A
-	jr	lb_sk0	
 ;
 lb_sk1:
 	push	de
@@ -975,18 +1034,16 @@ _ChangeDir::
 	ld l,4(ix)
 	ld h,5(ix)
 	pop ix
-	call	_ichdir
+	call	_irchdir
 	ld	l,a
 	ld	h,#0
 	ret
 	
-_ichdir::
-	ld	a,(#__os_ver)
-	dec	a
-	dec	a
-	ret	m
+_irchdir::
 	ex	de,hl
 	ld	c,#0x5A
+	ld	hl,#0
+
 	push	ix
 	call	#5
 	pop	ix
@@ -1007,30 +1064,21 @@ _MakeDir::
 	ld l,4(ix)
 	ld h,5(ix)
 	pop ix
-	call	_imkdir
+	call	_irmkdir
 	ld	l,a
 	ld	h,#0
 	ret
 	
-_imkdir::
-	ld	a,(#__os_ver)
-	dec	a
-	dec	a
-	ret	m
-	push	ix
+_irmkdir::
 	ex	de,hl
-	jr	z,lb_mkd1
-	ld	c,#0x41
-lb_mkd0:
+	ld	bc,#0x9044
+	ld	hl,#0
+
+	push	ix
 	call	#5
 	pop	ix
 	ld	(#__io_errno),a
 	ret
-;
-lb_mkd1:
-	ld	bc,#0x9044
-	xor	a
-	jr	lb_mkd0
 
 ;--- end of proc 
 
@@ -1053,15 +1101,10 @@ _RemoveDir::
 	
 _irmdir::
 	ex	de,hl
-	ld	a,(#__os_ver)
-	dec	a
-	dec	a
-	ret	m
-	push	ix
 	ld	c,#0x4D
-	jr	z,lb_rmd0
-	ld	c,#0x42
-lb_rmd0:
+	ld	hl,#0
+
+	push	ix
 	call	#5
 	pop	ix
 	ld	(#__io_errno),a
@@ -1069,6 +1112,8 @@ lb_rmd0:
 
 ;--- end of proc 
  
+
+
 ;--- proc 	FINDFIRST
 ;
 ;	char FindFirst(char *willcard, char *result, int attrib);	-- DOS1, DOS2
@@ -1228,146 +1273,7 @@ lb_fn2:
 	ld	c,#0x41
 	jr	lb_ff2c
 
-;--- end of proc
 
-;--- proc 	setdisk
-;
-;	void	SetDisk(int diskno)
-;
-_SetDisk::
-	push	ix
-	ld ix,#0
-	add ix,sp
-	ld	a,4(ix)
-	ld	e,a
-	ld	c,#0xE
-	call	#5
-	pop	ix
-	ret
-
-;--- end of proc 
-
-;--- proc 	getdisk
-;
-;	int	GetDisk();
-;
-_GetDisk::
-	push	ix
-	ld	c,#0x19
-	call	#5
-	ld	h,#0
-	ld	l,a
-	pop	ix
-	ret
 	
-;--- end of proc 
-
-;
-;	Diskload - load binary file from disk to RAM.
-;
-;	Compile on SDCC for MSX 
-;
-
-		.area _CODE
-		
-_DiskLoad::
-	push	ix
-	ld	ix,#0
-	add	ix,sp
-	ld	l,4(ix)
-	ld	h,5(ix)
-	ld	e,6(ix)
-	ld	d,7(ix)
-	ld	c,8(ix)
-	ld	b,9(ix)
-	
-	push	bc
-	push	de
-	
-	ld	a,#1
-	ld	(#loadflag),a
-
-		; prepare FCB
-	push	hl
-	ld	hl,#f_fcb
-	ld	de,#f_fn
-	push	de
-	ld	bc,#36
-	xor	a
-	ld	(hl),a
-	ldir
-	pop	de
-	pop	hl
-
-		; copy filename into FCB
-	ld	bc,#11
-	ldir
-
-		; open file for reading
-	ld	de,#f_fcb
-	ld	c, #0xF
-	call	#5
-
-	ld	hl,#1
-	ld	(#f_groot),hl
-	dec	hl
-	ld	(#f_blok),hl
-	ld	(#f_blok+#2),hl
-	
-	ld	hl,(#f_bleng)	; obtain file size
-	pop	de
-	push	hl
-		; set writing to RAM address
-	ld	c,#0x1A
-	call	#5
-	pop	hl
-	
-		; read from file
-	ld	de,#f_fcb
-	ld	c,#0x27
-	call	#5
-	ld      (#loadflag),a  ;sets 0 if ok, 1 if can not load 
-	
-	ld	de,#f_fcb
-	ld	c,#0x10
-	call	#5
-
-	pop	bc
-	ld	(#lb_calladdr),bc
-	
-	pop	ix
-	
-	xor	a
-	or	b
-	or	c
-	jr	z, lb_exit_
-			
-	.db	#0xCD	; call to address
-lb_calladdr:
-	.db	#0
-	.db	#0
-	
-lb_exit_:
-	ld	a,(#loadflag)
-	ld	l,a
-	ld	h,#0
-	ret
-	
-;	.area _DATA
-
-loadflag:	.db #0
-
-f_fcb:		.db	#0
-f_fn:		.ascii	"???????????"   ;11 chars          
-		.dw	#0
-f_groot:	.dw	#0
-f_bleng:	.ds	#17
-		
-f_blok:		.dw	#0
-		.dw	#0
-	.db	#0
-	
-	.area _CODE
-;
 
 

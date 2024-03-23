@@ -8,11 +8,11 @@
 |             |_|  \__,_|___/_|\___/|_| |_| *               |
 |                                                           |
 |               The MSX C Library for SDCC                  |
-|                   V1.0 - 09-10-11 2018                    |
+|                     V1.3 - 12- 2019 			            |
 |                                                           |
 |                Eric Boez &  Fernando Garcia               |
 |                                                           |
-|   vdp_circle.h : Functions to draw circle on graphic scr  |
+|   |
 |                                                           |
 |                                                           |
 |                                                           |
@@ -34,7 +34,7 @@ CircleFilled
                    op = operation mode on color
 ============================================================================= */
 void CircleFilled(int x0, int y0, int radius, int color, int OP);
-void SC2CircleFilled(int x0, int y0, int radius, int color); // MSX1 Version
+void SC2CircleFilled(int x0, int y0, int radius, int color); // MSX1 VDP Version
  
 
 /* =============================================================================
@@ -47,6 +47,6 @@ Circle
                    op = operation mode on color
 ============================================================================= */
 void Circle(int x0, int y0, int radius, int color, int OP);
-void SC2Circle(int x0, int y0, int radius, int color); // MS1 Version
+void SC2Circle(int x0, int y0, int radius, int color); // MSX1 VDP Version
 
 #endif

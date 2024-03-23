@@ -7,9 +7,11 @@
 ;|             |_|  \__,_|___/_|\___/|_| |_| *               |
 ;|                                                           |
 ;|               The MSX C Library for SDCC                  |
-;|                     V1.1   -  05-2019                     |
+;|                     V1.3   -  04-2020                     |
 ;|                                                           |
 ;|                Eric Boez &  Fernando Garcia               |
+;|              Revision by Oduvaldo Pavan Junior            |
+;|          Using suggestion by MRC User DarkSchneider       |
 ;|                                                           |
 ;|               A S M  S O U R C E   C O D E                |
 ;|                                                           |
@@ -17,9 +19,11 @@
 ;\___________________________________________________________/
 ;
 ;
-;	Interrupt functions
+;	Interrupt functions Based on H.KEYI HOOK
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;	2006/11/25	t.hara														;;
+;;	2020/04/07 Oduvaldo Pavan Junior - code based on MRC User DarkSchneider ;;
+;;  example at :															;;
+;; https://www.msx.org/forum/msx-talk/development/fusion-c-and-htimi?page=1 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;
 ;
@@ -29,37 +33,50 @@
 ; ---------------------------------------------------------
 reset_vect	= 0x0000
 bdos		= 0x0005
-keyint		= 0x0038
+ramad1		= 0xF342
+hookint		= 0xFD9A
 
 ; ---------------------------------------------------------
-;	void InitInterruptHandler(void)
+;	void InitInterruptHandler(int InterrupFunction)
 ; ---------------------------------------------------------
 _InitInterruptHandler::
-	;	keyint 
-	ld		hl, #keyint
-	ld		de, #backup_keyint
-	ld		bc, #3
-	ldir
-	
+	push	ix
+	ld		ix,#0
+	add		ix,sp
+	ld		l,4(ix)
+	ld		h,5(ix)
+	pop		ix
 	di
-	ld		a, #0xc3				;	jp intr_handler
-	ld		(keyint), a
+	ld		(intr_handler+1), hl	; Replace in intr_handler the address
+	
+	;	save hookint 
+	ld		hl, #hookint
+	ld		de, #backup_hookint
+	ld		bc, #5
+	ldir
+		
+	ld		a, #0xF7				; RST_30 (interslot call both dos and bios)
+	ld		(hookint), a
+	ld		a, (ramad1)
+	ld		(hookint+1), a
 	ld		hl, #intr_handler
-	ld		(keyint+1), hl
+	ld		(hookint+2), hl
+	ld		a, #0xc9
+	ld		(hookint+4), a
 	ei
 	ret
 
-backup_keyint:
-	.ds		3
+backup_hookint:
+	.ds		5
 
 ; ---------------------------------------------------------
 ;	void EndInterruptHandler(void)
 ; ---------------------------------------------------------
 _EndInterruptHandler::
 	di
-	ld		hl, #backup_keyint
-	ld		de, #keyint
-	ld		bc, #3
+	ld		hl, #backup_hookint
+	ld		de, #hookint
+	ld		bc, #5
 	ldir
 	ei
 	ret
@@ -68,58 +85,9 @@ _EndInterruptHandler::
 ;	intr_handler
 ; ---------------------------------------------------------
 intr_handler:
-	push	af
-	push	bc
-	push	de
-	push	hl
-	push	ix
-	push	iy
-	exx
-	ex		af,af'
-	push	af
-	push	bc
-	push	de
-	push	hl
-	push	ix
-	push	iy
-
-user_intr_handler:
-	call	dummy_handler
-
-	xor		a
-	or		l
-	call	z, backup_keyint
-
-	pop		iy
-	pop		ix
-	pop		hl
-	pop		de
-	pop		bc
-	pop		af
-	ex		af,af'
-	exx
-	pop		iy
-	pop		ix
-	pop		hl
-	pop		de
-	pop		bc
-	pop		af
-	reti
-
+	call	dummy_handler		; This will be replaced by user routine address
 dummy_handler:
+	jp		backup_hookint		; And continue processing interrupt hooks
 	ret
 
-; ---------------------------------------------------------
-;	void SetInterruptHandler( char (*p_handler)( void ) )
-; ---------------------------------------------------------
-_SetInterruptHandler::
-	ld		hl, #2
-	add		hl, sp
-
-	ld		c, (hl)
-	inc		hl
-	ld		b, (hl)
-	di
-	ld		(user_intr_handler + 1), bc
-	ei
-	ret
+	

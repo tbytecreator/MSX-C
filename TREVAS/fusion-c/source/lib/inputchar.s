@@ -15,26 +15,30 @@
 ;|                                                           |
 ;|                                                           |
 ;\___________________________________________________________/
-;------------------------------------------------
-;	InputChar 
-;	Eric Boez 2019
 ;
-;-----------------------------------------------
-	.area _CODE
+; Call Bios functions
+;
+;    InputChar
 
-;--- proc   InputChar   Return input char 
+
+ .area _CODE
+
+;----------------------------
+;   MODULE  InputChar 
 ;
 ;   char    InputChar(void)
+;   
+;   
+;   
 ;
 _InputChar::
 
         push ix
-        push iy
-        ld   ix,#0x9F	      ; Bios CHGET 
-        ld   iy,(0xFCC0)      ; mainrom slotaddress
-        call 0x001c           ; interslotcall
-        ei
-        ld l,a 
-        pop iy
-        pop ix
-        ret 
+        ld   ix,#0x9F       ; Bios CHGET 
+        ld iy, (0xFCC0)	; mainrom slotaddress 
+  		call 0x001c		; interslotcall
+  		ei
+  		ld   l,a 			; Return value to L 
+  		ld   h,#0
+  		pop  ix
+  		ret

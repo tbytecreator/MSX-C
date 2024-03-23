@@ -10,6 +10,10 @@
 #include "assets/PTBR.H"
 #include "assets/SPRITES.H"
 
+// Definição dos endereços de memória
+#define JIFFY (*(char *)0xfc9e)
+
+// Definição das variáveis globais
 int intMsxType,intBordaSuperior,intBordaInferior;
 int intXColisao,intYColisao;
 int intPosXCanhao,intPosYCanhao,intVelCanhao;
@@ -18,6 +22,7 @@ int intPosXTorpedo,intPosYTorpedo,intNumTorpedos,intVelTorpedo;
 int intNivel,i,j;
 int intAliens[8][2];
 char chrOpcao;
+unsigned int lastJiffy;
 
 void LoadSpritesTable()
 {
@@ -31,9 +36,9 @@ void DesenharCanhao()
     PutSprite(8,0,intPosXCanhao,intPosYCanhao,8);
 }
 
-void DesenharTorpedo(int x,int y)
+void DesenharTorpedo()
 {
-    PutSprite(9,1,x,y,8);
+    PutSprite(9,1,intPosXTorpedo,intPosYTorpedo,8);
 }
 
 void DesenharAlien(int intAlien,int x,int y)
@@ -75,7 +80,6 @@ void MoverAliens()
 
         intAliens[i][0] = intAliens[i][0]+intVelXAlien;
         intAliens[i][1] = intAliens[i][1]+intVelYAlien;
-        DesenharAlien(i,intAliens[i][0],intAliens[i][1]);
     }
 }
 
@@ -90,7 +94,6 @@ void CriarTorpedo()
     {
         intPosXTorpedo=intPosXCanhao;
         intPosYTorpedo=intPosYCanhao-2;
-        DesenharTorpedo(intPosXTorpedo,intPosYTorpedo);
         intNumTorpedos++;
     }
 }
@@ -101,7 +104,6 @@ void MoverTorpedo()
     {
         intPosYTorpedo=intPosYTorpedo-intVelTorpedo;
         if(intPosYTorpedo<=2) RemoverTorpedo();
-        DesenharTorpedo(intPosXTorpedo,intPosYTorpedo);
     }
 }
 
@@ -162,28 +164,7 @@ void CriarAliens()
         
         // adiciona um alien na contagem
         intNumAliens++;
-
-        // move o alien 
-        DesenharAlien(i,intAliens[i][0],intAliens[i][1]);
     }
-}
-
-void Inicializar()
-{   
-    intBordaInferior=80;
-    intBordaSuperior=16;
-    intPosXCanhao=128;
-    intPosYCanhao=176;
-    intVelCanhao=2;
-    intVelXAlien=1;
-    intVelYAlien=5;
-    intPosXAlien=105;
-    intPosYAlien=60;
-    intVelTorpedo=2;
-    intNivel=1;
-    intNumAliens=0;
-    intNumTorpedos=0;
-    intMsxType=ReadMSXtype();
 }
 
 void TelaInicial()
@@ -200,20 +181,65 @@ void TelaInicial()
     Sprite8();
     SpriteDouble();
     CriarAliens();
+}
+
+void initializeGame() 
+{
+    intBordaInferior=80;
+    intBordaSuperior=16;
+    intPosXCanhao=128;
+    intPosYCanhao=176;
+    intVelCanhao=2;
+    intVelXAlien=1;
+    intVelYAlien=10;
+    intPosXAlien=105;
+    intPosYAlien=60;
+    intVelTorpedo=2;
+    intNivel=1;
+    intNumAliens=0;
+    intNumTorpedos=0;
+    intMsxType=ReadMSXtype();
+
+    // Tela Inicial
+    TelaInicial(); 
+}
+
+void updateGame() 
+{
+    // Atualizar a posição do inimigo
+    MoverAliens();
+    
+    // Atualizar a posição do torpedo 
+    MoverTorpedo(); 
+}
+
+void drawGame() 
+{
     DesenharCanhao();
+    DesenharTorpedo();
+    for(i=0;i<8;i++)
+    {
+        DesenharAlien(i,intAliens[i][0],intAliens[i][1]);
+    }
 }
 
 void main(void) 
-{
-    Inicializar();   
-    TelaInicial();       
-	
+{  
+	// Inicializar o jogo
+    initializeGame();
+
     // Game Loop
     while(1)
     {
-        MoverAliens();
-        MoverTorpedo(); 
-	    PegarComandos();
-        DesenharCanhao(); 
+        // Aguardar o próximo jiffy
+        while (Peekw(JIFFY) == lastJiffy) {}
+        // Pegar os comandos do jogador
+        PegarComandos();
+         // Atualizar posição dos elementos do jogo
+        updateGame();
+        // Desenhar os elementos do jogo na tela
+        drawGame();
+        // Atulizar o contador de jiffies
+       lastJiffy = Peekw(JIFFY);
     }
 }

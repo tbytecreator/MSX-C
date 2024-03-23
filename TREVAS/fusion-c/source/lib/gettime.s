@@ -16,20 +16,25 @@
 ;|                                                           |
 ;\___________________________________________________________/
 ;
+; Call DOS functions
+; 1995, SOLID MSX C & SDCC port 2015
+; 2019-2020 Eric Boez
 ;
-;	gettime 
-;	Definitions for dealing with MSXDOS
 ;
-;	(C) 1995, SOLID MSX C
-;
-;	SDCC port 2015
-;
-	.area _CODE
+;	GetTime
 
-;--- proc 	gettime
-;
+
+;----------------------------
+;   MODULE  GetTime
+;   
 ;	void	GetTime(TIME *time);
+;	Return MSX-DOS Time to Structure address
 ;
+;
+;	
+ .area _CODE
+ 
+ 
 _GetTime::
 	push ix
 	ld ix,#0

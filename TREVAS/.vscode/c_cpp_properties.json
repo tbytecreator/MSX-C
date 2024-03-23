@@ -3,7 +3,9 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/fusion-c/header",
+                "C:\\Program Files\\SDCC\\include"
             ],
             "defines": [
                 "_DEBUG",

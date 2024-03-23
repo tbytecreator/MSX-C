@@ -15,27 +15,53 @@
 ;|                                                           |
 ;|                                                           |
 ;\___________________________________________________________/
-;------------------------------------------------
-;	printchar  
-;	Eric Boez 2019
-;-----------------------------------------------
-	.area _CODE
+;
+; Call Bios functions
+;
+;    PrintChar
 
 
-;--- proc   PrintChar
+
+ .area _CODE
+
+ _CallBiosX2:
+
+  ld iy, (0xFCC0)	; mainrom slotaddress 
+  call 0x001c		; interslotcall
+  ei
+  pop ix
+  ret
+
+
+;----------------------------
+;   MODULE  PrintChar 
 ;
 ;   void PrintChar(char c)
+;   
+;   
+;   
 ;
 _PrintChar::
-	push	ix
-	ld ix,#0
-	add ix,sp
-	ld	a,4(ix)
-	push iy
- 	ld   ix,#0xA2	      ; Bios CHPUT
-    ld   iy,(0xFCC0)      ; mainrom slotaddress
-    call 0x001c           ; interslotcall
-    ei
-    pop iy
-    pop ix
-    ret 
+  push  ix
+  ld ix,#0
+  add ix,sp
+  ld  a,4(ix)
+  ld   ix,#0xA2       ; Bios CHPUT
+  jp   _CallBiosX2
+
+
+  ;----------------------------
+;   MODULE  bchput
+;
+;   used internaly 
+;   
+;   bchput(char value)
+;   
+;
+_bchput::
+  push  ix
+  ld ix,#0
+  add ix,sp
+  ld  a,4(ix)
+  ld   ix,#0xA2         ; Bios CHPUT
+  jp   _CallBiosX2

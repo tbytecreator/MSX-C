@@ -7,7 +7,7 @@
 ;|             |_|  \__,_|___/_|\___/|_| |_| *               |
 ;|                                                           |
 ;|               The MSX C Library for SDCC                  |
-;|                     V1.1 -  03-2019                       |
+;|                   V1.0 - 09-10-11 2018                    |
 ;|                                                           |
 ;|                Eric Boez &  Fernando Garcia               |
 ;|                                                           |
@@ -16,19 +16,24 @@
 ;|                                                           |
 ;\___________________________________________________________/
 ;
-;
-;	GetDiskParam 
-;	Definitions for dealing with MSXDOS2 (only)
-;	Get the disk parameters 
-;	Eric Boez 2019
+; Call DOS functions
+; 1995, SOLID MSX C & SDCC port 2015
+; 2019-2020 Eric Boez
 ;
 ;
-	.area _CODE
+;	GetDiskParam
 
-;--- proc 	GetDiskParam
+;----------------------------
+;   MODULE  GetDiskParam
+;   
+;	char GetDiskParam(DSKPARAMS *info, unsigned char Drive)
+;	Return Current disk parameters
 ;
-;	unsigned char GetDiskParam(DSKPARAMS *info, unsigned char Drive)
 ;
+;
+ .area _CODE
+ 
+ 
 _GetDiskParam::
   push  ix
   ld ix,#0
@@ -39,9 +44,7 @@ _GetDiskParam::
   ld l,6(ix)
   ld c,#0x31
   call #5
+  pop ix
   ld h,#0
   ld l,a
-  pop ix
   ret
-
-;--- end of proc 

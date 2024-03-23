@@ -1,10 +1,10 @@
 #!/bin/sh
 clear
 echo "    "
-echo "  F U S I O N - C   V 1 . 2"
+echo "  F U S I O N - C   V 1 . 3"
 echo "  T h e   U l t i m a t e   SDCC   L i b r a r y   f o r   M S X"
-echo "  Eric Boez & Fernando Garcia 2018-2019 : Made for coders !"
-echo "  (Library builder script)"
+echo "  Eric Boez & Fernando Garcia 2018-2020 : Made for coders !"
+echo "  Library builder script for -->  MSX-DOS  <--"
 echo "_________________________________________________________________"
 echo "    "
 echo "    "
@@ -36,7 +36,7 @@ echo "... Compiling C functions"
 for file in *.c ; do
     echo $file;tput cuu1;tput el;
     
-    sdcc --use-stdout -mz80 -c $file >> log.txt
+    sdcc --use-stdout -mz80 -c --opt-code-speed $file >> log.txt
     err=$?
     if [ $err -gt 0 ];then
         echo "Error when compiling $file"
