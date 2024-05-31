@@ -117,6 +117,61 @@ void relacionais(int a, int b)
     Print("\n");
 }
 
+// OPERADORES LOGICOS 
+// && AND => se os dois operandos não forem zero, a condição é veradeira (A && B)
+// || OR  => Se qualquer um dos dois operandos não é zero, a condição é veradeira (A || B)
+// !  NOT => Usado para reverter o estado do operador !(A)
+void logicos()
+{
+    Print("\n");
+    Print("Tabela verade dos operadores logicos\n");
+    Print("====================================\n");
+
+    // NOT
+    Print("!0 = ");
+    PrintNumber(!0);
+    Print("\n");
+
+    Print("!1 = ");
+    PrintNumber(!1);
+    Print("\n");
+
+    // AND
+    Print("0 && 0 = ");
+    PrintNumber(0 && 0);
+    Print("\n");
+ 
+    Print("0 && 1 = ");
+    PrintNumber(0 && 1);
+    Print("\n");
+
+    Print("1 && 0 = ");
+    PrintNumber(1 && 0);
+    Print("\n");
+    
+    Print("1 && 1 = ");
+    PrintNumber(1 && 1);
+    Print("\n");
+    
+    // OR
+    Print("0 || 0 = ");
+    PrintNumber(0 || 0);
+    Print("\n");
+
+    Print("0 || 1 = ");
+    PrintNumber(0 || 1);
+    Print("\n");
+
+    Print("1 || 0 = ");
+    PrintNumber(1 || 0);
+    Print("\n");
+
+    Print("1 || 1 = ");
+    PrintNumber(1 || 1);
+    Print("\n");
+
+}
+
 void main(void)
 {
     int a = 10;
@@ -127,4 +182,7 @@ void main(void)
 
     // testa os operadores relacionais
     relacionais(a,b);
+
+    // testa os operadores logicos
+    logicos();
 }
