@@ -178,10 +178,10 @@ void main(void)
     int b = 5;
 
     // testa os operadores aritimeticos
-    aritimeticos(a,b);
+    //aritimeticos(a,b);
 
     // testa os operadores relacionais
-    relacionais(a,b);
+    //relacionais(a,b);
 
     // testa os operadores logicos
     logicos();
