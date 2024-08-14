@@ -172,6 +172,98 @@ void logicos()
 
 }
 
+// OPERADORES BITWISE
+// &	AND
+// |	OR
+// ^	XOR
+// ~	NOT
+// <<	SHIFT LEFT
+// >>	SHIFT RIGHT
+void bitwise()
+{
+    Print("\n");
+    Print("Tabela verade dos operadores bitwise\n");
+    Print("====================================\n");
+
+    // NOT
+    Print("~0 = ");
+    PrintNumber(~0);
+    Print("\n");
+
+    Print("~1 = ");
+    PrintNumber(~1);
+    Print("\n");
+
+    // AND
+    Print("0 & 0 = ");
+    PrintNumber(0 & 0);
+    Print("\n");
+ 
+    Print("0 & 1 = ");
+    PrintNumber(0 & 1);
+    Print("\n");
+
+    Print("1 & 0 = ");
+    PrintNumber(1 & 0);
+    Print("\n");
+    
+    Print("1 & 1 = ");
+    PrintNumber(1 & 1);
+    Print("\n");
+    
+    // OR
+    Print("0 | 0 = ");
+    PrintNumber(0 | 0);
+    Print("\n");
+
+    Print("0 | 1 = ");
+    PrintNumber(0 | 1);
+    Print("\n");
+
+    Print("1 | 0 = ");
+    PrintNumber(1 | 0);
+    Print("\n");
+
+    Print("1 | 1 = ");
+    PrintNumber(1 | 1);
+    Print("\n");
+
+    // XOR
+    Print("0 ^ 0 = ");
+    PrintNumber(0 ^ 0);
+    Print("\n");
+
+    Print("0 ^ 1 = ");
+    PrintNumber(0 ^ 1);
+    Print("\n");
+
+    Print("1 ^ 0 = ");
+    PrintNumber(1 ^ 0);
+    Print("\n");
+
+    Print("1 ^ 1 = ");
+    PrintNumber(1 ^ 1);
+    Print("\n");
+
+    // SHIFT LEFT
+    Print("1 << 1 = ");
+    PrintNumber(1 << 1);
+    Print("\n");
+
+    Print("1 << 2 = ");
+    PrintNumber(1 << 2);
+    Print("\n");
+
+    // SHIFT RIGHT
+    Print("1 >> 1 = ");
+    PrintNumber(1 >> 1);
+    Print("\n");
+
+    Print("1 >> 2 = ");
+    PrintNumber(1 >> 2);
+    Print("\n");
+}
+
 void main(void)
 {
     int a = 10;
@@ -184,5 +276,8 @@ void main(void)
     //relacionais(a,b);
 
     // testa os operadores logicos
-    logicos();
+    //logicos();
+
+    // testa os operadores bitwise
+    bitwise();
 }
