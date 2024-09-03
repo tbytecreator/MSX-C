@@ -264,6 +264,91 @@ void bitwise()
     Print("\n");
 }
 
+// OPERADORES DE ATRIBUICAO
+// =	ATRIBUICAO
+// +=	ATRIBUICAO DE ADICAO
+// -=	ATRIBUICAO DE SUBTRACAO
+// *=	ATRIBUICAO DE MULTIPLICACAO
+// /=	ATRIBUICAO DE DIVISAO
+// %=	ATRIBUICAO DE RESTO DA DIVISAO
+// <<=	ATRIBUICAO DE SHIFT LEFT
+// >>=	ATRIBUICAO DE SHIFT RIGHT
+// &=	ATRIBUICAO DE AND
+// |=	ATRIBUICAO DE OR
+// ^=	ATRIBUICAO DE XOR
+
+void atribuicao(int a, int b)
+{
+    int r;
+    Print("\n");
+
+    // Atribuicao
+    r = a;
+    Print("Atribuicao:");
+    PrintNumber(r);
+    Print("\n");
+
+    // Atribuicao de Adicao
+    r += b;
+    Print("Atribuicao de Adicao:");
+    PrintNumber(r);
+    Print("\n");
+
+    // Atribuicao de Subtracao
+    r -= b;
+    Print("Atribuicao de Subtracao:");
+    PrintNumber(r);
+    Print("\n");
+
+    // Atribuicao de Multiplicacao
+    r *= b;
+    Print("Atribuicao de Multiplicacao:");
+    PrintNumber(r);
+    Print("\n");
+
+    // Atribuicao de Divisao
+    r /= b;
+    Print("Atribuicao de Divisao:");
+    PrintNumber(r);
+    Print("\n");
+
+    // Atribuicao de Resto da Divisao
+    r %= b;
+    Print("Atribuicao de Resto da Divisao:");
+    PrintNumber(r);
+    Print("\n");
+
+    // Atribuicao de Shift Left
+    r <<= 1;
+    Print("Atribuicao de Shift Left:");
+    PrintNumber(r);
+    Print("\n");
+
+    // Atribuicao de Shift Right
+    r >>= 1;
+    Print("Atribuicao de Shift Right:");
+    PrintNumber(r);
+    Print("\n");
+
+    // Atribuicao de AND
+    r &= b;
+    Print("Atribuicao de AND:");
+    PrintNumber(r);
+    Print("\n");
+
+    // Atribuicao de OR
+    r |= b;
+    Print("Atribuicao de OR:");
+    PrintNumber(r);
+    Print("\n");
+
+    // Atribuicao de XOR
+    r ^= b;
+    Print("Atribuicao de XOR:");
+    PrintNumber(r);
+    Print("\n");
+}
+
 void main(void)
 {
     int a = 10;
@@ -279,5 +364,8 @@ void main(void)
     //logicos();
 
     // testa os operadores bitwise
-    bitwise();
+    //bitwise();
+
+    // testa os operadores de atribuicao
+    atribuicao(a, b);
 }
