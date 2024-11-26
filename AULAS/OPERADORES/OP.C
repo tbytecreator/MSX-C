@@ -276,7 +276,6 @@ void bitwise()
 // &=	ATRIBUICAO DE AND
 // |=	ATRIBUICAO DE OR
 // ^=	ATRIBUICAO DE XOR
-
 void atribuicao(int a, int b)
 {
     int r;
@@ -349,6 +348,47 @@ void atribuicao(int a, int b)
     Print("\n");
 }
 
+// OPERADORES UNARIOS
+// ++	INCREMENTO
+// --	DECREMENTO
+// +	IDENTIDADE
+// -	NEGACAO
+// &	ENDERECO
+// *	VALOR DE
+// !	NEGACAO LOGICA
+// ~	NEGACAO BITWISE
+void unarios(int op)
+{
+    int r;
+    Print("\n");
+
+    // incremento
+    r = op;
+    r++;
+    Print("Incremento:");
+    PrintNumber(r);
+    Print("\n");
+
+    // decremento
+    r = op;
+    r--;
+    Print("Decremento:");
+    PrintNumber(r);
+    Print("\n");
+
+    // identidade
+    r = -op;
+    Print("Identidade:");
+    PrintNumber(r);
+    Print("\n");
+
+    int b = 'A';
+    r = +b;
+    Print("Identidade:");
+    PrintNumber(r);
+    Print("\n");
+}
+
 void main(void)
 {
     int a = 10;
@@ -367,5 +407,8 @@ void main(void)
     //bitwise();
 
     // testa os operadores de atribuicao
-    atribuicao(a, b);
+    //atribuicao(a, b);
+
+    // testa os operadores unarios
+    unarios(a);
 }
