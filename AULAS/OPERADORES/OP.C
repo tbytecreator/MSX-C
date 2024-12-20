@@ -377,7 +377,7 @@ void unarios(int op)
     Print("\n");
 
     // identidade
-    r = -op;
+    r = +op;
     Print("Identidade:");
     PrintNumber(r);
     Print("\n");
@@ -387,6 +387,25 @@ void unarios(int op)
     Print("Identidade:");
     PrintNumber(r);
     Print("\n");
+
+    //negacao
+    r = -op;
+    Print("Negacao:");
+    PrintNumber(r);
+    Print("\n");
+
+    // endereco
+    int* p = &op;
+    Print("Endereco:");
+    PrintNumber(*p);
+    Print("\n");
+
+    //negacao logica
+   if (!(0 && 0))
+   {
+      Print("A Condicao agora eh verdadeira\n");
+   }
+
 }
 
 void main(void)
