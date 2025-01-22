@@ -9,7 +9,8 @@
         "VARIABLE.C": "cpp",
         "fstream": "cpp",
         "CLASCRUD.C": "cpp",
-        "CONST.C": "cpp"
+        "CONST.C": "cpp",
+        "MENU.C": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
