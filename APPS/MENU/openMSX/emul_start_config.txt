@@ -1,4 +1,4 @@
-machine panasonic_fs-a1st 
+machine Panasonic_FS-A1ST
 ext msxdos2 
 ext gfx9000 
 bind F12 cycle videosource
