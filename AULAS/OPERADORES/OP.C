@@ -420,7 +420,8 @@ void ternario(int a, int b)
     Print("\n");
 
     // Ternario
-    r = (a > b) ? a : b;
+    r = (a < b) ? a : b;
+
     Print("Ternario:");
     PrintNumber(r);
     Print("\n");
