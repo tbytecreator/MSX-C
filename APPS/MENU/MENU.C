@@ -77,13 +77,15 @@ void ReadFiles()
     }
 
     // Lê os arquivos do diretório
-    while (readdir(handle, &fcb) != EOF) {
+    while (readdir(handle, &fcb) != EOF)
+    {
         // Obtém o nome do arquivo
         strncpy(filename, fcb.fname, 12);
         filename[12] = '\0'; // Garante que a string esteja terminada corretamente
 
         // Verifica se o arquivo termina com .ROM
-        if (strcasecmp(&filename[strlen(filename) - 4], ".rom") == 0) {
+        if (strcasecmp(&filename[strlen(filename) - 4], ".rom") == 0) 
+        {
             printf("%s\n", filename);
         }
     }
