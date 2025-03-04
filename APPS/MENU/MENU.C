@@ -1,79 +1,110 @@
+#include <string.h>
+#include <stdio.h>
 #include "fusion-c/header/msx_fusion.h"
 #include "fusion-c/header/vdp_graph1.h"
-#include "fusion-c/header/vdp_graph2.h"
 #include "fusion-c/header/io.h"
 
 typedef struct {
     char *texto;
-    int x;
-    int y;
 } MenuItem;
 
-// Função para desenhar menu
-void DrawMenu(MenuItem items[], int numItems, int selected) 
+MenuItem *menuItems = NULL;
+int menuItemCount = 0;
+
+void AddMenuItem(const char *text, int x, int y) 
 {
-    int i;
-    
-    for(i = 0; i < numItems; i++) 
-    {
-        Locate(items[i].x, items[i].y);
-        
-        // Destaca item selecionado
-        if(i == selected) 
-        {
-            SetColors(1, 15, 1);  // Texto preto, fundo branco, borda preta
-            Print(items[i].texto);
-            SetColors(15, 1, 1);  // Texto branco, fundo preto, borda preta
-        } 
-        else 
-        {
-            Print(items[i].texto);
-        }
-    }
+    menuItems = (MenuItem *)realloc(menuItems, (menuItemCount + 1) * sizeof(MenuItem));
+    menuItems[menuItemCount].texto = strdup(text);
+    menuItemCount++;
 }
 
-// Função principal do menu
-void ShowMenu(MenuItem items[], int numItems) 
+void DrawBox(int x, int y, int width, int height) 
 {
-    int selected = 0;
-    int key;
-    int exit = 0;
-    
-    while(!exit) 
+    Locate(x,y);
+    PrintChar(1);
+    PrintChar(88);
+
+    for (int i=0; i<width-2; i++) 
     {
-        DrawMenu(items, numItems, selected);
-        key = WaitKey();
-        
-        switch(key) 
-        {
-            case 0x1E:  // Seta para cima
-                if(selected > 0) selected--;
-                break;
-            case 0x1F:  // Seta para baixo
-                if(selected < numItems-1) selected++;
-                break;
-            case 13:    // ENTER
-                exit = 1;
-                break;              
-            case 27:    // ESC
-                selected = -1;
-                exit = 1;
-                break;
+        Locate(x+i+1,y);
+        PrintChar(1);
+        PrintChar(87);
+    }
+
+    Locate(width,y);
+    PrintChar(1);
+    PrintChar(89);
+
+    for (int i=0; i<height-1; i++) 
+    {
+        Locate(x,y+i+1);
+        PrintChar(1);
+        PrintChar(86);
+
+        Locate(width,y+i+1);
+        PrintChar(1);
+        PrintChar(86);
+    }
+
+    Locate(x,y+height);
+    PrintChar(1);
+    PrintChar(90);
+
+    for (int i=0; i<width-2; i++) 
+    {
+        Locate(x+i+1,y+height);
+        PrintChar(1);
+        PrintChar(87);
+    }
+
+    Locate(width,y+height);
+    PrintChar(1);
+    PrintChar(91);
+
+}
+
+void ReadFiles()
+{
+    struct FCB fcb;
+    char filename[13];
+
+    // Abre o diretório atual
+    int handle = opendir("");
+
+    if (handle == -1) {
+        printf("Erro ao abrir o diretório.\n");
+        return;
+    }
+
+    // Lê os arquivos do diretório
+    while (readdir(handle, &fcb) != EOF) {
+        // Obtém o nome do arquivo
+        strncpy(filename, fcb.fname, 12);
+        filename[12] = '\0'; // Garante que a string esteja terminada corretamente
+
+        // Verifica se o arquivo termina com .ROM
+        if (strcasecmp(&filename[strlen(filename) - 4], ".rom") == 0) {
+            printf("%s\n", filename);
         }
     }
-    return;
+
+    closedir(handle); // Fecha o diretório
 }
 
 void main(void)
 {
-    int option=0;
-    MenuItem menuItems[] = {
-        {"1. Iniciar Jogo",5,5},
-        {"2. Configuracoes",5,6},
-        {"3. Creditos",5,7},
-        {"4. Sair",5,8}
-    };    
+    // prepara a tela
+    Screen(0);
+    SetColors(2, 0, 0);
     Cls();
-    ShowMenu(menuItems, 4);
-    WaitKey();
+
+    // desenha o menu
+    DrawBox(0,0,40,2);
+    Locate(1,1);Print("TBC EXECUTOR");
+    DrawBox(0,3,40,15);
+    DrawBox(0,19,40,2);
+    Locate(1,20);Print("ESCOLHA UM ARQUIVO PARA GRAVAR");
+
+    // le os arquivos do diretorio
+    ReadFiles();
 }
