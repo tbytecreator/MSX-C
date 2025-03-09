@@ -1,131 +1,99 @@
+#include <string.h>
+#include <stdio.h>
 #include "fusion-c/header/msx_fusion.h"
 #include "fusion-c/header/vdp_graph1.h"
-#include "fusion-c/header/vdp_graph2.h"
 #include "fusion-c/header/io.h"
 
 typedef struct {
     char *texto;
-    int x;
-    int y;
 } MenuItem;
 
-// Função para ativar modo 80 colunas
-void Set80Columns(void) 
+// globals
+static FCB file;
+
+/* void AddMenuItem(const char *text, int x, int y) 
 {
-    char version;
+    menuItems = (MenuItem *)realloc(menuItems, (menuItemCount + 1) * sizeof(MenuItem));
+    menuItems[menuItemCount].texto = strdup(text);
+    menuItemCount++;
+} */
 
-    version = GetMsxVersion();
-    Print("Version: ");
-    PrintDec(version);
-    Print("\n\r");
+void DrawBox(int x, int y, int width, int height) 
+{
+    Locate(x,y);
+    PrintChar(1);
+    PrintChar(88);
 
-    Screen(0);
-    if (version >= 1)
+    for (int i=0; i<width-2; i++) 
     {
-        Width(80);
+        Locate(x+i+1,y);
+        PrintChar(1);
+        PrintChar(87);
     }
-    else
+
+    Locate(width,y);
+    PrintChar(1);
+    PrintChar(89);
+
+    for (int i=0; i<height-1; i++) 
     {
-        Width(40);
+        Locate(x,y+i+1);
+        PrintChar(1);
+        PrintChar(86);
+
+        Locate(width,y+i+1);
+        PrintChar(1);
+        PrintChar(86);
     }
+
+    Locate(x,y+height);
+    PrintChar(1);
+    PrintChar(90);
+
+    for (int i=0; i<width-2; i++) 
+    {
+        Locate(x+i+1,y+height);
+        PrintChar(1);
+        PrintChar(87);
+    }
+
+    Locate(width,y+height);
+    PrintChar(1);
+    PrintChar(91);
+
 }
 
-// Função para desenhar menu
-void DrawMenu(MenuItem items[], int numItems, int selected) 
+void ReadFiles()
 {
-    int i;
-    
-    for(i = 0; i < numItems; i++) 
+    // Variable
+    char sbuf[255];
+    int n;
+  
+    // User interface 
+    n=FindFirst("*.ROM",sbuf,0);
+    for(;!n;)
     {
-        Locate(items[i].x, items[i].y);
-        
-        // Destaca item selecionado
-        if(i == selected) 
-        {
-            SetColors(1, 15, 1);  // Texto preto, fundo branco, borda preta
-            Print(items[i].texto);
-            SetColors(15, 1, 1);  // Texto branco, fundo preto, borda preta
-        } 
-        else 
-        {
-            Print(items[i].texto);
-        }
+        Print(sbuf);
+        Print("\n");
+        n=FindNext(sbuf);
     }
-}
-
-// Função principal do menu
-int ShowMenu(MenuItem items[], int numItems) 
-{
-    int selected = 0;
-    int key;
-    int exit = 0;
-    
-    // Esconde o cursor
-    //PutChar(0x1B); PutChar('x'); PutChar('5');
-
-    while(!exit) 
-    {
-        DrawMenu(items, numItems, selected);
-        
-        key = WaitKey();
-        
-        switch(key) 
-        {
-            case 0x1E:  // Seta para cima
-                if(selected > 0) selected--;
-                break;
-                
-            case 0x1F:  // Seta para baixo
-                if(selected < numItems-1) selected++;
-                break;
-                
-            case 13:    // ENTER
-                exit = 1;
-                break;
-                
-            case 27:    // ESC
-                selected = -1;
-                exit = 1;
-                break;
-        }
-    }
-    
-    // Mostra o cursor novamente
-    PutCharHex(0x1B); PutCharHex('y'); PutCharHex('5');
-
-    return selected;
 }
 
 void main(void)
 {
-    int escolha;
-    MenuItem menuItems[] = {
-        {"1. Iniciar Jogo", 5, 5},
-        {"2. Configuracoes", 5, 6},
-        {"3. Creditos", 5, 7},
-        {"4. Sair", 5, 8}
-    };
-    
-    Set80Columns();
-    //Cls();
-    
-    // Define cores padrão
-    SetColors(15, 1, 1);  // Texto branco (15), fundo preto (1), borda preta (1)
-    
-    Print("\n\r=== MENU PRINCIPAL ===\n\n\r");
-    Print("Use as setas para mover e ENTER para selecionar\n\r");
-    
-    escolha = ShowMenu(menuItems, 4);
-    
-    //Cls();
-    Print("\n\rVoce selecionou: ");
-    if(escolha >= 0) 
-    {
-        Print(menuItems[escolha].texto);
-    } else 
-    {
-        Print("Saiu com ESC");
-    }
-    
-    WaitKey();
+    // prepara a tela
+    Screen(0);
+    SetColors(2, 0, 0);
+    Cls();
+
+    // desenha o menu
+    DrawBox(0,0,40,2);
+    Locate(1,1);Print("TBC SPIDER FLASH WRITER");
+    DrawBox(0,3,40,15);
+    DrawBox(0,19,40,2);
+    Locate(1,20);Print("ESCOLHA UM ARQUIVO PARA GRAVAR");
+
+    // le os arquivos do diretorio
+    Locate(1,4);
+    ReadFiles();
 }

@@ -408,6 +408,25 @@ void unarios(int op)
 
 }
 
+// OPERADOR TERNARIO    
+// ? : OPERADOR TERNARIO
+// (condicao) ? valor1 : valor2
+// Se a condicao for verdadeira, 
+// o operador ternario retorna valor1, 
+// caso contrario, retorna valor2    
+void ternario(int a, int b)
+{
+    int r;
+    Print("\n");
+
+    // Ternario
+    r = (a < b) ? a : b;
+
+    Print("Ternario:");
+    PrintNumber(r);
+    Print("\n");
+}
+
 void main(void)
 {
     int a = 10;
@@ -429,5 +448,8 @@ void main(void)
     //atribuicao(a, b);
 
     // testa os operadores unarios
-    unarios(a);
+    //unarios(a);
+
+    // testa o operador ternario
+    ternario(a, b);
 }

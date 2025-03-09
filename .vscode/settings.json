@@ -10,7 +10,8 @@
         "fstream": "cpp",
         "CLASCRUD.C": "cpp",
         "CONST.C": "cpp",
-        "MENU.C": "cpp"
+        "MENU.C": "cpp",
+        "OP.C": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

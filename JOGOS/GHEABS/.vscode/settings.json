@@ -2,7 +2,8 @@
     "files.associations": {
         "SPRITES.C": "cpp",
         "TREVAS.C": "cpp",
-        "CLASCRUD.C": "cpp"
+        "CLASCRUD.C": "cpp",
+        "ROOMCRUD.C": "cpp"
     },
     "C_Cpp.default.compilerPath": "c:\\Program Files\\SDCC\\bin\\sdcc.exe",
     "C_Cpp.errorSquiggles": "disabled"
