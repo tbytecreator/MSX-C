@@ -2,7 +2,7 @@
 # include <stdlib.h>
 #include "fusion-c/header/msx_fusion.h"
 
-void positivoNegativo(int numero);
+void positivoNegativo(int numero)
 {
     if (numero > 0) 
     {
@@ -16,10 +16,10 @@ void positivoNegativo(int numero);
     {
         Print("O numero e zero.\n");
     }
-    return
+    return;
 }
 
-void testeswitch(int numero);
+void testeswitch(int numero)
 {
     switch(numero)
     {
