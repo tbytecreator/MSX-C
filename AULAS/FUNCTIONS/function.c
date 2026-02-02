@@ -1,6 +1,7 @@
 #include "fusion-c/header/msx_fusion.h"
 
 void ImprimeOiMUndo(void);
+int SomaDoisNumeros(int a, int b);
 
 int main(void) 
 {
@@ -11,4 +12,11 @@ int main(void)
 void ImprimeOiMUndo(void)
 {
   Print("Oi Mundo!\n\r");
+  PrintNumber(SomaDoisNumeros(3, 5));
+}
+
+int SomaDoisNumeros(int a, int b)
+{
+  return a + b;
 } 
+
