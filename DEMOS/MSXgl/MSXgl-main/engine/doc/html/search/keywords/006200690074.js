@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("bit",["Function"],[["Bitbuster_UnpackToRAM",,[[,,,,0,"File:compress/bitbuster.h:Bitbuster_UnpackToRAM"]]],["Bitbuster_UnpackToVRAM",,[[,,,,0,"File:compress/bitbuster.h:Bitbuster_UnpackToVRAM"]]],["Bitbuster2_UnpackToRAM",,[[,,,,0,"File:compress/bitbuster2.h:Bitbuster2_UnpackToRAM"]]]]);
