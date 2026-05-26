@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("File:core.h",{1372:"<div class=\"NDToolTip TMacro LC\"><div class=\"TTSummary\">Combines major, minor, and patch versions into a single version number.</div></div>"});

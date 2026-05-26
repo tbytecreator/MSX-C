@@ -1,0 +1,1796 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ANSI-C Compiler
+                                      3 ; Version 4.2.0 #13081 (Linux)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module vdp
+                                      6 	.optsdcc -mz80
+                                      7 	
+                                      8 ;--------------------------------------------------------
+                                      9 ; Public variables in this module
+                                     10 ;--------------------------------------------------------
+                                     11 	.globl _g_VDPInitilized
+                                     12 	.globl _g_SpriteColorLow
+                                     13 	.globl _g_SpritePatternLow
+                                     14 	.globl _g_SpriteAttributeLow
+                                     15 	.globl _g_ScreenPatternLow
+                                     16 	.globl _g_ScreenColorLow
+                                     17 	.globl _g_ScreenLayoutLow
+                                     18 	.globl _g_VDP_Sprite
+                                     19 	.globl _g_VDP_Command
+                                     20 	.globl _g_VDP_Data
+                                     21 	.globl _g_VDP_REGSAV
+                                     22 	.globl _g_SLTSL
+                                     23 	.globl _g_GRPACY
+                                     24 	.globl _g_GRPACX
+                                     25 	.globl _g_LOGOPR
+                                     26 	.globl _g_CMASK
+                                     27 	.globl _g_CLOC
+                                     28 	.globl _g_FNKSTR
+                                     29 	.globl _g_ATRBYT
+                                     30 	.globl _g_BDRCLR
+                                     31 	.globl _g_BAKCLR
+                                     32 	.globl _g_FORCLR
+                                     33 	.globl _g_CSRX
+                                     34 	.globl _g_CSRY
+                                     35 	.globl _g_CLIKSW
+                                     36 	.globl _g_MLTPAT
+                                     37 	.globl _g_MLTATR
+                                     38 	.globl _g_MLTCGP
+                                     39 	.globl _g_MLTCOL
+                                     40 	.globl _g_MLTNAM
+                                     41 	.globl _g_GRPPAT
+                                     42 	.globl _g_GRPATR
+                                     43 	.globl _g_GRPCGP
+                                     44 	.globl _g_GRPCOL
+                                     45 	.globl _g_GRPNAM
+                                     46 	.globl _g_T32PAT
+                                     47 	.globl _g_T32ATR
+                                     48 	.globl _g_T32CGP
+                                     49 	.globl _g_T32COL
+                                     50 	.globl _g_T32NAM
+                                     51 	.globl _g_TXTPAT
+                                     52 	.globl _g_TXTATR
+                                     53 	.globl _g_TXTCGP
+                                     54 	.globl _g_TXTCOL
+                                     55 	.globl _g_TXTNAM
+                                     56 	.globl _g_CLMLST
+                                     57 	.globl _g_CRTCNT
+                                     58 	.globl _g_LINLEN
+                                     59 	.globl _g_LINL32
+                                     60 	.globl _g_LINL40
+                                     61 	.globl _g_CHAR_16
+                                     62 	.globl _g_MSXMID
+                                     63 	.globl _g_MSXVER
+                                     64 	.globl _g_ROMVersion
+                                     65 	.globl _g_BASRVN
+                                     66 	.globl _g_VDP_DW
+                                     67 	.globl _g_VDP_DR
+                                     68 	.globl _g_CGTABL
+                                     69 	.globl _g_SVFFFD
+                                     70 	.globl _g_RG27SAV
+                                     71 	.globl _g_RG26SAV
+                                     72 	.globl _g_RG25SAV
+                                     73 	.globl _g_SVFFF8
+                                     74 	.globl _g_MINROM
+                                     75 	.globl _g_RG23SAV
+                                     76 	.globl _g_RG22SAV
+                                     77 	.globl _g_RG21SAV
+                                     78 	.globl _g_RG20SAV
+                                     79 	.globl _g_RG19SAV
+                                     80 	.globl _g_RG18SAV
+                                     81 	.globl _g_RG17SAV
+                                     82 	.globl _g_RG16SAV
+                                     83 	.globl _g_RG15SAV
+                                     84 	.globl _g_RG14SAV
+                                     85 	.globl _g_RG13SAV
+                                     86 	.globl _g_RG12SAV
+                                     87 	.globl _g_RG11SAV
+                                     88 	.globl _g_RG10SAV
+                                     89 	.globl _g_RG09SAV
+                                     90 	.globl _g_RG08SAV
+                                     91 	.globl _g_PROCNM
+                                     92 	.globl _g_SLTWRK
+                                     93 	.globl _g_SLTATR
+                                     94 	.globl _g_SLTTBL
+                                     95 	.globl _g_EXPTBL
+                                     96 	.globl _g_MNROM
+                                     97 	.globl _g_DRWANG
+                                     98 	.globl _g_DRWSCL
+                                     99 	.globl _g_DRWFLG
+                                    100 	.globl _g_GYPOS
+                                    101 	.globl _g_GXPOS
+                                    102 	.globl _g_BRDATR
+                                    103 	.globl _g_CASPRV
+                                    104 	.globl _g_OLDSCR
+                                    105 	.globl _g_SCRMOD
+                                    106 	.globl _g_FLBMEM
+                                    107 	.globl _g_KANAMD
+                                    108 	.globl _g_KANAST
+                                    109 	.globl _g_CAPST
+                                    110 	.globl _g_CSTYLE
+                                    111 	.globl _g_CSRSW
+                                    112 	.globl _g_INSFLG
+                                    113 	.globl _g_ESCCNT
+                                    114 	.globl _g_GRPHED
+                                    115 	.globl _g_WINWID
+                                    116 	.globl _g_LOWLIM
+                                    117 	.globl _g_INTCNT
+                                    118 	.globl _g_INTVAL
+                                    119 	.globl _g_JIFFY
+                                    120 	.globl _g_PADX
+                                    121 	.globl _g_PADY
+                                    122 	.globl _g_INTFLG
+                                    123 	.globl _g_RTYCNT
+                                    124 	.globl _g_TRPTBL
+                                    125 	.globl _g_HIMEM
+                                    126 	.globl _g_BOTTOM
+                                    127 	.globl _g_PATWRK
+                                    128 	.globl _g_LINWRK
+                                    129 	.globl _g_KEYBUF
+                                    130 	.globl _g_NEWKEY
+                                    131 	.globl _g_OLDKEY
+                                    132 	.globl _g_CLIKFL
+                                    133 	.globl _g_ONGSBF
+                                    134 	.globl _g_FNKFLG
+                                    135 	.globl _g_FNKSWI
+                                    136 	.globl _g_CODSAV
+                                    137 	.globl _g_FSTPOS
+                                    138 	.globl _g_LINTTB
+                                    139 	.globl _g_BASROM
+                                    140 	.globl _g_ENSTOP
+                                    141 	.globl _g_VCBC
+                                    142 	.globl _g_VCBB
+                                    143 	.globl _g_VCBA
+                                    144 	.globl _g_PLYCNT
+                                    145 	.globl _g_MUSICF
+                                    146 	.globl _g_QUEUEN
+                                    147 	.globl _g_MCLPTR
+                                    148 	.globl _g_MCLLEN
+                                    149 	.globl _g_SAVVOL
+                                    150 	.globl _g_VOICEN
+                                    151 	.globl _g_SAVSP
+                                    152 	.globl _g_PRSCNT
+                                    153 	.globl _g_LSTMOD
+                                    154 	.globl _g_LSTCOM
+                                    155 	.globl _g_COMMSK
+                                    156 	.globl _g_ESTBLS
+                                    157 	.globl _g_FLAGS
+                                    158 	.globl _g_ERRORS
+                                    159 	.globl _g_DATCNT
+                                    160 	.globl _g_DEVNUM
+                                    161 	.globl _g_OLDINT
+                                    162 	.globl _g_OLDSTT
+                                    163 	.globl _g_MEXBIh
+                                    164 	.globl _g_RSIQLN
+                                    165 	.globl _g_RSFCB
+                                    166 	.globl _g_TOCNT
+                                    167 	.globl _g_RSTMP
+                                    168 	.globl _g_YSAVE
+                                    169 	.globl _g_XSAVE
+                                    170 	.globl _g_NORUSE
+                                    171 	.globl _g_MODE
+                                    172 	.globl _g_ROMA
+                                    173 	.globl _g_CHRCNT
+                                    174 	.globl _g_EXBRSA
+                                    175 	.globl _g_AVCSAV
+                                    176 	.globl _g_ACPAGE
+                                    177 	.globl _g_DPPAGE
+                                    178 	.globl _g_RS2IQ
+                                    179 	.globl _g_VOICCQ
+                                    180 	.globl _g_VOICBQ
+                                    181 	.globl _g_VOICAQ
+                                    182 	.globl _g_QUEBAK
+                                    183 	.globl _g_QUETAB
+                                    184 	.globl _g_ASPCT2
+                                    185 	.globl _g_ASPCT1
+                                    186 	.globl _g_HEADER
+                                    187 	.globl _g_HIGH
+                                    188 	.globl _g_LOW
+                                    189 	.globl _g_CS240
+                                    190 	.globl _g_CS120
+                                    191 	.globl _g_GETPNT
+                                    192 	.globl _g_PUTPNT
+                                    193 	.globl _g_REPCNT
+                                    194 	.globl _g_SCNCNT
+                                    195 	.globl _g_FRCNEW
+                                    196 	.globl _g_QUEUES
+                                    197 	.globl _g_MINUPD
+                                    198 	.globl _g_MAXUPD
+                                    199 	.globl _g_TRGFLG
+                                    200 	.globl _g_STATFL
+                                    201 	.globl _g_RG7SAV
+                                    202 	.globl _g_RG6SAV
+                                    203 	.globl _g_RG5SAV
+                                    204 	.globl _g_RG4SAV
+                                    205 	.globl _g_RG3SAV
+                                    206 	.globl _g_RG2SAV
+                                    207 	.globl _g_RG1SAV
+                                    208 	.globl _g_RG0SAV
+                                    209 	.globl _g_CNSDFG
+                                    210 	.globl _g_USRTAB
+                                    211 	.globl _g_CLPRIM
+                                    212 	.globl _g_WRPRIM
+                                    213 	.globl _g_RDPRIM
+                                    214 	.globl _VDP_SetModeFlag
+                                    215 	.globl _VDP_SetModeText1
+                                    216 	.globl _VDP_SetModeMultiColor
+                                    217 	.globl _VDP_SetModeGraphic1
+                                    218 	.globl _VDP_SetModeGraphic2
+                                    219 	.globl _VDP_ClearVRAM
+                                    220 	.globl _VDP_WriteVRAM_16K
+                                    221 	.globl _VDP_FillVRAM_16K
+                                    222 	.globl _VDP_ReadVRAM_16K
+                                    223 	.globl _VDP_Peek_16K
+                                    224 	.globl _VDP_Poke_16K
+                                    225 	.globl _VDP_Initialize
+                                    226 	.globl _VDP_SetMode
+                                    227 	.globl _VDP_GetVersion
+                                    228 	.globl _VDP_RegWrite
+                                    229 	.globl _VDP_RegWriteBak
+                                    230 	.globl _VDP_RegWriteBakMask
+                                    231 	.globl _VDP_ReadDefaultStatus
+                                    232 	.globl _VDP_SetLayoutTable
+                                    233 	.globl _VDP_SetColorTable
+                                    234 	.globl _VDP_SetPatternTable
+                                    235 	.globl _VDP_SetSpriteAttributeTable
+                                    236 	.globl _VDP_SetSpritePatternTable
+                                    237 	.globl _VDP_LoadSpritePattern
+                                    238 	.globl _VDP_SetSpriteSM1
+                                    239 	.globl _VDP_SetSprite
+                                    240 	.globl _VDP_SetSpritePosition
+                                    241 	.globl _VDP_SetSpritePositionX
+                                    242 	.globl _VDP_SetSpritePositionY
+                                    243 	.globl _VDP_SetSpritePattern
+                                    244 	.globl _VDP_SetSpriteColorSM1
+                                    245 	.globl _VDP_DisableSpritesFrom
+                                    246 	.globl _VDP_LoadPattern_GM2
+                                    247 	.globl _VDP_LoadColor_GM2
+                                    248 	.globl _VDP_WriteLayout_GM2
+                                    249 	.globl _VDP_FillLayout_GM2
+                                    250 ;--------------------------------------------------------
+                                    251 ; special function registers
+                                    252 ;--------------------------------------------------------
+                           0000A0   253 _g_PSG_RegPort	=	0x00a0
+                           0000A1   254 _g_PSG_DataPort	=	0x00a1
+                           0000A2   255 _g_PSG_StatPort	=	0x00a2
+                           000010   256 _g_PSG_Ext_RegPort	=	0x0010
+                           000011   257 _g_PSG_Ext_DataPort	=	0x0011
+                           000012   258 _g_PSG_Ext_StatPort	=	0x0012
+                           000090   259 _g_Printer_ControlPort	=	0x0090
+                           000091   260 _g_Printer_DataPort	=	0x0091
+                           00007C   261 _g_MSXMusic_IndexPort	=	0x007c
+                           000098   262 _g_VDP_DataPort	=	0x0098
+                           000099   263 _g_VDP_RegPort	=	0x0099
+                           000099   264 _g_VDP_AddrPort	=	0x0099
+                           000099   265 _g_VDP_StatPort	=	0x0099
+                           0000A8   266 _g_PortPrimarySlot	=	0x00a8
+                           0000A9   267 _g_PortReadKeyboard	=	0x00a9
+                           0000AA   268 _g_PortAccessKeyboard	=	0x00aa
+                           0000AB   269 _g_PortControl	=	0x00ab
+                           0000B4   270 _g_RTC_AddrPort	=	0x00b4
+                           0000B5   271 _g_RTC_DataPort	=	0x00b5
+                           0000C0   272 _g_MSXAudio_IndexPort	=	0x00c0
+                           0000C1   273 _g_MSXAudio_DataPort	=	0x00c1
+                           0000C2   274 _g_MSXAudio_IndexPort2	=	0x00c2
+                           0000C3   275 _g_MSXAudio_DataPort2	=	0x00c3
+                                    276 ;--------------------------------------------------------
+                                    277 ; ram data
+                                    278 ;--------------------------------------------------------
+                                    279 	.area _DATA
+                           00F3AE   280 _g_LINL40	=	0xf3ae
+                           00F3AF   281 _g_LINL32	=	0xf3af
+                           00F3B0   282 _g_LINLEN	=	0xf3b0
+                           00F3B1   283 _g_CRTCNT	=	0xf3b1
+                           00F3B2   284 _g_CLMLST	=	0xf3b2
+                           00F3B3   285 _g_TXTNAM	=	0xf3b3
+                           00F3B5   286 _g_TXTCOL	=	0xf3b5
+                           00F3B7   287 _g_TXTCGP	=	0xf3b7
+                           00F3B9   288 _g_TXTATR	=	0xf3b9
+                           00F3BB   289 _g_TXTPAT	=	0xf3bb
+                           00F3BD   290 _g_T32NAM	=	0xf3bd
+                           00F3BF   291 _g_T32COL	=	0xf3bf
+                           00F3C1   292 _g_T32CGP	=	0xf3c1
+                           00F3C3   293 _g_T32ATR	=	0xf3c3
+                           00F3C5   294 _g_T32PAT	=	0xf3c5
+                           00F3C7   295 _g_GRPNAM	=	0xf3c7
+                           00F3C9   296 _g_GRPCOL	=	0xf3c9
+                           00F3CB   297 _g_GRPCGP	=	0xf3cb
+                           00F3CD   298 _g_GRPATR	=	0xf3cd
+                           00F3CF   299 _g_GRPPAT	=	0xf3cf
+                           00F3D1   300 _g_MLTNAM	=	0xf3d1
+                           00F3D3   301 _g_MLTCOL	=	0xf3d3
+                           00F3D5   302 _g_MLTCGP	=	0xf3d5
+                           00F3D7   303 _g_MLTATR	=	0xf3d7
+                           00F3D9   304 _g_MLTPAT	=	0xf3d9
+                           00F3DB   305 _g_CLIKSW	=	0xf3db
+                           00F3DC   306 _g_CSRY	=	0xf3dc
+                           00F3DD   307 _g_CSRX	=	0xf3dd
+                           00F3E9   308 _g_FORCLR	=	0xf3e9
+                           00F3EA   309 _g_BAKCLR	=	0xf3ea
+                           00F3EB   310 _g_BDRCLR	=	0xf3eb
+                           00F3F2   311 _g_ATRBYT	=	0xf3f2
+                           00F87F   312 _g_FNKSTR	=	0xf87f
+                           00F92A   313 _g_CLOC	=	0xf92a
+                           00F92C   314 _g_CMASK	=	0xf92c
+                           00FB02   315 _g_LOGOPR	=	0xfb02
+                           00FCB7   316 _g_GRPACX	=	0xfcb7
+                           00FCB9   317 _g_GRPACY	=	0xfcb9
+                           00FFFF   318 _g_SLTSL	=	0xffff
+      000000                        319 _g_VDP_REGSAV::
+      000000                        320 	.ds 28
+      00001C                        321 _g_VDP_Data::
+      00001C                        322 	.ds 2
+      00001E                        323 _g_VDP_Command::
+      00001E                        324 	.ds 15
+      00002D                        325 _g_VDP_Sprite::
+      00002D                        326 	.ds 4
+      000031                        327 _g_ScreenLayoutLow::
+      000031                        328 	.ds 2
+      000033                        329 _g_ScreenColorLow::
+      000033                        330 	.ds 2
+      000035                        331 _g_ScreenPatternLow::
+      000035                        332 	.ds 2
+      000037                        333 _g_SpriteAttributeLow::
+      000037                        334 	.ds 2
+      000039                        335 _g_SpritePatternLow::
+      000039                        336 	.ds 2
+      00003B                        337 _g_SpriteColorLow::
+      00003B                        338 	.ds 2
+                                    339 ;--------------------------------------------------------
+                                    340 ; ram data
+                                    341 ;--------------------------------------------------------
+                                    342 	.area _INITIALIZED
+      000000                        343 _g_VDPInitilized::
+      000000                        344 	.ds 1
+                                    345 ;--------------------------------------------------------
+                                    346 ; absolute external ram data
+                                    347 ;--------------------------------------------------------
+                                    348 	.area _DABS (ABS)
+                                    349 ;--------------------------------------------------------
+                                    350 ; global & static initialisations
+                                    351 ;--------------------------------------------------------
+                                    352 	.area _HOME
+                                    353 	.area _GSINIT
+                                    354 	.area _GSFINAL
+                                    355 	.area _GSINIT
+                                    356 ;--------------------------------------------------------
+                                    357 ; Home
+                                    358 ;--------------------------------------------------------
+                                    359 	.area _HOME
+                                    360 	.area _HOME
+                                    361 ;--------------------------------------------------------
+                                    362 ; code
+                                    363 ;--------------------------------------------------------
+                                    364 	.area _CODE
+                                    365 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:166: void VDP_SetModeFlag(u8 flag)
+                                    366 ;	---------------------------------
+                                    367 ; Function VDP_SetModeFlag
+                                    368 ; ---------------------------------
+      000000                        369 _VDP_SetModeFlag::
+      000000 5F               [ 4]  370 	ld	e, a
+                                    371 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:169: u8 reg1 = g_VDP_REGSAV[1];
+      000001 3Ar01r00         [13]  372 	ld	a, (#_g_VDP_REGSAV + 1)
+                                    373 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:170: reg1 &= 0b11100111;
+      000004 E6 E7            [ 7]  374 	and	a, #0xe7
+      000006 6F               [ 4]  375 	ld	l, a
+                                    376 ;	spillPairReg hl
+                                    377 ;	spillPairReg hl
+                                    378 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:171: if (flag & 0b00001)
+      000007 CB 43            [ 8]  379 	bit	0, e
+      000009 28 02            [12]  380 	jr	Z, 00102$
+                                    381 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:172: reg1 |= 0b00010000;
+      00000B CB E5            [ 8]  382 	set	4, l
+      00000D                        383 00102$:
+                                    384 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:173: if (flag & 0b00010)
+      00000D CB 4B            [ 8]  385 	bit	1, e
+      00000F 28 02            [12]  386 	jr	Z, 00104$
+                                    387 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:174: reg1 |= 0b00001000;
+      000011 CB DD            [ 8]  388 	set	3, l
+      000013                        389 00104$:
+                                    390 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:175: VDP_RegWriteBak(1, reg1);
+      000013 3E 01            [ 7]  391 	ld	a, #0x01
+      000015 CDrF4r01         [17]  392 	call	_VDP_RegWriteBak
+                                    393 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:178: u8 reg0 = g_VDP_REGSAV[0];
+      000018 3Ar00r00         [13]  394 	ld	a, (#_g_VDP_REGSAV + 0)
+                                    395 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:179: reg0 &= 0b11110001;
+      00001B E6 F1            [ 7]  396 	and	a, #0xf1
+      00001D 4F               [ 4]  397 	ld	c, a
+                                    398 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:180: flag >>= 1;
+      00001E 7B               [ 4]  399 	ld	a, e
+      00001F CB 3F            [ 8]  400 	srl	a
+                                    401 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:181: flag &= 0b00001110;
+      000021 E6 0E            [ 7]  402 	and	a, #0x0e
+                                    403 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:182: reg0 |= flag;
+      000023 B1               [ 4]  404 	or	a, c
+      000024 6F               [ 4]  405 	ld	l, a
+                                    406 ;	spillPairReg hl
+                                    407 ;	spillPairReg hl
+                                    408 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:183: VDP_RegWriteBak(0, reg0);
+      000025 AF               [ 4]  409 	xor	a, a
+                                    410 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:184: }
+      000026 C3rF4r01         [10]  411 	jp	_VDP_RegWriteBak
+                           00F380   412 _g_RDPRIM	=	0xf380
+                           00F385   413 _g_WRPRIM	=	0xf385
+                           00F38C   414 _g_CLPRIM	=	0xf38c
+                           00F39A   415 _g_USRTAB	=	0xf39a
+                           00F3DE   416 _g_CNSDFG	=	0xf3de
+                           00F3DF   417 _g_RG0SAV	=	0xf3df
+                           00F3E0   418 _g_RG1SAV	=	0xf3e0
+                           00F3E1   419 _g_RG2SAV	=	0xf3e1
+                           00F3E2   420 _g_RG3SAV	=	0xf3e2
+                           00F3E3   421 _g_RG4SAV	=	0xf3e3
+                           00F3E4   422 _g_RG5SAV	=	0xf3e4
+                           00F3E5   423 _g_RG6SAV	=	0xf3e5
+                           00F3E6   424 _g_RG7SAV	=	0xf3e6
+                           00F3E7   425 _g_STATFL	=	0xf3e7
+                           00F3E8   426 _g_TRGFLG	=	0xf3e8
+                           00F3EC   427 _g_MAXUPD	=	0xf3ec
+                           00F3EF   428 _g_MINUPD	=	0xf3ef
+                           00F3F3   429 _g_QUEUES	=	0xf3f3
+                           00F3F5   430 _g_FRCNEW	=	0xf3f5
+                           00F3F6   431 _g_SCNCNT	=	0xf3f6
+                           00F3F7   432 _g_REPCNT	=	0xf3f7
+                           00F3F8   433 _g_PUTPNT	=	0xf3f8
+                           00F3FA   434 _g_GETPNT	=	0xf3fa
+                           00F3FC   435 _g_CS120	=	0xf3fc
+                           00F401   436 _g_CS240	=	0xf401
+                           00F406   437 _g_LOW	=	0xf406
+                           00F408   438 _g_HIGH	=	0xf408
+                           00F40A   439 _g_HEADER	=	0xf40a
+                           00F40B   440 _g_ASPCT1	=	0xf40b
+                           00F40D   441 _g_ASPCT2	=	0xf40d
+                           00F959   442 _g_QUETAB	=	0xf959
+                           00F971   443 _g_QUEBAK	=	0xf971
+                           00F975   444 _g_VOICAQ	=	0xf975
+                           00F9F5   445 _g_VOICBQ	=	0xf9f5
+                           00FA75   446 _g_VOICCQ	=	0xfa75
+                           00FAF5   447 _g_RS2IQ	=	0xfaf5
+                           00FAF5   448 _g_DPPAGE	=	0xfaf5
+                           00FAF6   449 _g_ACPAGE	=	0xfaf6
+                           00FAF7   450 _g_AVCSAV	=	0xfaf7
+                           00FAF8   451 _g_EXBRSA	=	0xfaf8
+                           00FAF9   452 _g_CHRCNT	=	0xfaf9
+                           00FAFA   453 _g_ROMA	=	0xfafa
+                           00FAFC   454 _g_MODE	=	0xfafc
+                           00FAFD   455 _g_NORUSE	=	0xfafd
+                           00FAFE   456 _g_XSAVE	=	0xfafe
+                           00FB00   457 _g_YSAVE	=	0xfb00
+                           00FB03   458 _g_RSTMP	=	0xfb03
+                           00FB03   459 _g_TOCNT	=	0xfb03
+                           00FB04   460 _g_RSFCB	=	0xfb04
+                           00FB06   461 _g_RSIQLN	=	0xfb06
+                           00FB07   462 _g_MEXBIh	=	0xfb07
+                           00FB0C   463 _g_OLDSTT	=	0xfb0c
+                           00FB0C   464 _g_OLDINT	=	0xfb0c
+                           00FB16   465 _g_DEVNUM	=	0xfb16
+                           00FB17   466 _g_DATCNT	=	0xfb17
+                           00FB1A   467 _g_ERRORS	=	0xfb1a
+                           00FB1B   468 _g_FLAGS	=	0xfb1b
+                           00FB1C   469 _g_ESTBLS	=	0xfb1c
+                           00FB1D   470 _g_COMMSK	=	0xfb1d
+                           00FB1E   471 _g_LSTCOM	=	0xfb1e
+                           00FB1F   472 _g_LSTMOD	=	0xfb1f
+                           00FB35   473 _g_PRSCNT	=	0xfb35
+                           00FB36   474 _g_SAVSP	=	0xfb36
+                           00FB38   475 _g_VOICEN	=	0xfb38
+                           00FB39   476 _g_SAVVOL	=	0xfb39
+                           00FB3B   477 _g_MCLLEN	=	0xfb3b
+                           00FB3C   478 _g_MCLPTR	=	0xfb3c
+                           00FB3E   479 _g_QUEUEN	=	0xfb3e
+                           00FB3F   480 _g_MUSICF	=	0xfb3f
+                           00FB40   481 _g_PLYCNT	=	0xfb40
+                           00FB41   482 _g_VCBA	=	0xfb41
+                           00FB66   483 _g_VCBB	=	0xfb66
+                           00FB8B   484 _g_VCBC	=	0xfb8b
+                           00FBB0   485 _g_ENSTOP	=	0xfbb0
+                           00FBB1   486 _g_BASROM	=	0xfbb1
+                           00FBB2   487 _g_LINTTB	=	0xfbb2
+                           00FBCA   488 _g_FSTPOS	=	0xfbca
+                           00FBCC   489 _g_CODSAV	=	0xfbcc
+                           00FBCD   490 _g_FNKSWI	=	0xfbcd
+                           00FBCE   491 _g_FNKFLG	=	0xfbce
+                           00FBD8   492 _g_ONGSBF	=	0xfbd8
+                           00FBD9   493 _g_CLIKFL	=	0xfbd9
+                           00FBDA   494 _g_OLDKEY	=	0xfbda
+                           00FBE5   495 _g_NEWKEY	=	0xfbe5
+                           00FBF0   496 _g_KEYBUF	=	0xfbf0
+                           00FC18   497 _g_LINWRK	=	0xfc18
+                           00FC40   498 _g_PATWRK	=	0xfc40
+                           00FC48   499 _g_BOTTOM	=	0xfc48
+                           00FC4A   500 _g_HIMEM	=	0xfc4a
+                           00FC4C   501 _g_TRPTBL	=	0xfc4c
+                           00FC9A   502 _g_RTYCNT	=	0xfc9a
+                           00FC9B   503 _g_INTFLG	=	0xfc9b
+                           00FC9C   504 _g_PADY	=	0xfc9c
+                           00FC9D   505 _g_PADX	=	0xfc9d
+                           00FC9E   506 _g_JIFFY	=	0xfc9e
+                           00FCA0   507 _g_INTVAL	=	0xfca0
+                           00FCA2   508 _g_INTCNT	=	0xfca2
+                           00FCA4   509 _g_LOWLIM	=	0xfca4
+                           00FCA5   510 _g_WINWID	=	0xfca5
+                           00FCA6   511 _g_GRPHED	=	0xfca6
+                           00FCA7   512 _g_ESCCNT	=	0xfca7
+                           00FCA8   513 _g_INSFLG	=	0xfca8
+                           00FCA9   514 _g_CSRSW	=	0xfca9
+                           00FCAA   515 _g_CSTYLE	=	0xfcaa
+                           00FCAB   516 _g_CAPST	=	0xfcab
+                           00FCAC   517 _g_KANAST	=	0xfcac
+                           00FCAD   518 _g_KANAMD	=	0xfcad
+                           00FCAE   519 _g_FLBMEM	=	0xfcae
+                           00FCAF   520 _g_SCRMOD	=	0xfcaf
+                           00FCB0   521 _g_OLDSCR	=	0xfcb0
+                           00FCB1   522 _g_CASPRV	=	0xfcb1
+                           00FCB2   523 _g_BRDATR	=	0xfcb2
+                           00FCB3   524 _g_GXPOS	=	0xfcb3
+                           00FCB5   525 _g_GYPOS	=	0xfcb5
+                           00FCBB   526 _g_DRWFLG	=	0xfcbb
+                           00FCBC   527 _g_DRWSCL	=	0xfcbc
+                           00FCBD   528 _g_DRWANG	=	0xfcbd
+                           00FCC1   529 _g_MNROM	=	0xfcc1
+                           00FCC1   530 _g_EXPTBL	=	0xfcc1
+                           00FCC5   531 _g_SLTTBL	=	0xfcc5
+                           00FCC9   532 _g_SLTATR	=	0xfcc9
+                           00FD09   533 _g_SLTWRK	=	0xfd09
+                           00FD89   534 _g_PROCNM	=	0xfd89
+                           00FFE7   535 _g_RG08SAV	=	0xffe7
+                           00FFE8   536 _g_RG09SAV	=	0xffe8
+                           00FFE9   537 _g_RG10SAV	=	0xffe9
+                           00FFEA   538 _g_RG11SAV	=	0xffea
+                           00FFEB   539 _g_RG12SAV	=	0xffeb
+                           00FFEC   540 _g_RG13SAV	=	0xffec
+                           00FFED   541 _g_RG14SAV	=	0xffed
+                           00FFEE   542 _g_RG15SAV	=	0xffee
+                           00FFEF   543 _g_RG16SAV	=	0xffef
+                           00FFF0   544 _g_RG17SAV	=	0xfff0
+                           00FFF1   545 _g_RG18SAV	=	0xfff1
+                           00FFF2   546 _g_RG19SAV	=	0xfff2
+                           00FFF3   547 _g_RG20SAV	=	0xfff3
+                           00FFF4   548 _g_RG21SAV	=	0xfff4
+                           00FFF5   549 _g_RG22SAV	=	0xfff5
+                           00FFF6   550 _g_RG23SAV	=	0xfff6
+                           00FFF7   551 _g_MINROM	=	0xfff7
+                           00FFF8   552 _g_SVFFF8	=	0xfff8
+                           00FFFA   553 _g_RG25SAV	=	0xfffa
+                           00FFFB   554 _g_RG26SAV	=	0xfffb
+                           00FFFC   555 _g_RG27SAV	=	0xfffc
+                           00FFFD   556 _g_SVFFFD	=	0xfffd
+                           000004   557 _g_CGTABL	=	0x0004
+                           000006   558 _g_VDP_DR	=	0x0006
+                           000007   559 _g_VDP_DW	=	0x0007
+                           00002B   560 _g_BASRVN	=	0x002b
+                           00002B   561 _g_ROMVersion	=	0x002b
+                           00002D   562 _g_MSXVER	=	0x002d
+                           00002E   563 _g_MSXMID	=	0x002e
+                           000034   564 _g_CHAR_16	=	0x0034
+                                    565 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:189: void VDP_SetModeText1()
+                                    566 ;	---------------------------------
+                                    567 ; Function VDP_SetModeText1
+                                    568 ; ---------------------------------
+      000029                        569 _VDP_SetModeText1::
+                                    570 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:191: VDP_SetModeFlag(VDP_T1_MODE);
+      000029 3E 01            [ 7]  571 	ld	a, #0x01
+      00002B CDr00r00         [17]  572 	call	_VDP_SetModeFlag
+                                    573 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:192: VDP_SetLayoutTable(VDP_T1_ADDR_NT);
+      00002E 21 00 00         [10]  574 	ld	hl, #0x0000
+      000031 CDr29r02         [17]  575 	call	_VDP_SetLayoutTable
+                                    576 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:193: VDP_SetPatternTable(VDP_T1_ADDR_PT);
+      000034 21 00 08         [10]  577 	ld	hl, #0x0800
+                                    578 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:194: }
+      000037 C3r66r02         [10]  579 	jp	_VDP_SetPatternTable
+                                    580 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:200: void VDP_SetModeMultiColor()
+                                    581 ;	---------------------------------
+                                    582 ; Function VDP_SetModeMultiColor
+                                    583 ; ---------------------------------
+      00003A                        584 _VDP_SetModeMultiColor::
+                                    585 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:202: VDP_SetModeFlag(VDP_MC_MODE);
+      00003A 3E 02            [ 7]  586 	ld	a, #0x02
+      00003C CDr00r00         [17]  587 	call	_VDP_SetModeFlag
+                                    588 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:203: VDP_SetLayoutTable(VDP_MC_ADDR_NT);
+      00003F 21 00 08         [10]  589 	ld	hl, #0x0800
+      000042 CDr29r02         [17]  590 	call	_VDP_SetLayoutTable
+                                    591 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:204: VDP_SetPatternTable(VDP_MC_ADDR_PT);
+      000045 21 00 00         [10]  592 	ld	hl, #0x0000
+      000048 CDr66r02         [17]  593 	call	_VDP_SetPatternTable
+                                    594 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:206: VDP_SetSpriteAttributeTable(VDP_MC_ADDR_SAT);
+      00004B 21 00 1B         [10]  595 	ld	hl, #0x1b00
+      00004E CDr83r02         [17]  596 	call	_VDP_SetSpriteAttributeTable
+                                    597 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:207: VDP_SetSpritePatternTable(VDP_MC_ADDR_SPT);
+      000051 21 00 38         [10]  598 	ld	hl, #0x3800
+                                    599 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:209: }
+      000054 C3rB4r02         [10]  600 	jp	_VDP_SetSpritePatternTable
+                                    601 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:215: void VDP_SetModeGraphic1()
+                                    602 ;	---------------------------------
+                                    603 ; Function VDP_SetModeGraphic1
+                                    604 ; ---------------------------------
+      000057                        605 _VDP_SetModeGraphic1::
+                                    606 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:217: VDP_SetModeFlag(VDP_G1_MODE);
+      000057 AF               [ 4]  607 	xor	a, a
+      000058 CDr00r00         [17]  608 	call	_VDP_SetModeFlag
+                                    609 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:218: VDP_SetLayoutTable(VDP_G1_ADDR_NT);
+      00005B 21 00 18         [10]  610 	ld	hl, #0x1800
+      00005E CDr29r02         [17]  611 	call	_VDP_SetLayoutTable
+                                    612 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:219: VDP_SetColorTable(VDP_G1_ADDR_CT);
+      000061 21 00 20         [10]  613 	ld	hl, #0x2000
+      000064 CDr39r02         [17]  614 	call	_VDP_SetColorTable
+                                    615 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:220: VDP_SetPatternTable(VDP_G1_ADDR_PT);
+      000067 21 00 00         [10]  616 	ld	hl, #0x0000
+      00006A CDr66r02         [17]  617 	call	_VDP_SetPatternTable
+                                    618 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:222: VDP_SetSpriteAttributeTable(VDP_G1_ADDR_SAT);
+      00006D 21 00 1B         [10]  619 	ld	hl, #0x1b00
+      000070 CDr83r02         [17]  620 	call	_VDP_SetSpriteAttributeTable
+                                    621 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:223: VDP_SetSpritePatternTable(VDP_G1_ADDR_SPT);
+      000073 21 00 38         [10]  622 	ld	hl, #0x3800
+                                    623 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:225: }
+      000076 C3rB4r02         [10]  624 	jp	_VDP_SetSpritePatternTable
+                                    625 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:231: void VDP_SetModeGraphic2()
+                                    626 ;	---------------------------------
+                                    627 ; Function VDP_SetModeGraphic2
+                                    628 ; ---------------------------------
+      000079                        629 _VDP_SetModeGraphic2::
+                                    630 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:233: VDP_SetModeFlag(VDP_G2_MODE);
+      000079 3E 04            [ 7]  631 	ld	a, #0x04
+      00007B CDr00r00         [17]  632 	call	_VDP_SetModeFlag
+                                    633 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:234: VDP_SetLayoutTable(VDP_G2_ADDR_NT);
+      00007E 21 00 18         [10]  634 	ld	hl, #0x1800
+      000081 CDr29r02         [17]  635 	call	_VDP_SetLayoutTable
+                                    636 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:235: VDP_SetColorTable(VDP_G2_ADDR_CT);
+      000084 21 00 20         [10]  637 	ld	hl, #0x2000
+      000087 CDr39r02         [17]  638 	call	_VDP_SetColorTable
+                                    639 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:236: VDP_SetPatternTable(VDP_G2_ADDR_PT);
+      00008A 21 00 00         [10]  640 	ld	hl, #0x0000
+      00008D CDr66r02         [17]  641 	call	_VDP_SetPatternTable
+                                    642 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:238: VDP_SetSpriteAttributeTable(VDP_G2_ADDR_SAT);
+      000090 21 00 1B         [10]  643 	ld	hl, #0x1b00
+      000093 CDr83r02         [17]  644 	call	_VDP_SetSpriteAttributeTable
+                                    645 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:239: VDP_SetSpritePatternTable(VDP_G2_ADDR_SPT);
+      000096 21 00 38         [10]  646 	ld	hl, #0x3800
+                                    647 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:241: }
+      000099 C3rB4r02         [10]  648 	jp	_VDP_SetSpritePatternTable
+                                    649 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:252: void VDP_ClearVRAM()
+                                    650 ;	---------------------------------
+                                    651 ; Function VDP_ClearVRAM
+                                    652 ; ---------------------------------
+      00009C                        653 _VDP_ClearVRAM::
+                                    654 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:255: VDP_FillVRAM_16K(0, 0x0000, 0x4000);  // Clear 16 KB of VRAM
+      00009C 21 00 40         [10]  655 	ld	hl, #0x4000
+      00009F E5               [11]  656 	push	hl
+      0000A0 11 00 00         [10]  657 	ld	de, #0x0000
+      0000A3 AF               [ 4]  658 	xor	a, a
+      0000A4 CDrD1r00         [17]  659 	call	_VDP_FillVRAM_16K
+                                    660 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:264: }
+      0000A7 C9               [10]  661 	ret
+                                    662 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:275: void VDP_WriteVRAM_16K(const u8* src, u16 dest, u16 count)
+                                    663 ;	---------------------------------
+                                    664 ; Function VDP_WriteVRAM_16K
+                                    665 ; ---------------------------------
+      0000A8                        666 _VDP_WriteVRAM_16K::
+                                    667 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:344: __endasm;
+      0000A8 FD 21 02 00      [14]  668 	ld	iy, #2
+      0000AC FD 39            [15]  669 	add	iy, sp
+      0000AE 7B               [ 4]  670 	ld	a, e
+      0000AF F3               [ 4]  671 	di
+      0000B0 D3 99            [11]  672 	out	(0x99), a
+      0000B2 7A               [ 4]  673 	ld	a, d
+      0000B3 E6 3F            [ 7]  674 	and	a, #0x3F
+      0000B5 F6 40            [ 7]  675 	or	a, #0x40
+      0000B7 FB               [ 4]  676 	ei
+      0000B8 D3 99            [11]  677 	out	(0x99), a
+      0000BA FD 5E 00         [19]  678 	ld	e, 0(iy)
+      0000BD FD 56 01         [19]  679 	ld	d, 1(iy)
+      0000C0 0E 98            [ 7]  680 	ld	c, #0x98
+      0000C2 43               [ 4]  681 	ld	b, e
+      0000C3 1B               [ 6]  682 	dec	de
+      0000C4 14               [ 4]  683 	inc	d
+      0000C5                        684 	 wrt16_loop_start:
+      0000C5 ED A3            [16]  685 	outi
+      0000C7 C2rC5r00         [10]  686 	jp	nz, wrt16_loop_start
+      0000CA 15               [ 4]  687 	dec	d
+      0000CB C2rC5r00         [10]  688 	jp	nz, wrt16_loop_start
+      0000CE                        689 	 wrt16_loop_end:
+                                    690 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:345: }
+      0000CE E1               [10]  691 	pop	hl
+      0000CF F1               [10]  692 	pop	af
+      0000D0 E9               [ 4]  693 	jp	(hl)
+                                    694 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:354: void VDP_FillVRAM_16K(u8 value, u16 dest, u16 count) __NAKED // Stack: 4 bytes
+                                    695 ;	---------------------------------
+                                    696 ; Function VDP_FillVRAM_16K
+                                    697 ; ---------------------------------
+      0000D1                        698 _VDP_FillVRAM_16K::
+                                    699 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:405: __endasm;
+      0000D1 4F               [ 4]  700 	ld	c, a
+      0000D2 7B               [ 4]  701 	ld	a, e
+      0000D3 F3               [ 4]  702 	di
+      0000D4 D3 99            [11]  703 	out	(0x99), a
+      0000D6 7A               [ 4]  704 	ld	a, d
+      0000D7 E6 3F            [ 7]  705 	and	a, #0x3F
+      0000D9 F6 40            [ 7]  706 	or	a, #0x40
+      0000DB D3 99            [11]  707 	out	(0x99), a
+      0000DD FD E1            [14]  708 	pop	iy
+      0000DF D1               [10]  709 	pop	de
+      0000E0 79               [ 4]  710 	ld	a, c
+      0000E1 43               [ 4]  711 	ld	b, e
+      0000E2 1B               [ 6]  712 	dec	de
+      0000E3 14               [ 4]  713 	inc	d
+      0000E4                        714 	 fll16_loop_start:
+      0000E4 D3 98            [11]  715 	out	(0x98), a
+      0000E6 00               [ 4]  716 	nop
+      0000E7 10 FB            [13]  717 	djnz	fll16_loop_start
+      0000E9 15               [ 4]  718 	dec	d
+      0000EA C2rE4r00         [10]  719 	jp	nz, fll16_loop_start
+      0000ED                        720 	 fll16_loop_end:
+      0000ED FB               [ 4]  721 	ei
+      0000EE FD E9            [ 8]  722 	jp	(iy)
+                                    723 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:406: }
+                                    724 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:519: void VDP_ReadVRAM_16K(u16 src, u8* dest, u16 count)
+                                    725 ;	---------------------------------
+                                    726 ; Function VDP_ReadVRAM_16K
+                                    727 ; ---------------------------------
+      0000F0                        728 _VDP_ReadVRAM_16K::
+                                    729 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:589: __endasm;
+      0000F0 FD 21 02 00      [14]  730 	ld	iy, #2
+      0000F4 FD 39            [15]  731 	add	iy, sp
+      0000F6 7D               [ 4]  732 	ld	a, l
+      0000F7 F3               [ 4]  733 	di
+      0000F8 D3 99            [11]  734 	out	(0x99), a
+      0000FA 7C               [ 4]  735 	ld	a, h
+      0000FB E6 3F            [ 7]  736 	and	a, #0x3F
+      0000FD FB               [ 4]  737 	ei
+      0000FE D3 99            [11]  738 	out	(0x99), a
+      000100 EB               [ 4]  739 	ex	de, hl
+      000101 FD 5E 00         [19]  740 	ld	e, 0(iy)
+      000104 FD 56 01         [19]  741 	ld	d, 1(iy)
+      000107 0E 98            [ 7]  742 	ld	c, #0x98
+      000109 43               [ 4]  743 	ld	b, e
+      00010A 1B               [ 6]  744 	dec	de
+      00010B 14               [ 4]  745 	inc	d
+      00010C                        746 	 rd16_loop_start:
+      00010C ED A2            [16]  747 	ini
+      00010E C2r0Cr01         [10]  748 	jp	nz, rd16_loop_start
+      000111 15               [ 4]  749 	dec	d
+      000112 C2r0Cr01         [10]  750 	jp	nz, rd16_loop_start
+      000115                        751 	 rd16_loop_end:
+                                    752 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:590: }
+      000115 E1               [10]  753 	pop	hl
+      000116 F1               [10]  754 	pop	af
+      000117 E9               [ 4]  755 	jp	(hl)
+                                    756 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:600: u8 VDP_Peek_16K(u16 dest) __NAKED __PRESERVES(b, c, d, e, iyl, iyh)
+                                    757 ;	---------------------------------
+                                    758 ; Function VDP_Peek_16K
+                                    759 ; ---------------------------------
+      000118                        760 _VDP_Peek_16K::
+                                    761 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:636: __endasm;
+      000118 7D               [ 4]  762 	ld	a, l
+      000119 F3               [ 4]  763 	di
+      00011A D3 99            [11]  764 	out	(0x99), a
+      00011C 7C               [ 4]  765 	ld	a, h
+      00011D E6 3F            [ 7]  766 	and	a, #0x3F
+      00011F D3 99            [11]  767 	out	(0x99), a
+      000121 29               [11]  768 	add	hl, hl
+      000122 FB               [ 4]  769 	ei
+      000123 DB 98            [11]  770 	in	a, (0x98)
+      000125 C9               [10]  771 	ret
+                                    772 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:637: }
+                                    773 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:645: void VDP_Poke_16K(u8 val, u16 dest) __PRESERVES(c, h, l, iyl, iyh)
+                                    774 ;	---------------------------------
+                                    775 ; Function VDP_Poke_16K
+                                    776 ; ---------------------------------
+      000126                        777 _VDP_Poke_16K::
+                                    778 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:682: __endasm;
+      000126 47               [ 4]  779 	ld	b, a
+      000127 7B               [ 4]  780 	ld	a, e
+      000128 F3               [ 4]  781 	di
+      000129 D3 99            [11]  782 	out	(0x99), a
+      00012B 7A               [ 4]  783 	ld	a, d
+      00012C E6 3F            [ 7]  784 	and	a, #0x3F
+      00012E F6 40            [ 7]  785 	or	a, #0x40
+      000130 D3 99            [11]  786 	out	(0x99), a
+      000132 13               [ 6]  787 	inc	de
+      000133 78               [ 4]  788 	ld	a, b
+      000134 FB               [ 4]  789 	ei
+      000135 D3 98            [11]  790 	out	(0x98), a
+                                    791 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:683: }
+      000137 C9               [10]  792 	ret
+                                    793 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1455: void VDP_Initialize()
+                                    794 ;	---------------------------------
+                                    795 ; Function VDP_Initialize
+                                    796 ; ---------------------------------
+      000138                        797 _VDP_Initialize::
+                                    798 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1463: __endasm;
+      000138 21 DF F3         [10]  799 	ld	hl, #0xF3DF
+      00013B 11r00r00         [10]  800 	ld	de, #_g_VDP_REGSAV+0
+      00013E 01 08 00         [10]  801 	ld	bc, #8
+      000141 ED B0            [21]  802 	ldir
+                                    803 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1486: g_VDPInitilized = TRUE;
+      000143 21r00r00         [10]  804 	ld	hl, #_g_VDPInitilized
+      000146 36 01            [10]  805 	ld	(hl), #0x01
+                                    806 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1488: }
+      000148 C9               [10]  807 	ret
+                                    808 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1496: void VDP_SetMode(const u8 mode)
+                                    809 ;	---------------------------------
+                                    810 ; Function VDP_SetMode
+                                    811 ; ---------------------------------
+      000149                        812 _VDP_SetMode::
+      000149 4F               [ 4]  813 	ld	c, a
+                                    814 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1499: if (!g_VDPInitilized)
+      00014A 3Ar00r00         [13]  815 	ld	a, (_g_VDPInitilized+0)
+      00014D B7               [ 4]  816 	or	a, a
+      00014E 20 05            [12]  817 	jr	NZ, 00102$
+                                    818 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1500: VDP_Initialize();
+      000150 C5               [11]  819 	push	bc
+      000151 CDr38r01         [17]  820 	call	_VDP_Initialize
+      000154 C1               [10]  821 	pop	bc
+      000155                        822 00102$:
+                                    823 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1507: g_VDP_Data.Mode = mode;
+      000155 21r1Cr00         [10]  824 	ld	hl, #_g_VDP_Data
+                                    825 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1508: switch (mode)
+      000158 79               [ 4]  826 	ld	a,c
+      000159 77               [ 7]  827 	ld	(hl),a
+      00015A B7               [ 4]  828 	or	a, a
+      00015B 28 10            [12]  829 	jr	Z, 00103$
+      00015D 79               [ 4]  830 	ld	a, c
+      00015E 3D               [ 4]  831 	dec	a
+      00015F 28 12            [12]  832 	jr	Z, 00104$
+      000161 79               [ 4]  833 	ld	a,c
+      000162 FE 02            [ 7]  834 	cp	a,#0x02
+      000164 28 13            [12]  835 	jr	Z, 00105$
+      000166 D6 03            [ 7]  836 	sub	a, #0x03
+      000168 28 15            [12]  837 	jr	Z, 00106$
+      00016A C3r82r01         [10]  838 	jp	00113$
+                                    839 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1515: case VDP_MODE_TEXT1:
+      00016D                        840 00103$:
+                                    841 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1516: VDP_SetModeText1();
+      00016D CDr29r00         [17]  842 	call	_VDP_SetModeText1
+                                    843 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1517: break;
+      000170 C3r82r01         [10]  844 	jp	00113$
+                                    845 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1522: case VDP_MODE_MULTICOLOR:
+      000173                        846 00104$:
+                                    847 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1523: VDP_SetModeMultiColor();
+      000173 CDr3Ar00         [17]  848 	call	_VDP_SetModeMultiColor
+                                    849 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1524: break;
+      000176 C3r82r01         [10]  850 	jp	00113$
+                                    851 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1529: case VDP_MODE_GRAPHIC1:
+      000179                        852 00105$:
+                                    853 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1530: VDP_SetModeGraphic1();
+      000179 CDr57r00         [17]  854 	call	_VDP_SetModeGraphic1
+                                    855 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1531: break;
+      00017C C3r82r01         [10]  856 	jp	00113$
+                                    857 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1536: case VDP_MODE_GRAPHIC2:
+      00017F                        858 00106$:
+                                    859 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1537: VDP_SetModeGraphic2();
+      00017F CDr79r00         [17]  860 	call	_VDP_SetModeGraphic2
+                                    861 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.h:710: inline void VDP_EnableDisplay(bool enable) { VDP_RegWriteBakMask(1, (u8)~R01_BL, enable ? R01_BL : 0); }
+      000182                        862 00113$:
+      000182 3E 40            [ 7]  863 	ld	a, #0x40
+      000184 F5               [11]  864 	push	af
+      000185 33               [ 6]  865 	inc	sp
+      000186 2E BF            [ 7]  866 	ld	l, #0xbf
+                                    867 ;	spillPairReg hl
+                                    868 ;	spillPairReg hl
+      000188 3E 01            [ 7]  869 	ld	a, #0x01
+      00018A CDr07r02         [17]  870 	call	_VDP_RegWriteBakMask
+                                    871 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.h:717: inline void VDP_EnableVBlank(bool enable) { VDP_RegWriteBakMask(1, (u8)~R01_IE0, enable ? R01_IE0 : 0); }
+      00018D 3E 20            [ 7]  872 	ld	a, #0x20
+      00018F F5               [11]  873 	push	af
+      000190 33               [ 6]  874 	inc	sp
+      000191 2E DF            [ 7]  875 	ld	l, #0xdf
+                                    876 ;	spillPairReg hl
+                                    877 ;	spillPairReg hl
+      000193 3E 01            [ 7]  878 	ld	a, #0x01
+      000195 CDr07r02         [17]  879 	call	_VDP_RegWriteBakMask
+                                    880 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1620: VDP_EnableVBlank(TRUE);
+                                    881 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1643: }
+      000198 C9               [10]  882 	ret
+                                    883 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1649: u8 VDP_GetVersion() __NAKED
+                                    884 ;	---------------------------------
+                                    885 ; Function VDP_GetVersion
+                                    886 ; ---------------------------------
+      000199                        887 _VDP_GetVersion::
+                                    888 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1718: __endasm;
+      000199                        889 	 VDP_GetVersionAsm:
+      000199 CDrB8r01         [17]  890 	call	VDP_IsTMS9918A
+      00019C C8               [11]  891 	ret	z
+      00019D 3E 01            [ 7]  892 	ld	a, #1
+      00019F F3               [ 4]  893 	di
+      0001A0 D3 99            [11]  894 	out	(0x99), a
+      0001A2 3E 8F            [ 7]  895 	ld	a, #(0x80 | 15)
+      0001A4 D3 99            [11]  896 	out	(0x99), a
+      0001A6 DB 99            [11]  897 	in	a, (0x99)
+      0001A8 E6 3E            [ 7]  898 	and	#0b00111110
+      0001AA 0F               [ 4]  899 	rrca
+      0001AB 08               [ 4]  900 	ex	af, af'					; '
+      0001AC AF               [ 4]  901 	xor	a
+      0001AD D3 99            [11]  902 	out	(0x99), a
+      0001AF 3E 8F            [ 7]  903 	ld	a, #(0x80 | 15)
+      0001B1 FB               [ 4]  904 	ei
+      0001B2 D3 99            [11]  905 	out	(0x99), a
+      0001B4 08               [ 4]  906 	ex	af, af'					; '
+      0001B5 C0               [11]  907 	ret	nz
+      0001B6 3C               [ 4]  908 	inc	a
+      0001B7 C9               [10]  909 	ret
+      0001B8                        910 	 VDP_IsTMS9918A:
+      0001B8 AF               [ 4]  911 	xor	a
+      0001B9 F3               [ 4]  912 	di
+      0001BA D3 99            [11]  913 	out	(0x99), a
+      0001BC 3E 8F            [ 7]  914 	ld	a, #(0x80 | 15)
+      0001BE D3 99            [11]  915 	out	(0x99), a
+      0001C0 DB 99            [11]  916 	in	a, (0x99)
+      0001C2                        917 	 VDP_IsTMS9918A_Wait:
+      0001C2 DB 99            [11]  918 	in	a,(0x99)
+      0001C4 A7               [ 4]  919 	and	a
+      0001C5 F2rC2r01         [10]  920 	jp	p, VDP_IsTMS9918A_Wait
+      0001C8 3E 02            [ 7]  921 	ld	a, #2
+      0001CA D3 99            [11]  922 	out	(0x99), a
+      0001CC 3E 8F            [ 7]  923 	ld	a, #(0x80 | 15)
+      0001CE D3 99            [11]  924 	out	(0x99), a
+      0001D0 DB 99            [11]  925 	in	a, (0x99)
+      0001D2 08               [ 4]  926 	ex	af, af'					; '
+      0001D3 AF               [ 4]  927 	xor	a
+      0001D4 D3 99            [11]  928 	out	(0x99), a
+      0001D6 3E 8F            [ 7]  929 	ld	a, #(0x80 | 15)
+      0001D8 D3 99            [11]  930 	out	(0x99), a
+      0001DA 3A E6 F3         [13]  931 	ld	a, (0xF3E6)
+      0001DD D3 99            [11]  932 	out	(0x99), a
+      0001DF 3E 87            [ 7]  933 	ld	a, #(0x80 | 7)
+      0001E1 FB               [ 4]  934 	ei
+      0001E2 D3 99            [11]  935 	out	(0x99), a
+      0001E4 08               [ 4]  936 	ex	af, af'					; '
+      0001E5 E6 40            [ 7]  937 	and	#0b01000000
+      0001E7 C9               [10]  938 	ret
+                                    939 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1719: }
+                                    940 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1727: void VDP_RegWrite(u8 reg, u8 value) __PRESERVES(b, c, d, e, iyl, iyh)
+                                    941 ;	---------------------------------
+                                    942 ; Function VDP_RegWrite
+                                    943 ; ---------------------------------
+      0001E8                        944 _VDP_RegWrite::
+                                    945 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1741: __endasm;
+      0001E8 67               [ 4]  946 	ld	h, a
+      0001E9 7D               [ 4]  947 	ld	a, l
+      0001EA F3               [ 4]  948 	di
+      0001EB D3 99            [11]  949 	out	(0x99), a
+      0001ED 7C               [ 4]  950 	ld	a, h
+      0001EE C6 80            [ 7]  951 	add	#0x80
+      0001F0 FB               [ 4]  952 	ei
+      0001F1 D3 99            [11]  953 	out	(0x99), a
+                                    954 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1742: }
+      0001F3 C9               [10]  955 	ret
+                                    956 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1750: void VDP_RegWriteBak(u8 reg, u8 value) __PRESERVES(d, e, iyl, iyh)
+                                    957 ;	---------------------------------
+                                    958 ; Function VDP_RegWriteBak
+                                    959 ; ---------------------------------
+      0001F4                        960 _VDP_RegWriteBak::
+                                    961 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1770: __endasm;
+      0001F4 4F               [ 4]  962 	ld	c, a
+      0001F5 7D               [ 4]  963 	ld	a, l
+      0001F6 06 00            [ 7]  964 	ld	b, #0
+      0001F8 21r00r00         [10]  965 	ld	hl, #_g_VDP_REGSAV
+      0001FB 09               [11]  966 	add	hl, bc
+      0001FC 77               [ 7]  967 	ld	(hl), a
+      0001FD F3               [ 4]  968 	di
+      0001FE D3 99            [11]  969 	out	(0x99), a
+      000200 79               [ 4]  970 	ld	a, c
+      000201 C6 80            [ 7]  971 	add	#0x80
+      000203 FB               [ 4]  972 	ei
+      000204 D3 99            [11]  973 	out	(0x99), a
+                                    974 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1771: }
+      000206 C9               [10]  975 	ret
+                                    976 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1780: void VDP_RegWriteBakMask(u8 reg, u8 mask, u8 flag)
+                                    977 ;	---------------------------------
+                                    978 ; Function VDP_RegWriteBakMask
+                                    979 ; ---------------------------------
+      000207                        980 _VDP_RegWriteBakMask::
+      000207 DD E5            [15]  981 	push	ix
+      000209 DD 21 00 00      [14]  982 	ld	ix,#0
+      00020D DD 39            [15]  983 	add	ix,sp
+      00020F 4F               [ 4]  984 	ld	c, a
+      000210 5D               [ 4]  985 	ld	e, l
+                                    986 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1782: u8 value = g_VDP_REGSAV[reg];
+      000211 21r00r00         [10]  987 	ld	hl, #_g_VDP_REGSAV+0
+      000214 06 00            [ 7]  988 	ld	b, #0x00
+      000216 09               [11]  989 	add	hl, bc
+      000217 7E               [ 7]  990 	ld	a, (hl)
+                                    991 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1783: value &= mask;
+      000218 A3               [ 4]  992 	and	a, e
+                                    993 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1784: value |= flag;
+      000219 DD B6 04         [19]  994 	or	a, 4 (ix)
+      00021C 6F               [ 4]  995 	ld	l, a
+                                    996 ;	spillPairReg hl
+                                    997 ;	spillPairReg hl
+                                    998 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1785: VDP_RegWriteBak(reg, value);
+      00021D 79               [ 4]  999 	ld	a, c
+      00021E CDrF4r01         [17] 1000 	call	_VDP_RegWriteBak
+                                   1001 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1786: }
+      000221 DD E1            [14] 1002 	pop	ix
+      000223 E1               [10] 1003 	pop	hl
+      000224 33               [ 6] 1004 	inc	sp
+      000225 E9               [ 4] 1005 	jp	(hl)
+                                   1006 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1790: u8 VDP_ReadDefaultStatus() __NAKED __PRESERVES(b, c, d, e, h, l, iyl, iyh)
+                                   1007 ;	---------------------------------
+                                   1008 ; Function VDP_ReadDefaultStatus
+                                   1009 ; ---------------------------------
+      000226                       1010 _VDP_ReadDefaultStatus::
+                                   1011 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1795: __endasm;
+      000226 DB 99            [11] 1012 	in	a, (0x99)
+      000228 C9               [10] 1013 	ret
+                                   1014 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1796: }
+                                   1015 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1813: void VDP_SetLayoutTable(VADDR addr)
+                                   1016 ;	---------------------------------
+                                   1017 ; Function VDP_SetLayoutTable
+                                   1018 ; ---------------------------------
+      000229                       1019 _VDP_SetLayoutTable::
+                                   1020 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1815: g_ScreenLayoutLow = (u16)addr;
+      000229 22r31r00         [16] 1021 	ld	(_g_ScreenLayoutLow), hl
+                                   1022 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1818: reg = (u8)(addr >> 10);
+      00022C 7C               [ 4] 1023 	ld	a, h
+      00022D 0F               [ 4] 1024 	rrca
+      00022E 0F               [ 4] 1025 	rrca
+      00022F E6 3F            [ 7] 1026 	and	a, #0x3f
+      000231 6F               [ 4] 1027 	ld	l, a
+                                   1028 ;	spillPairReg hl
+                                   1029 ;	spillPairReg hl
+      000232 26 00            [ 7] 1030 	ld	h, #0x00
+                                   1031 ;	spillPairReg hl
+                                   1032 ;	spillPairReg hl
+                                   1033 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1839: VDP_RegWrite(2, reg);
+      000234 3E 02            [ 7] 1034 	ld	a, #0x02
+                                   1035 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1844: }
+      000236 C3rE8r01         [10] 1036 	jp	_VDP_RegWrite
+                                   1037 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1848: void VDP_SetColorTable(VADDR addr)
+                                   1038 ;	---------------------------------
+                                   1039 ; Function VDP_SetColorTable
+                                   1040 ; ---------------------------------
+      000239                       1041 _VDP_SetColorTable::
+                                   1042 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1850: g_ScreenColorLow = (u16)addr;
+      000239 22r33r00         [16] 1043 	ld	(_g_ScreenColorLow), hl
+                                   1044 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1853: reg = (u8)(addr >> 6);
+      00023C CB 3C            [ 8] 1045 	srl	h
+      00023E CB 1D            [ 8] 1046 	rr	l
+      000240 CB 3C            [ 8] 1047 	srl	h
+      000242 CB 1D            [ 8] 1048 	rr	l
+      000244 CB 3C            [ 8] 1049 	srl	h
+      000246 CB 1D            [ 8] 1050 	rr	l
+      000248 CB 3C            [ 8] 1051 	srl	h
+      00024A CB 1D            [ 8] 1052 	rr	l
+      00024C CB 3C            [ 8] 1053 	srl	h
+      00024E CB 1D            [ 8] 1054 	rr	l
+      000250 CB 3C            [ 8] 1055 	srl	h
+      000252 CB 1D            [ 8] 1056 	rr	l
+      000254 4D               [ 4] 1057 	ld	c, l
+                                   1058 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1854: switch (g_VDP_Data.Mode)
+      000255 3Ar1Cr00         [13] 1059 	ld	a, (#_g_VDP_Data + 0)
+      000258 D6 03            [ 7] 1060 	sub	a, #0x03
+      00025A 20 04            [12] 1061 	jr	NZ, 00102$
+                                   1062 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1874: reg |= 0b1111111;
+      00025C 79               [ 4] 1063 	ld	a, c
+      00025D F6 7F            [ 7] 1064 	or	a, #0x7f
+      00025F 4F               [ 4] 1065 	ld	c, a
+                                   1066 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1876: };	
+      000260                       1067 00102$:
+                                   1068 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1877: VDP_RegWrite(3, reg);
+      000260 69               [ 4] 1069 	ld	l, c
+                                   1070 ;	spillPairReg hl
+                                   1071 ;	spillPairReg hl
+      000261 3E 03            [ 7] 1072 	ld	a, #0x03
+                                   1073 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1885: }
+      000263 C3rE8r01         [10] 1074 	jp	_VDP_RegWrite
+                                   1075 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1889: void VDP_SetPatternTable(VADDR addr)
+                                   1076 ;	---------------------------------
+                                   1077 ; Function VDP_SetPatternTable
+                                   1078 ; ---------------------------------
+      000266                       1079 _VDP_SetPatternTable::
+                                   1080 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1891: g_ScreenPatternLow = (u16)addr;
+      000266 22r35r00         [16] 1081 	ld	(_g_ScreenPatternLow), hl
+                                   1082 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1894: reg = (u8)(addr >> 11);
+      000269 7C               [ 4] 1083 	ld	a, h
+      00026A 0F               [ 4] 1084 	rrca
+      00026B 0F               [ 4] 1085 	rrca
+      00026C 0F               [ 4] 1086 	rrca
+      00026D E6 1F            [ 7] 1087 	and	a, #0x1f
+      00026F 4F               [ 4] 1088 	ld	c, a
+      000270 06 00            [ 7] 1089 	ld	b, #0x00
+                                   1090 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1895: switch (g_VDP_Data.Mode)
+      000272 3Ar1Cr00         [13] 1091 	ld	a, (#_g_VDP_Data + 0)
+      000275 D6 03            [ 7] 1092 	sub	a, #0x03
+      000277 20 04            [12] 1093 	jr	NZ, 00102$
+                                   1094 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1909: reg |= 0b11;
+      000279 79               [ 4] 1095 	ld	a, c
+      00027A F6 03            [ 7] 1096 	or	a, #0x03
+      00027C 4F               [ 4] 1097 	ld	c, a
+                                   1098 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1910: };
+      00027D                       1099 00102$:
+                                   1100 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1911: VDP_RegWrite(4, reg);
+      00027D 69               [ 4] 1101 	ld	l, c
+                                   1102 ;	spillPairReg hl
+                                   1103 ;	spillPairReg hl
+      00027E 3E 04            [ 7] 1104 	ld	a, #0x04
+                                   1105 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1916: }
+      000280 C3rE8r01         [10] 1106 	jp	_VDP_RegWrite
+                                   1107 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1930: void VDP_SetSpriteAttributeTable(VADDR addr)
+                                   1108 ;	---------------------------------
+                                   1109 ; Function VDP_SetSpriteAttributeTable
+                                   1110 ; ---------------------------------
+      000283                       1111 _VDP_SetSpriteAttributeTable::
+      000283 EB               [ 4] 1112 	ex	de, hl
+                                   1113 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1932: g_SpriteAttributeLow = (u16)addr;
+      000284 ED 53r37r00      [20] 1114 	ld	(_g_SpriteAttributeLow), de
+                                   1115 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1935: reg = (u8)(addr >> 7);
+      000288 6B               [ 4] 1116 	ld	l, e
+                                   1117 ;	spillPairReg hl
+                                   1118 ;	spillPairReg hl
+      000289 4A               [ 4] 1119 	ld	c, d
+      00028A CB 39            [ 8] 1120 	srl	c
+      00028C CB 1D            [ 8] 1121 	rr	l
+      00028E CB 39            [ 8] 1122 	srl	c
+      000290 CB 1D            [ 8] 1123 	rr	l
+      000292 CB 39            [ 8] 1124 	srl	c
+      000294 CB 1D            [ 8] 1125 	rr	l
+      000296 CB 39            [ 8] 1126 	srl	c
+      000298 CB 1D            [ 8] 1127 	rr	l
+      00029A CB 39            [ 8] 1128 	srl	c
+      00029C CB 1D            [ 8] 1129 	rr	l
+      00029E CB 39            [ 8] 1130 	srl	c
+      0002A0 CB 1D            [ 8] 1131 	rr	l
+      0002A2 CB 39            [ 8] 1132 	srl	c
+      0002A4 CB 1D            [ 8] 1133 	rr	l
+                                   1134 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1958: VDP_RegWrite(5, reg);
+      0002A6 3E 05            [ 7] 1135 	ld	a, #0x05
+      0002A8 CDrE8r01         [17] 1136 	call	_VDP_RegWrite
+                                   1137 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1967: addr -= 0x200;
+                                   1138 ;	spillPairReg hl
+                                   1139 ;	spillPairReg hl
+      0002AB 6B               [ 4] 1140 	ld	l, e
+      0002AC 7A               [ 4] 1141 	ld	a,d
+      0002AD C6 FE            [ 7] 1142 	add	a,#0xfe
+      0002AF 67               [ 4] 1143 	ld	h, a
+                                   1144 ;	spillPairReg hl
+                                   1145 ;	spillPairReg hl
+      0002B0 22r3Br00         [16] 1146 	ld	(_g_SpriteColorLow), hl
+                                   1147 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1968: g_SpriteColorLow = (u16)addr;
+                                   1148 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1972: }
+      0002B3 C9               [10] 1149 	ret
+                                   1150 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1978: void VDP_SetSpritePatternTable(VADDR addr)
+                                   1151 ;	---------------------------------
+                                   1152 ; Function VDP_SetSpritePatternTable
+                                   1153 ; ---------------------------------
+      0002B4                       1154 _VDP_SetSpritePatternTable::
+                                   1155 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1980: g_SpritePatternLow  = (u16)addr;
+      0002B4 22r39r00         [16] 1156 	ld	(_g_SpritePatternLow), hl
+                                   1157 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1985: u8 reg = (u8)(addr >> 11);
+      0002B7 7C               [ 4] 1158 	ld	a, h
+      0002B8 0F               [ 4] 1159 	rrca
+      0002B9 0F               [ 4] 1160 	rrca
+      0002BA 0F               [ 4] 1161 	rrca
+      0002BB E6 1F            [ 7] 1162 	and	a, #0x1f
+      0002BD 6F               [ 4] 1163 	ld	l, a
+                                   1164 ;	spillPairReg hl
+                                   1165 ;	spillPairReg hl
+      0002BE 26 00            [ 7] 1166 	ld	h, #0x00
+                                   1167 ;	spillPairReg hl
+                                   1168 ;	spillPairReg hl
+                                   1169 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1986: VDP_RegWrite(6, reg);
+      0002C0 3E 06            [ 7] 1170 	ld	a, #0x06
+                                   1171 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1988: }
+      0002C2 C3rE8r01         [10] 1172 	jp	_VDP_RegWrite
+                                   1173 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1992: void VDP_LoadSpritePattern(const u8* addr, u8 index, u8 count)
+                                   1174 ;	---------------------------------
+                                   1175 ; Function VDP_LoadSpritePattern
+                                   1176 ; ---------------------------------
+      0002C5                       1177 _VDP_LoadSpritePattern::
+      0002C5 DD E5            [15] 1178 	push	ix
+      0002C7 DD 21 00 00      [14] 1179 	ld	ix,#0
+      0002CB DD 39            [15] 1180 	add	ix,sp
+      0002CD 4D               [ 4] 1181 	ld	c, l
+      0002CE 44               [ 4] 1182 	ld	b, h
+                                   1183 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1994: u16 low = g_SpritePatternLow;
+      0002CF ED 5Br39r00      [20] 1184 	ld	de, (_g_SpritePatternLow)
+                                   1185 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1995: low += (index * 8);
+      0002D3 DD 6E 04         [19] 1186 	ld	l, 4 (ix)
+                                   1187 ;	spillPairReg hl
+                                   1188 ;	spillPairReg hl
+      0002D6 26 00            [ 7] 1189 	ld	h, #0x00
+                                   1190 ;	spillPairReg hl
+                                   1191 ;	spillPairReg hl
+      0002D8 29               [11] 1192 	add	hl, hl
+      0002D9 29               [11] 1193 	add	hl, hl
+      0002DA 29               [11] 1194 	add	hl, hl
+      0002DB 19               [11] 1195 	add	hl, de
+      0002DC EB               [ 4] 1196 	ex	de, hl
+                                   1197 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1996: VDP_WriteVRAM(addr, low, g_SpritePatternHigh, count * 8);
+      0002DD DD 6E 05         [19] 1198 	ld	l, 5 (ix)
+                                   1199 ;	spillPairReg hl
+                                   1200 ;	spillPairReg hl
+      0002E0 26 00            [ 7] 1201 	ld	h, #0x00
+                                   1202 ;	spillPairReg hl
+                                   1203 ;	spillPairReg hl
+      0002E2 29               [11] 1204 	add	hl, hl
+      0002E3 29               [11] 1205 	add	hl, hl
+      0002E4 29               [11] 1206 	add	hl, hl
+      0002E5 E5               [11] 1207 	push	hl
+      0002E6 69               [ 4] 1208 	ld	l, c
+                                   1209 ;	spillPairReg hl
+                                   1210 ;	spillPairReg hl
+      0002E7 60               [ 4] 1211 	ld	h, b
+                                   1212 ;	spillPairReg hl
+                                   1213 ;	spillPairReg hl
+      0002E8 CDrA8r00         [17] 1214 	call	_VDP_WriteVRAM_16K
+                                   1215 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:1997: }
+      0002EB DD E1            [14] 1216 	pop	ix
+      0002ED E1               [10] 1217 	pop	hl
+      0002EE F1               [10] 1218 	pop	af
+      0002EF E9               [ 4] 1219 	jp	(hl)
+                                   1220 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2001: void VDP_SetSpriteSM1(u8 index, u8 x, u8 y, u8 shape, u8 color)
+                                   1221 ;	---------------------------------
+                                   1222 ; Function VDP_SetSpriteSM1
+                                   1223 ; ---------------------------------
+      0002F0                       1224 _VDP_SetSpriteSM1::
+      0002F0 DD E5            [15] 1225 	push	ix
+      0002F2 DD 21 00 00      [14] 1226 	ld	ix,#0
+      0002F6 DD 39            [15] 1227 	add	ix,sp
+      0002F8 5F               [ 4] 1228 	ld	e, a
+      0002F9 4D               [ 4] 1229 	ld	c, l
+                                   1230 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2003: g_VDP_Sprite.Y = y;				// Y coordinate on screen (all lower priority sprite will be disable if equal to 216 or 0xD0)
+      0002FA 21r2Dr00         [10] 1231 	ld	hl, #_g_VDP_Sprite
+      0002FD DD 7E 04         [19] 1232 	ld	a, 4 (ix)
+      000300 77               [ 7] 1233 	ld	(hl), a
+                                   1234 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2004: g_VDP_Sprite.X = x;				// X coordinate of the sprite
+      000301 21r2Er00         [10] 1235 	ld	hl, #(_g_VDP_Sprite + 1)
+      000304 71               [ 7] 1236 	ld	(hl), c
+                                   1237 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2005: g_VDP_Sprite.Pattern = shape;	// Pattern index
+      000305 21r2Fr00         [10] 1238 	ld	hl, #(_g_VDP_Sprite + 2)
+      000308 DD 7E 05         [19] 1239 	ld	a, 5 (ix)
+      00030B 77               [ 7] 1240 	ld	(hl), a
+                                   1241 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2006: g_VDP_Sprite.Color = color;		// Color index (Sprite Mode 1 only) + Early clock
+      00030C 21r30r00         [10] 1242 	ld	hl, #(_g_VDP_Sprite + 3)
+      00030F DD 7E 06         [19] 1243 	ld	a, 6 (ix)
+      000312 77               [ 7] 1244 	ld	(hl), a
+                                   1245 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2008: u16 low = g_SpriteAttributeLow;
+      000313 ED 4Br37r00      [20] 1246 	ld	bc, (_g_SpriteAttributeLow)
+                                   1247 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2009: low += (index * 4);
+      000317 6B               [ 4] 1248 	ld	l, e
+                                   1249 ;	spillPairReg hl
+                                   1250 ;	spillPairReg hl
+      000318 26 00            [ 7] 1251 	ld	h, #0x00
+                                   1252 ;	spillPairReg hl
+                                   1253 ;	spillPairReg hl
+      00031A 29               [11] 1254 	add	hl, hl
+      00031B 29               [11] 1255 	add	hl, hl
+      00031C 09               [11] 1256 	add	hl, bc
+      00031D EB               [ 4] 1257 	ex	de, hl
+                                   1258 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2010: VDP_WriteVRAM((u8*)&g_VDP_Sprite, low, g_SpriteAttributeHigh, 4);
+      00031E 21 04 00         [10] 1259 	ld	hl, #0x0004
+      000321 E5               [11] 1260 	push	hl
+      000322 21r2Dr00         [10] 1261 	ld	hl, #_g_VDP_Sprite
+      000325 CDrA8r00         [17] 1262 	call	_VDP_WriteVRAM_16K
+                                   1263 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2011: }
+      000328 DD E1            [14] 1264 	pop	ix
+      00032A E1               [10] 1265 	pop	hl
+      00032B F1               [10] 1266 	pop	af
+      00032C 33               [ 6] 1267 	inc	sp
+      00032D E9               [ 4] 1268 	jp	(hl)
+                                   1269 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2015: void VDP_SetSprite(u8 index, u8 x, u8 y, u8 shape)
+                                   1270 ;	---------------------------------
+                                   1271 ; Function VDP_SetSprite
+                                   1272 ; ---------------------------------
+      00032E                       1273 _VDP_SetSprite::
+      00032E DD E5            [15] 1274 	push	ix
+      000330 DD 21 00 00      [14] 1275 	ld	ix,#0
+      000334 DD 39            [15] 1276 	add	ix,sp
+      000336 5F               [ 4] 1277 	ld	e, a
+      000337 4D               [ 4] 1278 	ld	c, l
+                                   1279 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2017: g_VDP_Sprite.Y = y;				// Y coordinate on screen (all lower priority sprite will be disable if equal to 216 or 0xD0)
+      000338 21r2Dr00         [10] 1280 	ld	hl, #_g_VDP_Sprite
+      00033B DD 7E 04         [19] 1281 	ld	a, 4 (ix)
+      00033E 77               [ 7] 1282 	ld	(hl), a
+                                   1283 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2018: g_VDP_Sprite.X = x;				// X coordinate of the sprite
+      00033F 21r2Er00         [10] 1284 	ld	hl, #(_g_VDP_Sprite + 1)
+      000342 71               [ 7] 1285 	ld	(hl), c
+                                   1286 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2019: g_VDP_Sprite.Pattern = shape;	// Pattern index
+      000343 21r2Fr00         [10] 1287 	ld	hl, #(_g_VDP_Sprite + 2)
+      000346 DD 7E 05         [19] 1288 	ld	a, 5 (ix)
+      000349 77               [ 7] 1289 	ld	(hl), a
+                                   1290 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2021: u16 low = g_SpriteAttributeLow;
+      00034A ED 4Br37r00      [20] 1291 	ld	bc, (_g_SpriteAttributeLow)
+                                   1292 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2022: low += (index * 4);
+      00034E 6B               [ 4] 1293 	ld	l, e
+                                   1294 ;	spillPairReg hl
+                                   1295 ;	spillPairReg hl
+      00034F 26 00            [ 7] 1296 	ld	h, #0x00
+                                   1297 ;	spillPairReg hl
+                                   1298 ;	spillPairReg hl
+      000351 29               [11] 1299 	add	hl, hl
+      000352 29               [11] 1300 	add	hl, hl
+      000353 09               [11] 1301 	add	hl, bc
+      000354 EB               [ 4] 1302 	ex	de, hl
+                                   1303 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2023: VDP_WriteVRAM((u8*)&g_VDP_Sprite, low, g_SpriteAttributeHigh, 3);
+      000355 21 03 00         [10] 1304 	ld	hl, #0x0003
+      000358 E5               [11] 1305 	push	hl
+      000359 21r2Dr00         [10] 1306 	ld	hl, #_g_VDP_Sprite
+      00035C CDrA8r00         [17] 1307 	call	_VDP_WriteVRAM_16K
+                                   1308 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2024: }
+      00035F DD E1            [14] 1309 	pop	ix
+      000361 E1               [10] 1310 	pop	hl
+      000362 F1               [10] 1311 	pop	af
+      000363 E9               [ 4] 1312 	jp	(hl)
+                                   1313 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2062: void VDP_SetSpritePosition(u8 index, u8 x, u8 y)
+                                   1314 ;	---------------------------------
+                                   1315 ; Function VDP_SetSpritePosition
+                                   1316 ; ---------------------------------
+      000364                       1317 _VDP_SetSpritePosition::
+      000364 DD E5            [15] 1318 	push	ix
+      000366 DD 21 00 00      [14] 1319 	ld	ix,#0
+      00036A DD 39            [15] 1320 	add	ix,sp
+      00036C 5F               [ 4] 1321 	ld	e, a
+      00036D 4D               [ 4] 1322 	ld	c, l
+                                   1323 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2064: g_VDP_Sprite.Y = y;				// Y coordinate on screen (all lower priority sprite will be disable if equal to 216 or 0xD0)
+      00036E 21r2Dr00         [10] 1324 	ld	hl, #_g_VDP_Sprite
+      000371 DD 7E 04         [19] 1325 	ld	a, 4 (ix)
+      000374 77               [ 7] 1326 	ld	(hl), a
+                                   1327 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2065: g_VDP_Sprite.X = x;				// X coordinate of the sprite
+      000375 21r2Er00         [10] 1328 	ld	hl, #(_g_VDP_Sprite + 1)
+      000378 71               [ 7] 1329 	ld	(hl), c
+                                   1330 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2067: u16 low = g_SpriteAttributeLow;
+      000379 ED 4Br37r00      [20] 1331 	ld	bc, (_g_SpriteAttributeLow)
+                                   1332 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2068: low += (index * 4);
+      00037D 6B               [ 4] 1333 	ld	l, e
+                                   1334 ;	spillPairReg hl
+                                   1335 ;	spillPairReg hl
+      00037E 26 00            [ 7] 1336 	ld	h, #0x00
+                                   1337 ;	spillPairReg hl
+                                   1338 ;	spillPairReg hl
+      000380 29               [11] 1339 	add	hl, hl
+      000381 29               [11] 1340 	add	hl, hl
+      000382 09               [11] 1341 	add	hl, bc
+      000383 EB               [ 4] 1342 	ex	de, hl
+                                   1343 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2069: VDP_WriteVRAM((u8*)&g_VDP_Sprite, low, g_SpriteAttributeHigh, 2);
+      000384 21 02 00         [10] 1344 	ld	hl, #0x0002
+      000387 E5               [11] 1345 	push	hl
+      000388 21r2Dr00         [10] 1346 	ld	hl, #_g_VDP_Sprite
+      00038B CDrA8r00         [17] 1347 	call	_VDP_WriteVRAM_16K
+                                   1348 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2070: }
+      00038E DD E1            [14] 1349 	pop	ix
+      000390 E1               [10] 1350 	pop	hl
+      000391 33               [ 6] 1351 	inc	sp
+      000392 E9               [ 4] 1352 	jp	(hl)
+                                   1353 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2074: void VDP_SetSpritePositionX(u8 index, u8 x)
+                                   1354 ;	---------------------------------
+                                   1355 ; Function VDP_SetSpritePositionX
+                                   1356 ; ---------------------------------
+      000393                       1357 _VDP_SetSpritePositionX::
+      000393 47               [ 4] 1358 	ld	b, a
+      000394 4D               [ 4] 1359 	ld	c, l
+                                   1360 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2076: u16 low = g_SpriteAttributeLow;
+      000395 ED 5Br37r00      [20] 1361 	ld	de, (_g_SpriteAttributeLow)
+                                   1362 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2077: low += (index * 4);
+      000399 68               [ 4] 1363 	ld	l, b
+                                   1364 ;	spillPairReg hl
+                                   1365 ;	spillPairReg hl
+      00039A 26 00            [ 7] 1366 	ld	h, #0x00
+                                   1367 ;	spillPairReg hl
+                                   1368 ;	spillPairReg hl
+      00039C 29               [11] 1369 	add	hl, hl
+      00039D 29               [11] 1370 	add	hl, hl
+      00039E 19               [11] 1371 	add	hl, de
+      00039F EB               [ 4] 1372 	ex	de, hl
+                                   1373 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2078: VDP_Poke(x, ++low, g_SpriteAttributeHigh);
+      0003A0 13               [ 6] 1374 	inc	de
+      0003A1 79               [ 4] 1375 	ld	a, c
+                                   1376 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2079: }
+      0003A2 C3r26r01         [10] 1377 	jp	_VDP_Poke_16K
+                                   1378 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2083: void VDP_SetSpritePositionY(u8 index, u8 y)
+                                   1379 ;	---------------------------------
+                                   1380 ; Function VDP_SetSpritePositionY
+                                   1381 ; ---------------------------------
+      0003A5                       1382 _VDP_SetSpritePositionY::
+      0003A5 47               [ 4] 1383 	ld	b, a
+      0003A6 4D               [ 4] 1384 	ld	c, l
+                                   1385 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2085: u16 low = g_SpriteAttributeLow;
+      0003A7 ED 5Br37r00      [20] 1386 	ld	de, (_g_SpriteAttributeLow)
+                                   1387 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2086: low += (index * 4);
+      0003AB 68               [ 4] 1388 	ld	l, b
+                                   1389 ;	spillPairReg hl
+                                   1390 ;	spillPairReg hl
+      0003AC 26 00            [ 7] 1391 	ld	h, #0x00
+                                   1392 ;	spillPairReg hl
+                                   1393 ;	spillPairReg hl
+      0003AE 29               [11] 1394 	add	hl, hl
+      0003AF 29               [11] 1395 	add	hl, hl
+      0003B0 19               [11] 1396 	add	hl, de
+      0003B1 EB               [ 4] 1397 	ex	de, hl
+                                   1398 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2087: VDP_Poke(y, low, g_SpriteAttributeHigh);
+      0003B2 79               [ 4] 1399 	ld	a, c
+                                   1400 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2088: }
+      0003B3 C3r26r01         [10] 1401 	jp	_VDP_Poke_16K
+                                   1402 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2092: void VDP_SetSpritePattern(u8 index, u8 shape)
+                                   1403 ;	---------------------------------
+                                   1404 ; Function VDP_SetSpritePattern
+                                   1405 ; ---------------------------------
+      0003B6                       1406 _VDP_SetSpritePattern::
+      0003B6 47               [ 4] 1407 	ld	b, a
+      0003B7 4D               [ 4] 1408 	ld	c, l
+                                   1409 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2094: u16 low = g_SpriteAttributeLow + 2;
+      0003B8 ED 5Br37r00      [20] 1410 	ld	de, (_g_SpriteAttributeLow)
+      0003BC 13               [ 6] 1411 	inc	de
+      0003BD 13               [ 6] 1412 	inc	de
+                                   1413 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2095: low += (index * 4);
+      0003BE 68               [ 4] 1414 	ld	l, b
+                                   1415 ;	spillPairReg hl
+                                   1416 ;	spillPairReg hl
+      0003BF 26 00            [ 7] 1417 	ld	h, #0x00
+                                   1418 ;	spillPairReg hl
+                                   1419 ;	spillPairReg hl
+      0003C1 29               [11] 1420 	add	hl, hl
+      0003C2 29               [11] 1421 	add	hl, hl
+      0003C3 19               [11] 1422 	add	hl, de
+      0003C4 EB               [ 4] 1423 	ex	de, hl
+                                   1424 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2096: VDP_Poke(shape, low, g_SpriteAttributeHigh);
+      0003C5 79               [ 4] 1425 	ld	a, c
+                                   1426 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2097: }
+      0003C6 C3r26r01         [10] 1427 	jp	_VDP_Poke_16K
+                                   1428 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2101: void VDP_SetSpriteColorSM1(u8 index, u8 color)
+                                   1429 ;	---------------------------------
+                                   1430 ; Function VDP_SetSpriteColorSM1
+                                   1431 ; ---------------------------------
+      0003C9                       1432 _VDP_SetSpriteColorSM1::
+      0003C9 47               [ 4] 1433 	ld	b, a
+      0003CA 4D               [ 4] 1434 	ld	c, l
+                                   1435 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2103: u16 low = g_SpriteAttributeLow + 3;
+      0003CB ED 5Br37r00      [20] 1436 	ld	de, (_g_SpriteAttributeLow)
+      0003CF 13               [ 6] 1437 	inc	de
+      0003D0 13               [ 6] 1438 	inc	de
+      0003D1 13               [ 6] 1439 	inc	de
+                                   1440 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2104: low += (index * 4);
+      0003D2 68               [ 4] 1441 	ld	l, b
+                                   1442 ;	spillPairReg hl
+                                   1443 ;	spillPairReg hl
+      0003D3 26 00            [ 7] 1444 	ld	h, #0x00
+                                   1445 ;	spillPairReg hl
+                                   1446 ;	spillPairReg hl
+      0003D5 29               [11] 1447 	add	hl, hl
+      0003D6 29               [11] 1448 	add	hl, hl
+      0003D7 19               [11] 1449 	add	hl, de
+      0003D8 EB               [ 4] 1450 	ex	de, hl
+                                   1451 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2105: VDP_Poke(color, low, g_SpriteAttributeHigh);
+      0003D9 79               [ 4] 1452 	ld	a, c
+                                   1453 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2106: }
+      0003DA C3r26r01         [10] 1454 	jp	_VDP_Poke_16K
+                                   1455 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2139: void VDP_DisableSpritesFrom(u8 index)
+                                   1456 ;	---------------------------------
+                                   1457 ; Function VDP_DisableSpritesFrom
+                                   1458 ; ---------------------------------
+      0003DD                       1459 _VDP_DisableSpritesFrom::
+      0003DD 4F               [ 4] 1460 	ld	c, a
+                                   1461 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2146: VDP_SetSpritePositionY(index, y);
+      0003DE 2E D0            [ 7] 1462 	ld	l, #0xd0
+                                   1463 ;	spillPairReg hl
+                                   1464 ;	spillPairReg hl
+      0003E0 79               [ 4] 1465 	ld	a, c
+                                   1466 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2147: }
+      0003E1 C3rA5r03         [10] 1467 	jp	_VDP_SetSpritePositionY
+                                   1468 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2213: void VDP_LoadPattern_GM2(const u8* src, u8 count, u8 offset)
+                                   1469 ;	---------------------------------
+                                   1470 ; Function VDP_LoadPattern_GM2
+                                   1471 ; ---------------------------------
+      0003E4                       1472 _VDP_LoadPattern_GM2::
+      0003E4 DD E5            [15] 1473 	push	ix
+      0003E6 DD 21 00 00      [14] 1474 	ld	ix,#0
+      0003EA DD 39            [15] 1475 	add	ix,sp
+      0003EC 4D               [ 4] 1476 	ld	c, l
+      0003ED 44               [ 4] 1477 	ld	b, h
+                                   1478 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2215: u16 cnt = count == 0 ? 256 * 8 : count * 8;
+      0003EE DD 7E 04         [19] 1479 	ld	a, 4 (ix)
+      0003F1 B7               [ 4] 1480 	or	a, a
+      0003F2 20 06            [12] 1481 	jr	NZ, 00103$
+      0003F4 21 00 08         [10] 1482 	ld	hl, #0x0800
+      0003F7 C3r02r04         [10] 1483 	jp	00104$
+      0003FA                       1484 00103$:
+      0003FA DD 6E 04         [19] 1485 	ld	l, 4 (ix)
+                                   1486 ;	spillPairReg hl
+                                   1487 ;	spillPairReg hl
+      0003FD 26 00            [ 7] 1488 	ld	h, #0x00
+                                   1489 ;	spillPairReg hl
+                                   1490 ;	spillPairReg hl
+      0003FF 29               [11] 1491 	add	hl, hl
+      000400 29               [11] 1492 	add	hl, hl
+      000401 29               [11] 1493 	add	hl, hl
+      000402                       1494 00104$:
+      000402 E5               [11] 1495 	push	hl
+      000403 FD E1            [14] 1496 	pop	iy
+                                   1497 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2216: u16 dst = g_ScreenPatternLow + (offset * 8);
+      000405 DD 6E 05         [19] 1498 	ld	l, 5 (ix)
+                                   1499 ;	spillPairReg hl
+                                   1500 ;	spillPairReg hl
+      000408 26 00            [ 7] 1501 	ld	h, #0x00
+                                   1502 ;	spillPairReg hl
+                                   1503 ;	spillPairReg hl
+      00040A 29               [11] 1504 	add	hl, hl
+      00040B 29               [11] 1505 	add	hl, hl
+      00040C 29               [11] 1506 	add	hl, hl
+      00040D ED 5Br35r00      [20] 1507 	ld	de, (_g_ScreenPatternLow)
+      000411 19               [11] 1508 	add	hl, de
+                                   1509 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2217: VDP_WriteVRAM(src, dst, g_ScreenPatternHigh, cnt);
+      000412 E5               [11] 1510 	push	hl
+      000413 C5               [11] 1511 	push	bc
+      000414 FD E5            [15] 1512 	push	iy
+      000416 FD E5            [15] 1513 	push	iy
+      000418 EB               [ 4] 1514 	ex	de,hl
+      000419 69               [ 4] 1515 	ld	l, c
+                                   1516 ;	spillPairReg hl
+                                   1517 ;	spillPairReg hl
+      00041A 60               [ 4] 1518 	ld	h, b
+                                   1519 ;	spillPairReg hl
+                                   1520 ;	spillPairReg hl
+      00041B CDrA8r00         [17] 1521 	call	_VDP_WriteVRAM_16K
+      00041E FD E1            [14] 1522 	pop	iy
+      000420 C1               [10] 1523 	pop	bc
+      000421 E1               [10] 1524 	pop	hl
+                                   1525 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2218: dst += 0x800;
+      000422 7C               [ 4] 1526 	ld	a, h
+      000423 C6 08            [ 7] 1527 	add	a, #0x08
+      000425 67               [ 4] 1528 	ld	h, a
+                                   1529 ;	spillPairReg hl
+                                   1530 ;	spillPairReg hl
+                                   1531 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2219: VDP_WriteVRAM(src, dst, g_ScreenPatternHigh, cnt);
+      000426 E5               [11] 1532 	push	hl
+      000427 C5               [11] 1533 	push	bc
+      000428 FD E5            [15] 1534 	push	iy
+      00042A FD E5            [15] 1535 	push	iy
+      00042C EB               [ 4] 1536 	ex	de,hl
+      00042D 69               [ 4] 1537 	ld	l, c
+                                   1538 ;	spillPairReg hl
+                                   1539 ;	spillPairReg hl
+      00042E 60               [ 4] 1540 	ld	h, b
+                                   1541 ;	spillPairReg hl
+                                   1542 ;	spillPairReg hl
+      00042F CDrA8r00         [17] 1543 	call	_VDP_WriteVRAM_16K
+      000432 FD E1            [14] 1544 	pop	iy
+      000434 C1               [10] 1545 	pop	bc
+      000435 E1               [10] 1546 	pop	hl
+                                   1547 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2220: dst += 0x800;
+      000436 5D               [ 4] 1548 	ld	e, l
+      000437 7C               [ 4] 1549 	ld	a, h
+      000438 C6 08            [ 7] 1550 	add	a, #0x08
+      00043A 57               [ 4] 1551 	ld	d, a
+                                   1552 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2221: VDP_WriteVRAM(src, dst, g_ScreenPatternHigh, cnt);
+      00043B FD E5            [15] 1553 	push	iy
+      00043D 69               [ 4] 1554 	ld	l, c
+                                   1555 ;	spillPairReg hl
+                                   1556 ;	spillPairReg hl
+      00043E 60               [ 4] 1557 	ld	h, b
+                                   1558 ;	spillPairReg hl
+                                   1559 ;	spillPairReg hl
+      00043F CDrA8r00         [17] 1560 	call	_VDP_WriteVRAM_16K
+                                   1561 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2222: }
+      000442 DD E1            [14] 1562 	pop	ix
+      000444 E1               [10] 1563 	pop	hl
+      000445 F1               [10] 1564 	pop	af
+      000446 E9               [ 4] 1565 	jp	(hl)
+                                   1566 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2226: void VDP_LoadColor_GM2(const u8* src, u8 count, u8 offset)
+                                   1567 ;	---------------------------------
+                                   1568 ; Function VDP_LoadColor_GM2
+                                   1569 ; ---------------------------------
+      000447                       1570 _VDP_LoadColor_GM2::
+      000447 DD E5            [15] 1571 	push	ix
+      000449 DD 21 00 00      [14] 1572 	ld	ix,#0
+      00044D DD 39            [15] 1573 	add	ix,sp
+      00044F 4D               [ 4] 1574 	ld	c, l
+      000450 44               [ 4] 1575 	ld	b, h
+                                   1576 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2228: u16 cnt = count == 0 ? 256 * 8 : count * 8;
+      000451 DD 7E 04         [19] 1577 	ld	a, 4 (ix)
+      000454 B7               [ 4] 1578 	or	a, a
+      000455 20 06            [12] 1579 	jr	NZ, 00103$
+      000457 21 00 08         [10] 1580 	ld	hl, #0x0800
+      00045A C3r65r04         [10] 1581 	jp	00104$
+      00045D                       1582 00103$:
+      00045D DD 6E 04         [19] 1583 	ld	l, 4 (ix)
+                                   1584 ;	spillPairReg hl
+                                   1585 ;	spillPairReg hl
+      000460 26 00            [ 7] 1586 	ld	h, #0x00
+                                   1587 ;	spillPairReg hl
+                                   1588 ;	spillPairReg hl
+      000462 29               [11] 1589 	add	hl, hl
+      000463 29               [11] 1590 	add	hl, hl
+      000464 29               [11] 1591 	add	hl, hl
+      000465                       1592 00104$:
+      000465 E5               [11] 1593 	push	hl
+      000466 FD E1            [14] 1594 	pop	iy
+                                   1595 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2229: u16 dst = g_ScreenColorLow + (offset * 8);
+      000468 DD 6E 05         [19] 1596 	ld	l, 5 (ix)
+                                   1597 ;	spillPairReg hl
+                                   1598 ;	spillPairReg hl
+      00046B 26 00            [ 7] 1599 	ld	h, #0x00
+                                   1600 ;	spillPairReg hl
+                                   1601 ;	spillPairReg hl
+      00046D 29               [11] 1602 	add	hl, hl
+      00046E 29               [11] 1603 	add	hl, hl
+      00046F 29               [11] 1604 	add	hl, hl
+      000470 ED 5Br33r00      [20] 1605 	ld	de, (_g_ScreenColorLow)
+      000474 19               [11] 1606 	add	hl, de
+                                   1607 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2230: VDP_WriteVRAM(src, dst, g_ScreenColorHigh, cnt);
+      000475 E5               [11] 1608 	push	hl
+      000476 C5               [11] 1609 	push	bc
+      000477 FD E5            [15] 1610 	push	iy
+      000479 FD E5            [15] 1611 	push	iy
+      00047B EB               [ 4] 1612 	ex	de,hl
+      00047C 69               [ 4] 1613 	ld	l, c
+                                   1614 ;	spillPairReg hl
+                                   1615 ;	spillPairReg hl
+      00047D 60               [ 4] 1616 	ld	h, b
+                                   1617 ;	spillPairReg hl
+                                   1618 ;	spillPairReg hl
+      00047E CDrA8r00         [17] 1619 	call	_VDP_WriteVRAM_16K
+      000481 FD E1            [14] 1620 	pop	iy
+      000483 C1               [10] 1621 	pop	bc
+      000484 E1               [10] 1622 	pop	hl
+                                   1623 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2231: dst += 0x800;
+      000485 7C               [ 4] 1624 	ld	a, h
+      000486 C6 08            [ 7] 1625 	add	a, #0x08
+      000488 67               [ 4] 1626 	ld	h, a
+                                   1627 ;	spillPairReg hl
+                                   1628 ;	spillPairReg hl
+                                   1629 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2232: VDP_WriteVRAM(src, dst, g_ScreenColorHigh, cnt);
+      000489 E5               [11] 1630 	push	hl
+      00048A C5               [11] 1631 	push	bc
+      00048B FD E5            [15] 1632 	push	iy
+      00048D FD E5            [15] 1633 	push	iy
+      00048F EB               [ 4] 1634 	ex	de,hl
+      000490 69               [ 4] 1635 	ld	l, c
+                                   1636 ;	spillPairReg hl
+                                   1637 ;	spillPairReg hl
+      000491 60               [ 4] 1638 	ld	h, b
+                                   1639 ;	spillPairReg hl
+                                   1640 ;	spillPairReg hl
+      000492 CDrA8r00         [17] 1641 	call	_VDP_WriteVRAM_16K
+      000495 FD E1            [14] 1642 	pop	iy
+      000497 C1               [10] 1643 	pop	bc
+      000498 E1               [10] 1644 	pop	hl
+                                   1645 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2233: dst += 0x800;
+      000499 5D               [ 4] 1646 	ld	e, l
+      00049A 7C               [ 4] 1647 	ld	a, h
+      00049B C6 08            [ 7] 1648 	add	a, #0x08
+      00049D 57               [ 4] 1649 	ld	d, a
+                                   1650 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2234: VDP_WriteVRAM(src, dst, g_ScreenColorHigh, cnt);
+      00049E FD E5            [15] 1651 	push	iy
+      0004A0 69               [ 4] 1652 	ld	l, c
+                                   1653 ;	spillPairReg hl
+                                   1654 ;	spillPairReg hl
+      0004A1 60               [ 4] 1655 	ld	h, b
+                                   1656 ;	spillPairReg hl
+                                   1657 ;	spillPairReg hl
+      0004A2 CDrA8r00         [17] 1658 	call	_VDP_WriteVRAM_16K
+                                   1659 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2235: }
+      0004A5 DD E1            [14] 1660 	pop	ix
+      0004A7 E1               [10] 1661 	pop	hl
+      0004A8 F1               [10] 1662 	pop	af
+      0004A9 E9               [ 4] 1663 	jp	(hl)
+                                   1664 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2239: void VDP_WriteLayout_GM2(const u8* src, u8 dx, u8 dy, u8 nx, u8 ny)
+                                   1665 ;	---------------------------------
+                                   1666 ; Function VDP_WriteLayout_GM2
+                                   1667 ; ---------------------------------
+      0004AA                       1668 _VDP_WriteLayout_GM2::
+      0004AA DD E5            [15] 1669 	push	ix
+      0004AC DD 21 00 00      [14] 1670 	ld	ix,#0
+      0004B0 DD 39            [15] 1671 	add	ix,sp
+      0004B2 3B               [ 6] 1672 	dec	sp
+      0004B3 4D               [ 4] 1673 	ld	c, l
+      0004B4 44               [ 4] 1674 	ld	b, h
+                                   1675 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2241: u16 dst = g_ScreenLayoutLow + (dy * 32) + dx;
+      0004B5 DD 6E 05         [19] 1676 	ld	l, 5 (ix)
+                                   1677 ;	spillPairReg hl
+                                   1678 ;	spillPairReg hl
+      0004B8 26 00            [ 7] 1679 	ld	h, #0x00
+                                   1680 ;	spillPairReg hl
+                                   1681 ;	spillPairReg hl
+      0004BA 29               [11] 1682 	add	hl, hl
+      0004BB 29               [11] 1683 	add	hl, hl
+      0004BC 29               [11] 1684 	add	hl, hl
+      0004BD 29               [11] 1685 	add	hl, hl
+      0004BE 29               [11] 1686 	add	hl, hl
+      0004BF ED 5Br31r00      [20] 1687 	ld	de, (_g_ScreenLayoutLow)
+      0004C3 19               [11] 1688 	add	hl, de
+      0004C4 DD 5E 04         [19] 1689 	ld	e, 4 (ix)
+      0004C7 16 00            [ 7] 1690 	ld	d, #0x00
+      0004C9 19               [11] 1691 	add	hl, de
+                                   1692 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2242: for (u8 y = 0; y < ny; ++y)
+      0004CA DD 36 FF 00      [19] 1693 	ld	-1 (ix), #0x00
+      0004CE                       1694 00103$:
+      0004CE DD 7E FF         [19] 1695 	ld	a, -1 (ix)
+      0004D1 DD 96 07         [19] 1696 	sub	a, 7 (ix)
+      0004D4 30 22            [12] 1697 	jr	NC, 00105$
+                                   1698 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2244: VDP_WriteVRAM(src, dst, g_ScreenLayoutHigh, nx);
+      0004D6 DD 5E 06         [19] 1699 	ld	e, 6 (ix)
+      0004D9 16 00            [ 7] 1700 	ld	d, #0x00
+      0004DB E5               [11] 1701 	push	hl
+      0004DC C5               [11] 1702 	push	bc
+      0004DD EB               [ 4] 1703 	ex	de, hl
+      0004DE E5               [11] 1704 	push	hl
+      0004DF 69               [ 4] 1705 	ld	l, c
+                                   1706 ;	spillPairReg hl
+                                   1707 ;	spillPairReg hl
+      0004E0 60               [ 4] 1708 	ld	h, b
+                                   1709 ;	spillPairReg hl
+                                   1710 ;	spillPairReg hl
+      0004E1 CDrA8r00         [17] 1711 	call	_VDP_WriteVRAM_16K
+      0004E4 C1               [10] 1712 	pop	bc
+      0004E5 E1               [10] 1713 	pop	hl
+                                   1714 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2245: src += nx;
+      0004E6 79               [ 4] 1715 	ld	a, c
+      0004E7 DD 86 06         [19] 1716 	add	a, 6 (ix)
+      0004EA 4F               [ 4] 1717 	ld	c, a
+      0004EB 30 01            [12] 1718 	jr	NC, 00118$
+      0004ED 04               [ 4] 1719 	inc	b
+      0004EE                       1720 00118$:
+                                   1721 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2246: dst += 32;
+      0004EE 11 20 00         [10] 1722 	ld	de, #0x0020
+      0004F1 19               [11] 1723 	add	hl, de
+                                   1724 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2242: for (u8 y = 0; y < ny; ++y)
+      0004F2 DD 34 FF         [23] 1725 	inc	-1 (ix)
+      0004F5 C3rCEr04         [10] 1726 	jp	00103$
+      0004F8                       1727 00105$:
+                                   1728 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2248: }
+      0004F8 33               [ 6] 1729 	inc	sp
+      0004F9 DD E1            [14] 1730 	pop	ix
+      0004FB E1               [10] 1731 	pop	hl
+      0004FC F1               [10] 1732 	pop	af
+      0004FD F1               [10] 1733 	pop	af
+      0004FE E9               [ 4] 1734 	jp	(hl)
+                                   1735 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2252: void VDP_FillLayout_GM2(u8 value, u8 dx, u8 dy, u8 nx, u8 ny)
+                                   1736 ;	---------------------------------
+                                   1737 ; Function VDP_FillLayout_GM2
+                                   1738 ; ---------------------------------
+      0004FF                       1739 _VDP_FillLayout_GM2::
+      0004FF DD E5            [15] 1740 	push	ix
+      000501 DD 21 00 00      [14] 1741 	ld	ix,#0
+      000505 DD 39            [15] 1742 	add	ix,sp
+      000507 4F               [ 4] 1743 	ld	c, a
+      000508 45               [ 4] 1744 	ld	b, l
+                                   1745 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2254: u16 dst = g_ScreenLayoutLow + (dy * 32) + dx;
+      000509 DD 6E 04         [19] 1746 	ld	l, 4 (ix)
+                                   1747 ;	spillPairReg hl
+                                   1748 ;	spillPairReg hl
+      00050C 26 00            [ 7] 1749 	ld	h, #0x00
+                                   1750 ;	spillPairReg hl
+                                   1751 ;	spillPairReg hl
+      00050E 29               [11] 1752 	add	hl, hl
+      00050F 29               [11] 1753 	add	hl, hl
+      000510 29               [11] 1754 	add	hl, hl
+      000511 29               [11] 1755 	add	hl, hl
+      000512 29               [11] 1756 	add	hl, hl
+      000513 ED 5Br31r00      [20] 1757 	ld	de, (_g_ScreenLayoutLow)
+      000517 19               [11] 1758 	add	hl, de
+      000518 58               [ 4] 1759 	ld	e, b
+      000519 16 00            [ 7] 1760 	ld	d, #0x00
+      00051B 19               [11] 1761 	add	hl, de
+                                   1762 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2255: for (u8 y = 0; y < ny; ++y)
+      00051C 06 00            [ 7] 1763 	ld	b, #0x00
+      00051E                       1764 00103$:
+      00051E 78               [ 4] 1765 	ld	a, b
+      00051F DD 96 06         [19] 1766 	sub	a, 6 (ix)
+      000522 30 17            [12] 1767 	jr	NC, 00105$
+                                   1768 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2257: VDP_FillVRAM(value, dst, g_ScreenLayoutHigh, nx);
+      000524 DD 5E 05         [19] 1769 	ld	e, 5 (ix)
+      000527 16 00            [ 7] 1770 	ld	d, #0x00
+      000529 E5               [11] 1771 	push	hl
+      00052A C5               [11] 1772 	push	bc
+      00052B EB               [ 4] 1773 	ex	de, hl
+      00052C E5               [11] 1774 	push	hl
+      00052D 79               [ 4] 1775 	ld	a, c
+      00052E CDrD1r00         [17] 1776 	call	_VDP_FillVRAM_16K
+      000531 C1               [10] 1777 	pop	bc
+      000532 E1               [10] 1778 	pop	hl
+                                   1779 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2258: dst += 32;
+      000533 11 20 00         [10] 1780 	ld	de, #0x0020
+      000536 19               [11] 1781 	add	hl, de
+                                   1782 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2255: for (u8 y = 0; y < ny; ++y)
+      000537 04               [ 4] 1783 	inc	b
+      000538 C3r1Er05         [10] 1784 	jp	00103$
+      00053B                       1785 00105$:
+                                   1786 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/vdp.c:2260: }
+      00053B DD E1            [14] 1787 	pop	ix
+      00053D E1               [10] 1788 	pop	hl
+      00053E F1               [10] 1789 	pop	af
+      00053F 33               [ 6] 1790 	inc	sp
+      000540 E9               [ 4] 1791 	jp	(hl)
+                                   1792 	.area _CODE
+                                   1793 	.area _INITIALIZER
+      000000                       1794 __xinit__g_VDPInitilized:
+      000000 00                    1795 	.db #0x00	; 0
+                                   1796 	.area _CABS (ABS)

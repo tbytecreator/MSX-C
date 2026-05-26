@@ -1,0 +1,574 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include "msxgl.h"
+
+#include "game.h"
+#include "ui.h"
+
+// ============================================================================
+// FORTALEZA DE BERDOLOCK - MSX Adventure Game
+// A digital replica of the classic RPG board game
+// ============================================================================
+
+Game_State game_state;
+int running = 1;
+
+void init_game() {
+    srand((unsigned)time(NULL));
+    
+    // Initialize MSX graphics (text mode 40x24)
+    VDP_SetMode(VDP_MODE_TEXT1);
+    VDP_ClearVRAM();
+    
+    // Initialize game state
+    memset(&game_state, 0, sizeof(Game_State));
+    game_state.state = GAME_MENU;
+    game_state.turn = 0;
+    game_state.player_alive = 1;
+}
+
+void main_menu() {
+    Print_Clear();
+    Print_At(10, 2, "FORTALEZA DE BERDOLOCK");
+    Print_At(8, 4, "Um RPG Solitario em MSX");
+    Print_At(5, 7, "1 - Novo Jogo");
+    Print_At(5, 8, "2 - Continuare");
+    Print_At(5, 9, "3 - Como Jogar");
+    Print_At(5, 10, "4 - Sair");
+    Print_At(5, 13, "Digite sua opcao: ");
+    
+    char choice = getchar();
+    
+    switch (choice) {
+        case '1':
+            game_state.state = GAME_CHARACTER_CREATION;
+            break;
+        case '2':
+            // TODO: Load saved game
+            game_state.state = GAME_EXPLORATION;
+            break;
+        case '3':
+            game_state.state = GAME_HELP;
+            break;
+        case '4':
+            running = 0;
+            break;
+        default:
+            break;
+    }
+}
+
+void character_creation() {
+    Print_Clear();
+    Print_At(10, 2, "CRIACAO DO PERSONAGEM");
+    Print_At(2, 5, "Bem-vindo a Fortaleza de Berdolock!");
+    Print_At(2, 6, "Seu personagem comecara com:");
+    Print_At(5, 8, "PA (Poder de Ataque): 2d6");
+    Print_At(5, 9, "PD (Poder de Defesa): 7");
+    Print_At(5, 10, "PV (Pontos Vitais): 2d6");
+    
+    // Roll stats
+    game_state.player.pa = roll_dice(1, 6) + roll_dice(1, 6);
+    game_state.player.pd = 7;
+    game_state.player.pv_max = roll_dice(1, 6) + roll_dice(1, 6);
+    game_state.player.pv = game_state.player.pv_max;
+    
+    // Starting equipment
+    game_state.player.weapon = WEAPON_SWORD;
+    game_state.player.armor = ARMOR_PLATE;
+    game_state.player.shield = 1;
+    game_state.player.potions = 0;
+    game_state.player.trap_ring = 0;
+    game_state.player.magic_sword = 0;
+    game_state.player.magic_armor = 0;
+    game_state.player.gold = 0;
+    
+    Print_At(5, 12, "PA rolado: ");
+    printf("%d", game_state.player.pa);
+    Print_At(5, 13, "PV rolado: ");
+    printf("%d", game_state.player.pv_max);
+    Print_At(5, 15, "Pressione ENTER para continuar...");
+    
+    getchar();
+    game_state.state = GAME_EXPLORATION;
+    game_state.turn = 1;
+    game_state.player_alive = 1;
+}
+
+void exploration() {
+    Print_Clear();
+    Print_At(5, 1, "=== FORTALEZA DE BERDOLOCK ===");
+    Print_At(2, 3, "Turno: ");
+    printf("%d/30", game_state.turn);
+    
+    Print_At(2, 5, "Seu Status:");
+    Print_At(5, 6, "PA: ");
+    printf("%d", game_state.player.pa);
+    Print_At(20, 6, "PD: ");
+    printf("%d", game_state.player.pd);
+    Print_At(5, 7, "PV: ");
+    printf("%d/%d", game_state.player.pv, game_state.player.pv_max);
+    
+    Print_At(5, 9, "Inventario:");
+    Print_At(5, 10, "Pocoes de Cura: ");
+    printf("%d", game_state.player.potions);
+    Print_At(5, 11, "Ouro: ");
+    printf("%d", game_state.player.gold);
+    
+    Print_At(2, 14, "Acoes:");
+    Print_At(5, 15, "1 - Explorar");
+    Print_At(5, 16, "2 - Usar Pocao");
+    Print_At(5, 17, "3 - Status Completo");
+    Print_At(5, 18, "4 - Salvar Jogo");
+    Print_At(5, 19, "5 - Menu Principal");
+    
+    if (game_state.turn >= 30) {
+        Print_At(5, 20, "6 - Buscar Saida");
+    }
+    
+    Print_At(2, 22, "Escolha: ");
+    
+    char choice = getchar();
+    
+    switch (choice) {
+        case '1':
+            handle_exploration_event();
+            game_state.turn++;
+            if (game_state.turn > 30) game_state.turn = 30;
+            break;
+        case '2':
+            if (game_state.player.potions > 0) {
+                game_state.player.pv = game_state.player.pv_max;
+                game_state.player.potions--;
+                Print_At(2, 23, "Voce usou uma pocao! PV restaurado.");
+            } else {
+                Print_At(2, 23, "Voce nao tem potcoes!");
+            }
+            getchar();
+            break;
+        case '3':
+            show_full_status();
+            break;
+        case '4':
+            // TODO: Save game
+            Print_At(2, 23, "Jogo salvo!");
+            getchar();
+            break;
+        case '5':
+            game_state.state = GAME_MENU;
+            break;
+        case '6':
+            if (game_state.turn >= 30) {
+                handle_exit_attempt();
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void handle_exploration_event() {
+    int roll = roll_dice(2, 6);
+    
+    Print_Clear();
+    Print_At(10, 2, "=== EVENTO DE EXPLORACAO ===");
+    Print_At(2, 4, "Voce rolou: ");
+    printf("%d", roll);
+    
+    if (roll == 2 || roll == 5 || roll == 6 || roll == 8 || roll == 9 || roll == 10) {
+        Print_At(2, 6, "Voce encontrou uma SECAO da masmorra.");
+    } else if (roll == 3) {
+        Print_At(2, 6, "Voce acionou uma ARMADILHA!");
+        handle_trap();
+    } else if (roll == 4 || roll == 12) {
+        Print_At(2, 6, "Voce encontrou um TESOURO!");
+        handle_treasure();
+    } else if (roll == 7 || roll == 11) {
+        Print_At(2, 6, "Voce encontrou um ENCONTRO!");
+        handle_encounter();
+    }
+    
+    Print_At(2, 22, "Pressione ENTER para continuar...");
+    getchar();
+}
+
+void handle_trap() {
+    int trap_type = roll_dice(1, 6);
+    int damage = 0;
+    
+    const char* trap_names[] = {
+        "Alcapao",
+        "Chuva de Dardos",
+        "Acido",
+        "Chuva de Flechas",
+        "Gas",
+        "Desmoronamento de teto"
+    };
+    
+    Print_At(2, 8, "Tipo de Armadilha: ");
+    printf("%s", trap_names[trap_type - 1]);
+    
+    if (game_state.player.trap_ring) {
+        Print_At(2, 10, "Seu Anel Detetor funcionou!");
+        Print_At(2, 11, "Voce evitou a armadilha!");
+        game_state.player.trap_ring = 0;
+    } else {
+        switch (trap_type) {
+            case 1: damage = roll_dice(1, 6); break;
+            case 2: damage = roll_dice(1, 6); break;
+            case 3: damage = roll_dice(3, 6); break;
+            case 4: damage = roll_dice(2, 6); break;
+            case 5: damage = roll_dice(1, 6); break;
+            case 6: 
+                Print_At(2, 10, "MORTE! Voce foi esmagado pelo teto!");
+                game_state.player.pv = 0;
+                game_state.player_alive = 0;
+                return;
+        }
+        
+        game_state.player.pv -= damage;
+        Print_At(2, 10, "Voce sofreu ");
+        printf("%d", damage);
+        Print_At(2, 11, "pontos de dano!");
+        
+        if (game_state.player.pv <= 0) {
+            game_state.player.pv = 0;
+            game_state.player_alive = 0;
+            Print_At(2, 13, "VOCE MORREU!");
+            game_state.state = GAME_OVER;
+        }
+    }
+}
+
+void handle_treasure() {
+    int treasure_type = roll_dice(1, 6);
+    
+    const char* treasure_names[] = {
+        "Espada Magica",
+        "Pocao de Cura",
+        "Anel Detetor de Armadilhas",
+        "Armadura Magica",
+        "Ouro",
+        "Item Amaldicoado"
+    };
+    
+    Print_At(2, 8, "Tesouro encontrado: ");
+    printf("%s", treasure_names[treasure_type - 1]);
+    
+    switch (treasure_type) {
+        case 1:
+            if (!game_state.player.magic_sword) {
+                game_state.player.magic_sword = 1;
+                game_state.player.pa += 2;
+                Print_At(2, 10, "Sua PA aumentou para ");
+                printf("%d!", game_state.player.pa);
+            }
+            break;
+        case 2:
+            game_state.player.potions++;
+            Print_At(2, 10, "Voce tem agora ");
+            printf("%d", game_state.player.potions);
+            Print_At(2, 11, "pocoes!");
+            break;
+        case 3:
+            if (!game_state.player.trap_ring) {
+                game_state.player.trap_ring = 1;
+                Print_At(2, 10, "Voce agora tem um Anel Detetor!");
+            }
+            break;
+        case 4:
+            if (!game_state.player.magic_armor) {
+                game_state.player.magic_armor = 1;
+                game_state.player.pd = 9;
+                Print_At(2, 10, "Sua PD aumentou para 9!");
+            }
+            break;
+        case 5: {
+            int gold = roll_dice(1, 6) * 1000;
+            game_state.player.gold += gold;
+            Print_At(2, 10, "Voce encontrou ");
+            printf("%d", gold);
+            Print_At(2, 11, "moedas de ouro!");
+            break;
+        }
+        case 6: {
+            int damage = roll_dice(1, 6);
+            game_state.player.pv -= damage;
+            Print_At(2, 10, "MALDITO! O item causou ");
+            printf("%d", damage);
+            Print_At(2, 11, "de dano!");
+            if (game_state.player.pv <= 0) {
+                game_state.player.pv = 0;
+                game_state.player_alive = 0;
+                game_state.state = GAME_OVER;
+            }
+            break;
+        }
+    }
+}
+
+void handle_encounter() {
+    int enemy_type;
+    Enemy_t enemy;
+    const char* enemy_names[] = {
+        "Aranha Gigante",
+        "Morto Vivo",
+        "Fantasma",
+        "Orco",
+        "Troll",
+        "Guerreiro do Caos"
+    };
+    int enemy_pa[] = { 2, 2, 2, 2, 2, 2 };
+    int enemy_pd[] = { 7, 5, 9, 6, 8, 9 };
+    int enemy_pv[] = { 15, 8, 10, 7, 14, 12 };
+    
+    enemy_type = roll_dice(1, 6);
+    
+    Print_At(2, 8, "Voce encontrou: ");
+    printf("%s", enemy_names[enemy_type - 1]);
+    
+    enemy.type = enemy_type;
+    enemy.pa = enemy_pa[enemy_type - 1];
+    enemy.pd = enemy_pd[enemy_type - 1];
+    enemy.pv = enemy_pv[enemy_type - 1];
+    
+    handle_combat(&enemy);
+}
+
+void handle_combat(Enemy_t* enemy) {
+    Print_At(2, 10, "Iniciando combate!");
+    Print_At(2, 22, "Pressione ENTER...");
+    getchar();
+    
+    Print_Clear();
+    Print_At(5, 2, "=== COMBATE ===");
+    
+    while (game_state.player.pv > 0 && enemy->pv > 0) {
+        Print_At(2, 5, "Status do Jogador: ");
+        printf("%d/%d PV", game_state.player.pv, game_state.player.pv_max);
+        Print_At(2, 6, "Status do Inimigo: ");
+        printf("%d PV", enemy->pv);
+        
+        // Combat logic
+        int player_damage = (roll_dice(2, 6) + game_state.player.pa) - enemy->pd;
+        if (player_damage < 0) player_damage = 0;
+        
+        int enemy_damage = (roll_dice(2, 6) + enemy->pa) - game_state.player.pd;
+        if (enemy_damage < 0) enemy_damage = 0;
+        
+        enemy->pv -= player_damage;
+        game_state.player.pv -= enemy_damage;
+        
+        Print_At(2, 9, "Voce causou ");
+        printf("%d", player_damage);
+        Print_At(2, 10, "de dano!");
+        Print_At(2, 11, "Voce sofreu ");
+        printf("%d", enemy_damage);
+        Print_At(2, 12, "de dano!");
+        
+        Print_At(2, 22, "Pressione ENTER para continuar...");
+        getchar();
+        Print_Clear();
+        Print_At(5, 2, "=== COMBATE ===");
+    }
+    
+    if (game_state.player.pv <= 0) {
+        game_state.player.pv = 0;
+        game_state.player_alive = 0;
+        game_state.state = GAME_OVER;
+        Print_At(2, 8, "VOCE FOI DERROTADO!");
+    } else {
+        Print_At(2, 8, "VOCE VENCEU O COMBATE!");
+        // 50% chance de tesouro
+        if (roll_dice(1, 6) > 3) {
+            handle_treasure();
+        }
+    }
+    
+    Print_At(2, 22, "Pressione ENTER para continuar...");
+    getchar();
+}
+
+void handle_exit_attempt() {
+    int roll = roll_dice(1, 6);
+    
+    Print_Clear();
+    Print_At(5, 2, "=== TENTATIVA DE SAIDA ===");
+    Print_At(2, 4, "Voce rolou: ");
+    printf("%d", roll);
+    
+    switch (roll) {
+        case 1:
+            Print_At(2, 6, "Encontro surpresa! Combate necessario!");
+            handle_encounter();
+            break;
+        case 2:
+            Print_At(2, 6, "VITORIA! Voce conseguiu sair!");
+            Print_At(2, 8, "Sua aventura terminou!");
+            Print_At(2, 9, "Ouro coletado: ");
+            printf("%d", game_state.player.gold);
+            game_state.state = GAME_OVER;
+            break;
+        case 3:
+            int damage = roll_dice(1, 6);
+            Print_At(2, 6, "Voce caiu! Sofreu ");
+            printf("%d", damage);
+            Print_At(2, 7, "de dano!");
+            game_state.player.pv -= damage;
+            if (game_state.player.pv <= 0) {
+                game_state.player.pv = 0;
+                game_state.player_alive = 0;
+                game_state.state = GAME_OVER;
+            }
+            break;
+        case 4:
+            Print_At(2, 6, "Caminho bloqueado por pedra!");
+            Print_At(2, 7, "Tente novamente!");
+            break;
+        case 5:
+            int chance = roll_dice(1, 6);
+            Print_At(2, 6, "Esqueleto guardiao!");
+            if (chance > 3) {
+                Print_At(2, 7, "Voce conseguiu passar!");
+                game_state.state = GAME_OVER;
+            } else {
+                Print_At(2, 7, "Esqueleto bloqueou o caminho!");
+            }
+            break;
+        case 6:
+            Print_At(2, 6, "Desespero! Voce precisa de 1-3 em 1d6!");
+            int exit_roll = roll_dice(1, 6);
+            Print_At(2, 8, "Voce rolou: ");
+            printf("%d", exit_roll);
+            if (exit_roll <= 3) {
+                Print_At(2, 10, "VITORIA! Voce escapou!");
+                game_state.state = GAME_OVER;
+            } else {
+                Print_At(2, 10, "Nao conseguiu escapar!");
+            }
+            break;
+    }
+    
+    Print_At(2, 22, "Pressione ENTER para continuar...");
+    getchar();
+}
+
+void show_full_status() {
+    Print_Clear();
+    Print_At(8, 2, "=== STATUS COMPLETO ===");
+    Print_At(2, 4, "STATS:");
+    Print_At(5, 5, "PA: ");
+    printf("%d", game_state.player.pa);
+    Print_At(5, 6, "PD: ");
+    printf("%d", game_state.player.pd);
+    Print_At(5, 7, "PV: ");
+    printf("%d/%d", game_state.player.pv, game_state.player.pv_max);
+    Print_At(5, 8, "Turno: ");
+    printf("%d/30", game_state.turn);
+    
+    Print_At(2, 10, "INVENTARIO:");
+    Print_At(5, 11, "Pocoes: ");
+    printf("%d", game_state.player.potions);
+    Print_At(5, 12, "Ouro: ");
+    printf("%d", game_state.player.gold);
+    Print_At(5, 13, "Espada Magica: ");
+    printf("%s", game_state.player.magic_sword ? "Sim" : "Nao");
+    Print_At(5, 14, "Armadura Magica: ");
+    printf("%s", game_state.player.magic_armor ? "Sim" : "Nao");
+    Print_At(5, 15, "Anel Detetor: ");
+    printf("%s", game_state.player.trap_ring ? "Sim" : "Nao");
+    
+    Print_At(2, 22, "Pressione ENTER para voltar...");
+    getchar();
+}
+
+void show_help() {
+    Print_Clear();
+    Print_At(8, 2, "=== COMO JOGAR ===");
+    Print_At(2, 4, "VERBOS DISPONIVEIS:");
+    Print_At(2, 5, "- EXPLORAR: Avance na masmorra");
+    Print_At(2, 6, "- COMBATER: Lute contra inimigos");
+    Print_At(2, 7, "- USAR POCAO: Recupere PV");
+    Print_At(2, 8, "- STATUS: Veja seus stats");
+    Print_At(2, 9, "- SALVAR: Salve seu progresso");
+    Print_At(2, 10, "- SAIR: Procure a saida (turno 30+)");
+    Print_At(2, 12, "OBJETIVO:");
+    Print_At(2, 13, "Explore a masmorra, derrote inimigos,");
+    Print_At(2, 14, "colete tesouros e tente escapar!");
+    Print_At(2, 16, "DICA: Guarde pocoes para situacoes");
+    Print_At(2, 17, "criticas e use o Anel Detetor");
+    Print_At(2, 18, "para evitar armadilhas letais!");
+    Print_At(2, 22, "Pressione ENTER para voltar...");
+    getchar();
+}
+
+void game_over_screen() {
+    Print_Clear();
+    
+    if (game_state.player_alive) {
+        Print_At(10, 5, "=== VOCE VENCEU! ===");
+        Print_At(5, 8, "Resultado Final:");
+        Print_At(5, 9, "Turnos: ");
+        printf("%d/30", game_state.turn);
+        Print_At(5, 10, "Ouro Coletado: ");
+        printf("%d", game_state.player.gold);
+        Print_At(5, 11, "Inimigos Derrotados: [Contador]");
+    } else {
+        Print_At(10, 5, "=== GAME OVER ===");
+        Print_At(5, 8, "Voce nao conseguiu sobreviver...");
+        Print_At(5, 10, "Turnos Alcancados: ");
+        printf("%d/30", game_state.turn);
+    }
+    
+    Print_At(2, 16, "1 - Novo Jogo");
+    Print_At(2, 17, "2 - Menu Principal");
+    Print_At(2, 18, "3 - Sair");
+    
+    char choice = getchar();
+    
+    switch (choice) {
+        case '1':
+            game_state.state = GAME_CHARACTER_CREATION;
+            break;
+        case '2':
+            game_state.state = GAME_MENU;
+            break;
+        case '3':
+            running = 0;
+            break;
+    }
+}
+
+int main() {
+    init_game();
+    
+    while (running) {
+        switch (game_state.state) {
+            case GAME_MENU:
+                main_menu();
+                break;
+            case GAME_CHARACTER_CREATION:
+                character_creation();
+                break;
+            case GAME_EXPLORATION:
+                exploration();
+                break;
+            case GAME_HELP:
+                show_help();
+                game_state.state = GAME_MENU;
+                break;
+            case GAME_OVER:
+                game_over_screen();
+                break;
+        }
+    }
+    
+    Print_Clear();
+    Print_At(8, 12, "Obrigado por jogar!");
+    Print_At(5, 14, "Pressione ENTER para sair...");
+    getchar();
+    
+    return 0;
+}

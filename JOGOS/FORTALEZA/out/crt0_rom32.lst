@@ -1,0 +1,1799 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 1.
+Hexadecimal [24-Bits]
+
+
+
+                                      1 ; ____________________________
+                                      2 ; ██▀███▀██▀▀▀▀▀▀▀█▀▀█        │   ▄▄       ▄▄   ▄▄
+                                      3 ; ██  ▀  █▄  ▀██▄ ▀ ▄█ ▄▀▀ █  │  ██ ▀ ██▄▀ ██▀ █ ██
+                                      4 ; █  █ █  ▀▀  ▄█  █  █ ▀▄█ █▄ │  ▀█▄▀ ██   ▀█▄ ▀▄█▀
+                                      5 ; ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀────────┘
+                                      6 ;  by Guillaume 'Aoineko' Blanchard under CC-BY-AS license
+                                      7 ;──────────────────────────────────────────────────────────────────────────────
+                                      8 ; crt0 header for 32KB ROM program
+                                      9 ;──────────────────────────────────────────────────────────────────────────────
+                                     10 ; Code address: 0x4000
+                                     11 ; Data address: 0xC000
+                                     12 ;──────────────────────────────────────────────────────────────────────────────
+                                     13 .module	crt0
+                                     14 
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 2.
+Hexadecimal [24-Bits]
+
+
+
+                                     15 .include "defines.asm"
+                                      1 ; ____________________________
+                                      2 ; ██▀███▀██▀▀▀▀▀▀▀█▀▀█        │   ▄▄       ▄▄   ▄▄
+                                      3 ; ██  ▀  █▄  ▀██▄ ▀ ▄█ ▄▀▀ █  │  ██ ▀ ██▄▀ ██▀ █ ██
+                                      4 ; █  █ █  ▀▀  ▄█  █  █ ▀▄█ █▄ │  ▀█▄▀ ██   ▀█▄ ▀▄█▀
+                                      5 ; ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀────────┘
+                                      6 ;  by Guillaume 'Aoineko' Blanchard under CC-BY-AS license
+                                      7 ;──────────────────────────────────────────────────────────────────────────────
+                                      8 ; crt0 helper defines
+                                      9 ;------------------------------------------------------------------------------
+                                     10 ; By Guillaume 'Aoineko' Blanchard for MSX Game Library 
+                                     11 ; (ɔ) 2022 under CC-BY-AS license
+                                     12 ;------------------------------------------------------------------------------
+                                     13 .module	crt0
+                                     14 
+                                     15 ;------------------------------------------------------------------------------
+                                     16 ; Global symbols
+                                     17 .globl _main
+                                     18 .globl l__INITIALIZER
+                                     19 .globl s__INITIALIZED
+                                     20 .globl s__INITIALIZER
+                                     21 .globl s__HEADER
+                                     22 .globl s__GSFINAL
+                                     23 .globl s__HEAP
+                                     24 
+                                     25 ;------------------------------------------------------------------------------
+                                     26 ; I/O ports
+                           0000A8    27 PPI_A			= #0xA8
+                           0000A9    28 PPI_B			= #0xA9
+                           0000AA    29 PPI_C			= #0xAA
+                           0000AB    30 PPI_MODE		= #0xAB
+                           000099    31 VDP_S			= #0x99
+                           000099    32 VDP_A			= #0x99
+                           000066    33 V9_P06			= #0x66
+                                     34 
+                                     35 ;------------------------------------------------------------------------------
+                                     36 ; Main-ROM routines
+                           000014    37 WRSLT			= #0x0014 ; Writes a value to an address in another slot
+                           000024    38 ENASLT			= #0x0024 ; Switches indicated slot at indicated page on perpetually
+                           00002B    39 ROMVER			= #0x002B ; Basic ROM version
+                           00002D    40 MSXVER			= #0x002D ; MSX version number
+                           00006C    41 INITXT			= #0x006C ; Switches to SCREEN 0
+                           000078    42 SETTXT			= #0x0078 ; Switches VDP to SCREEN 0 mode
+                           00009F    43 CHGET			= #0x009F ; One character input (waiting)
+                           0000A2    44 CHPUT			= #0x00A2 ; Displays one character
+                           0000C3    45 CLS				= #0x00C3 ; Clears the screen
+                           000138    46 RSLREG			= #0x0138 ; Reads the primary slot register
+                                     47 
+                                     48 ;------------------------------------------------------------------------------
+                                     49 ; RAM work area variables
+                           00F3AE    50 LINL40			= #0xF3AE
+                           00FC4A    51 HIMEM			= #0xFC4A
+                           00FCC1    52 EXPTBL			= #0xFCC1
+                           00FEDA    53 H_STKE			= #0xFEDA
+                           00FFFF    54 SLTSL			= #0xFFFF
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 3.
+Hexadecimal [24-Bits]
+
+
+
+                                     55 
+                                     56 ;------------------------------------------------------------------------------
+                                     57 ; MSX version
+                           000000    58 MSX1			= 0 ; MSX 1
+                           000001    59 MSX2			= 1 ; MSX 2
+                           000002    60 MSX2P			= 2 ; MSX 2+
+                           000003    61 MSXTR			= 3 ; MSX turbo R
+                           000004    62 MSX2PP			= 4 ; MSX 2++
+                           000005    63 MSX2S			= 5 ; MSX 2#
+                                     64 
+                                     65 ;------------------------------------------------------------------------------
+                                     66 ; Row #7 keys
+                           000001    67 KEY_F4			= #0b00000001
+                           000002    68 KEY_F5			= #0b00000010
+                           000004    69 KEY_ESC			= #0b00000100
+                           000008    70 KEY_TAB			= #0b00001000
+                           000010    71 KEY_STOP		= #0b00010000
+                           000020    72 KEY_BS			= #0b00100000
+                           000040    73 KEY_SELECT		= #0b01000000
+                           000080    74 KEY_RETURN		= #0b10000000
+                                     75 
+                                     76 ;------------------------------------------------------------------------------
+                                     77 ; ROM types
+                                     78 ; /!\ Must match the values in "config_option.h"
+                           000000    79 ROM_PLAIN		= 0		; Plain ROM (no mapper)
+                           000002    80 ROM_MAPPER_8K	= 2		; Mapper 8 KB
+                           000002    81 ROM_ASCII8		= 2		;  ASCII-8 mapper
+                           000003    82 ROM_KONAMI		= 3		;  Konami without SCC mapper
+                           000004    83 ROM_KONAMI_SCC	= 4		;  Konami with SCC mapper
+                           000005    84 ROM_NEO8		= 5		;  NEO-8 mapper
+                           000006    85 ROM_YAMANOOTO	= 6		;  Yamanooto mapper
+                           000007    86 ROM_POPOLON		= 7		;  Popolon SCC mapper
+                           00000A    87 ROM_MAPPER_16K	= 10	; Mapper 16 KB
+                           00000A    88 ROM_ASCII16		= 10	;  ASCII-16 mmaper
+                           00000B    89 ROM_NEO16		= 11	;  NEO-16 mapper
+                           00000C    90 ROM_ASCII16X	= 12	;  ASCII16-X mmaper
+                                     91 
+                                     92 ;------------------------------------------------------------------------------
+                                     93 ; Yamanooto registers types
+                           007FFF    94 YAMA_ENAR		= #0x7FFF		; Features enable register
+                           000001    95 YAMA_ENAR_REGEN	= #0b00000001	; Registers enable. Setting this bit allows writing to all other registers and all register readability.
+                           000010    96 YAMA_ENAR_WREN	= #0b00010000	; Write enable. Set to 1 to enable writes to flash rom.
+                           007FFE    97 YAMA_OFFR		= #0x7FFE		; Mapper offset register
+                           007FFD    98 YAMA_CFGR		= #0x7FFD		; Configuration and control register
+                           000001    99 YAMA_CFGR_MDIS	= #0b00000001	; This bit disables mapping so you avoid mapper changes with small (up to 32 kbyte) roms that poke the switching area. Usually this is a problem only in K4 mode. Remember to reset this bit to make changes again.
+                           000002   100 YAMA_CFGR_ECHO	= #0b00000010	; This bit allows the built-in PSG to respond to the port number of the internal PSG of the MSX, causing music intended for the internal PSG to be played too in the Yamanooto and be heard through the stereo output of the cartridge. This is set only during boot when you press the HOME key.
+                           000004   101 YAMA_CFGR_ROMDIS= #0b00000100	; Setting this bit disables access to flash rom. This is automatically set during boot when the DEL key is pressed. You need to clear this bit in software to be able read/write the flash rom.
+                           000008   102 YAMA_CFGR_K4	= #0b00001000	; Changes mapper configuration from Konami5 (SCC) to Konami4 for compatibility with game compilations including non-SCC games.
+                                    103 
+                                    104 ;------------------------------------------------------------------------------
+                                    105 ; Popolon SCC registers
+                           003800   106 POPOLON_OFF		= #0x3800		; Mapper 16-bit offset register
+                           003804   107 POPOLON_CFGR	= #0x3804		; Configuration register
+                           000000   108 POPOLON_CFGR_OE	= #0b00000000	; Offset enable (default mode)
+                           000001   109 POPOLON_CFGR_OD	= #0b00000001	; Offset disable
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 4.
+Hexadecimal [24-Bits]
+
+
+
+                                    110 
+                                    111 ;------------------------------------------------------------------------------
+                                    112 ; ISR types
+                           000000   113 ISR_NONE		= 0				; No ISR
+                           000001   114 ISR_ALL			= 1				; Handle any interruption
+                           000002   115 ISR_VBLANK		= 2				; V-blank handler (V9938 or V9958)
+                           000003   116 ISR_VHBLANK		= 3				; V-blank and h-blank handler (V9958)
+                           000004   117 ISR_V9990		= 4				; V-blank, h-blank and command end handler (V9990)
+                                    118 
+                                    119 ;------------------------------------------------------------------------------
+                                    120 ; Installation in RAM's page 0
+                           000000   121 RAM0_NONE		= 0				; Don't install anything in RAM 
+                           000001   122 RAM0_ISR		= 1				; Install only ISR
+                           000002   123 RAM0_SEGMENT	= 2				; Install ISR and segment data (for mapped-ROM)
+                                    124 
+                                    125 ;------------------------------------------------------------------------------
+                                    126 ; Default values
+                           004000   127 START_ADDR		= 0x4000		; Program start address
+                           000000   128 ROM_MAPPER		= ROM_PLAIN		; ROM type
+                           000000   129 ROM_SKIP		= 0				; Skip boot with a key press
+                           000004   130 ROM_SKIP_KEY	= KEY_ESC		; Skip key to check
+                           000000   131 ROM_DELAY		= 0				; Install BDOS
+                           000000   132 ROM_BCALL		= 0				; Add banked call trampoline
+                           000002   133 ROM_ISR			= ISR_VBLANK	; ISR type
+                           000000   134 ROM_RAMISR		= RAM0_NONE		; Install ISR in RAM's page 0
+                           000000   135 ISR_SET_S0		= 0				; Reset statut register to S#0 in ISR
+                           000000   136 APP_SIGN		= 0				; Add application signature
+                           004C47   137 APP_SIGN_NAME	= "GL"			; Application creator/group/company name
+                           000000   138 APP_SIGN_ID		= 0x0000		; Application number
+                           000000   139 DOS_PARSEARG	= 0				; Parse MSX-DOS command-line arguments
+                           000000   140 DOS_ISR			= 0				; Install ISR for MSX-DOS
+                           000000   141 CHECK_MSX		= MSX1			; Minimum MSX version required
+                           000000   142 BIOS_RELEASE    = 0				; Event called before BIOS is released
+                                    143 
+                                    144 ;------------------------------------------------------------------------------
+                                    145 ; Project overwrite values; File generated by the build tool
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 5.
+Hexadecimal [24-Bits]
+
+
+
+                                    146 .include "crt0_config.asm"
+                                      1 ; MSXgl | Crt0 config file generated by the Build tool
+                           004000     2 ADDR_BOOT=0x4000
+                           000001     3 DOS_PARSEARG=1
+                           000000     4 CHECK_MSX=MSX1
+                           000001     5 APP_SIGN=1
+                           004C47     6 APP_SIGN_NAME="GL"
+                           003154     7 APP_SIGN_ID="T1"
+                                      8 .macro ROM_SIGN_MACRO
+                                      9 .endm
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 6.
+Hexadecimal [24-Bits]
+
+
+
+                                     16 .include "macros.asm"
+                                      1 ; ____________________________
+                                      2 ; ██▀███▀██▀▀▀▀▀▀▀█▀▀█        │   ▄▄       ▄▄   ▄▄
+                                      3 ; ██  ▀  █▄  ▀██▄ ▀ ▄█ ▄▀▀ █  │  ██ ▀ ██▄▀ ██▀ █ ██
+                                      4 ; █  █ █  ▀▀  ▄█  █  █ ▀▄█ █▄ │  ▀█▄▀ ██   ▀█▄ ▀▄█▀
+                                      5 ; ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀────────┘
+                                      6 ;  by Guillaume 'Aoineko' Blanchard under CC-BY-AS license
+                                      7 ;──────────────────────────────────────────────────────────────────────────────
+                                      8 .module	crt0
+                                      9 
+                                     10 ;==============================================================================
+                                     11 ; HEADER
+                                     12 ;==============================================================================
+                                     13 
+                                     14 ;------------------------------------------------------------------------------
+                                     15 ; ROM Header
+                                     16 ;------------------------------------------------------------------------------
+                                     17 .macro ROM_HEADER startAddr
+                                     18 
+                                     19 	crt0_rom_header::
+                                     20 		.ascii	"AB"
+                                     21 		.dw		startAddr
+                                     22 		.dw		0x0000
+                                     23 		.dw		0x0000
+                                     24 		.dw		0x0000
+                                     25 		.dw		0x0000
+                                     26 		.dw		0x0000
+                                     27 		.dw		0x0000
+                                     28 
+                                     29 		ROM_SIGN_MACRO ; empty if AddROMSignature build option is set to false
+                                     30 
+                                     31 	.if APP_SIGN
+                                     32 	_g_AppSignature::
+                                     33 		.dw		APP_SIGN_NAME
+                                     34 		.dw		APP_SIGN_ID
+                                     35 	.endif
+                                     36 	; .ifdef APP_SIGN_EXTRA
+                                     37 		; .db		APP_SIGN_EXTRA
+                                     38 	; .endif
+                                     39 
+                                     40 .endm
+                                     41 
+                                     42 ;------------------------------------------------------------------------------
+                                     43 ; Basic Header
+                                     44 ;------------------------------------------------------------------------------
+                                     45 .macro BASIC_HEADER endAddr
+                                     46 
+                                     47 	crt0_basic_header::
+                                     48 		.db 	0xFE				; ID byte
+                                     49 		.dw 	crt0_basic_start	; Start address
+                                     50 		.dw		crt0_end			; End address
+                                     51 		.dw 	crt0_basic_exec		; Execution address
+                                     52 
+                                     53 	crt0_basic_start:
+                                     54 	.if APP_SIGN
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 7.
+Hexadecimal [24-Bits]
+
+
+
+                                     55 	_g_AppSignature::
+                                     56 		.dw		APP_SIGN_NAME
+                                     57 		.dw		APP_SIGN_ID
+                                     58 	.endif
+                                     59 	; .ifdef APP_SIGN_EXTRA
+                                     60 		; .db		APP_SIGN_EXTRA
+                                     61 	; .endif
+                                     62 	crt0_basic_exec:
+                                     63 
+                                     64 .endm
+                                     65 
+                                     66 ;==============================================================================
+                                     67 ; MAPPER
+                                     68 ;==============================================================================
+                                     69 
+                                     70 ;------------------------------------------------------------------------------
+                                     71 ; Bank switching addresses
+                                     72 ;------------------------------------------------------------------------------
+                                     73 
+                                     74 ; ROM_ASCII8
+                           000000    75 .ifeq ROM_MAPPER-ROM_ASCII8
+                                     76 	BANK0_ADDR = #0x6000
+                                     77 	BANK1_ADDR = #0x6800
+                                     78 	BANK2_ADDR = #0x7000
+                                     79 	BANK3_ADDR = #0x7800
+                                     80 	BANKED_ADDR = BANK2_ADDR
+                                     81 .endif
+                                     82 ; ROM_ASCII16
+                           000000    83 .ifeq ROM_MAPPER-ROM_ASCII16
+                                     84 	BANK0_ADDR = #0x6000
+                                     85 	BANK1_ADDR = #0x77FF
+                                     86 	BANKED_ADDR = BANK1_ADDR
+                                     87 .endif
+                                     88 ; ROM_KONAMI
+                           000000    89 .ifeq ROM_MAPPER-ROM_KONAMI
+                                     90 	BANK1_ADDR = #0x6000
+                                     91 	BANK2_ADDR = #0x8000
+                                     92 	BANK3_ADDR = #0xA000
+                                     93 	BANKED_ADDR = BANK2_ADDR
+                                     94 .endif
+                                     95 ; ROM_KONAMI_SCC
+                           000000    96 .ifeq ROM_MAPPER-ROM_KONAMI_SCC
+                                     97 	BANK0_ADDR = #0x5000
+                                     98 	BANK1_ADDR = #0x7000
+                                     99 	BANK2_ADDR = #0x9000
+                                    100 	BANK3_ADDR = #0xB000
+                                    101 	BANKED_ADDR = BANK2_ADDR
+                                    102 .endif
+                                    103 ; ROM_NEO8
+                           000000   104 .ifeq ROM_MAPPER-ROM_NEO8
+                                    105 	BANK0_ADDR = #0x5000
+                                    106 	BANK1_ADDR = #0x5800
+                                    107 	BANK2_ADDR = #0x6000
+                                    108 	BANK3_ADDR = #0x6800
+                                    109 	BANK4_ADDR = #0x7000
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 8.
+Hexadecimal [24-Bits]
+
+
+
+                                    110 	BANK5_ADDR = #0x7800
+                                    111 	BANKED_ADDR = BANK4_ADDR
+                                    112 .endif
+                                    113 ; ROM_NEO16
+                           000000   114 .ifeq ROM_MAPPER-ROM_NEO16
+                                    115 	BANK0_ADDR = #0x5000
+                                    116 	BANK1_ADDR = #0x6000
+                                    117 	BANK2_ADDR = #0x7000
+                                    118 	BANKED_ADDR = BANK2_ADDR
+                                    119 .endif
+                                    120 ; ROM_YAMANOOTO
+                           000000   121 .ifeq ROM_MAPPER-ROM_YAMANOOTO
+                                    122 	BANK0_ADDR = #0x5000
+                                    123 	BANK1_ADDR = #0x7000
+                                    124 	BANK2_ADDR = #0x9000
+                                    125 	BANK3_ADDR = #0xB000
+                                    126 	BANKED_ADDR = BANK2_ADDR
+                                    127 .endif
+                                    128 ; ROM_ASCII16-X
+                           000000   129 .ifeq ROM_MAPPER-ROM_ASCII16X
+                                    130 	BANK0_ADDR = #0x6000
+                                    131 	BANK1_ADDR = #0x7000
+                                    132 	BANKED_ADDR = BANK1_ADDR
+                                    133 .endif
+                                    134 ; ROM_POPOLON
+                           000000   135 .ifeq ROM_MAPPER-ROM_POPOLON
+                                    136 	BANK0_ADDR = #0x5000
+                                    137 	BANK1_ADDR = #0x7000
+                                    138 	BANK2_ADDR = #0x9000
+                                    139 	BANK3_ADDR = #0xB000
+                                    140 	BANKED_ADDR = BANK2_ADDR
+                                    141 .endif
+                                    142 
+                                    143 ;==============================================================================
+                                    144 ; HELPER
+                                    145 ;==============================================================================
+                                    146 
+                                    147 ;------------------------------------------------------------------------------
+                                    148 ; Initialize globals
+                                    149 ;------------------------------------------------------------------------------
+                                    150 .macro INIT_GLOBALS
+                                    151 
+                                    152 	crt0_init_globals:
+                                    153 		ld		bc, #l__INITIALIZER
+                                    154 		ld		a, b
+                                    155 		or		a, c
+                                    156 		jp		z, crt0_skip_globals
+                                    157 		ld		de, #s__INITIALIZED
+                                    158 		ld		hl, #s__INITIALIZER
+                                    159 		ldir
+                                    160 	crt0_skip_globals:
+                                    161 
+                                    162 .endm
+                                    163 
+                                    164 ;------------------------------------------------------------------------------
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 9.
+Hexadecimal [24-Bits]
+
+
+
+                                    165 ; Set page #2 at the same slot than the page #1 (for 32K ROM)
+                                    166 ;------------------------------------------------------------------------------
+                                    167 .macro INIT_P1_TO_P2
+                                    168 
+                                    169 	crt0_p1_to_p2::
+                                    170 		in		a, (PPI_A)				; A=[P3|P2|P1|P0] Get primary slots info
+                                    171 		rrca
+                                    172 		rrca							; A=[P0|P3|P2|P1]
+                                    173 		and		a, #0b00000011			; A=[00|00|00|P1] Save Page 1 primary slot
+                                    174 		ld		c, a					; C=[00|00|00|P1]
+                                    175 		ld		hl, #EXPTBL				; HL=&EXPTBL
+                                    176 		add		a, l
+                                    177 		ld		l, a
+                                    178 		ld		a, (hl)					; A=EXPTBL[P1]    See if the slot is expanded or not
+                                    179 		and		a, #0x80				; A=[X|000|00|00] Keep only expansion flag
+                                    180 		or		a, c					; A=[X|000|00|P1] Set MSB if so
+                                    181 		ld		c, a					; C=[X|000|00|P1] Save it to [C]
+                                    182 		inc		l						;                 Point to primary slot's SLTTBL entry
+                                    183 		inc		l
+                                    184 		inc		l
+                                    185 		inc		l
+                                    186 		ld		a, (hl)					; A=SLTTBL[P1]    Get what is currently output to expansion slot register
+                                    187 		and		a, #0b00001100			; A=[00|00|S1|00]
+                                    188 		or		c						; A=[X|000|S1|P1] Finally form slot address
+                                    189 		ld		h, #0x80				; H=Page 2
+                                    190 		call	ENASLT					;                 Enable page 1's slot in page 2
+                                    191 .endm
+                                    192 
+                                    193 ;------------------------------------------------------------------------------
+                                    194 ; Set pages #0 and #2 at the same slot than the page #1 (for 48K ROM)
+                                    195 ;------------------------------------------------------------------------------
+                                    196 .macro INIT_P1_TO_P02
+                                    197 
+                                    198 	; Backup Page 0 (Main-ROM) information
+                                    199 	BACKUP_ROMINFO
+                                    200 
+                                    201 	; Call event before BIOS release
+                                    202 	ON_BIOS_RELEASE
+                                    203 
+                                    204 	crt0_p1_to_p02::
+                                    205 		; Set all pages primary slot equal to page #1 one
+                                    206 		in		a, (PPI_A)				; A=[P3|P2|P1|P0] Get primary slots info
+                                    207 		ld		d, a					; D=[P3|P2|P1|P0] Backup full slots info
+                                    208 		and		a, #0b00001100			; A=[00|00|P1|00] Mask all pages slots but P1 
+                                    209 		ld		c, a					; C=[00|00|P1|00] Backup P1
+                                    210 		rrca							;                 A>>1
+                                    211 		rrca							; A=[00|00|00|P1] A>>1
+                                    212 		or		a, c					; A=[00|00|P1|P1]
+                                    213 		ld		c, a					; C=[00|00|P1|P1] Backup 
+                                    214 		add		a, a					;                 A<<1
+                                    215 		add		a, a					; A=[00|P1|P1|00] A<<1
+                                    216 		add		a, a					;                 A<<1
+                                    217 		add		a, a					; A=[P1|P1|00|00] A<<1
+                                    218 		or		a, c					; A=[P1|P1|P1|P1] Merge
+                                    219 		out		(PPI_A), a				;                 Set primary slots info
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 10.
+Hexadecimal [24-Bits]
+
+
+
+                                    220 		ld		e, a					; E=[P1|P1|P1|P1] Backup new slots
+                                    221 
+                                    222 		; Set page #0 and 2 at the same secondary slot than page #1 one
+                                    223 		ld		a, (SLTSL)				; A=[~3|~2|~1|~0] Read secondary slots register of selected primary slot
+                                    224 		cpl								; A=[S3|S2|S1|S0] Reverses the bits
+                                    225 		ld		b, a					; B=[S3|S2|S1|S0] Backup secondary slot
+                                    226 		and		a, #0b00001100			; A=[00|00|S1|00] Mask all pages secondary slots but P1 
+                                    227 		ld		c, a					; C=[00|00|S1|00] Backup
+                                    228 		rrca							;                 A>>1
+                                    229 		rrca							; A=[00|00|00|S1] A>>1
+                                    230 		or		a, c					; A=[00|00|S1|S1] Merge
+                                    231 		ld		c, a					; C=[00|00|S1|S1] Backup
+                                    232 		add		a, a					;                 A<<1
+                                    233 		add		a, a					; A=[00|S1|S1|00] A<<1
+                                    234 		or		a, c					; A=[00|S1|S1|S1] Merge
+                                    235 		ld		c, a					; C=[00|S1|S1|S1] Backup
+                                    236 		ld		a, b					; A=[S3|S2|S1|S0] Restore primary slots info 
+                                    237 		and		a, #0b11000000			; A=[S3|00|00|00] Mask all pages slots but P0 
+                                    238 		or		a, c					; A=[S3|S1|S1|S0] Merge original P0 and P1 in all other page
+                                    239 		ld		(SLTSL), a				;                 Set secondary slot info
+                                    240 
+                                    241 		; Restore initial Page 3 slot
+                                    242 		ld		a, d					; A=[P3|P2|P1|P0] Restore initiale primary slots
+                                    243 		and		a, #0b11000000			; A=[P3|00|00|00] Keep page #3 primary slot
+                                    244 		ld		c, a					; C=[P3|00|00|00] Backup
+                                    245 		ld		a, e					; A=[P1|P1|P1|P1] Restore new primary slots
+                                    246 		and		a, #0b00111111			; A=[00|P1|P1|P1] Keep all pages but page #3
+                                    247 		or		a, c					; A=[P3|P1|P1|P1] Merge
+                                    248 		out		(PPI_A), a				;                 Set primary slots info
+                                    249 .endm
+                                    250 
+                                    251 ;------------------------------------------------------------------------------
+                                    252 ; Set page #0 at the same slot than the page #3 (replace Main-ROM by RAM)
+                                    253 ; /!\ Need 64 KB of RAM
+                                    254 ;------------------------------------------------------------------------------
+                                    255 .macro INIT_P3_TO_P0
+                                    256 
+                                    257 	; Backup Page 0 (Main-ROM) information
+                                    258 	BACKUP_ROMINFO
+                                    259 
+                                    260 	; Call event before BIOS release
+                                    261 	ON_BIOS_RELEASE
+                                    262 
+                                    263 	crt0_p3_to_p0::
+                                    264 
+                                    265 		; Code by retrocanada76
+                                    266 		; https://msx.org/forum/msx-talk/development/msxgl-%E2%80%93-a-new-c-game-library-for-msx?page=28
+                                    267 
+                                    268 		; D = current SLOT config (P3|P2|P1|P0)
+                                    269 		; E = current SLTSL reg (P3)
+                                    270 		in		a, (PPI_A)				; get current SLOTs
+                                    271 		ld		e, a					; save for later (E)
+                                    272 		ld		a, (SLTSL)				
+                                    273 		cpl								; get current SSLOTs (P3)
+                                    274 		ld		d,a						; save for later (D)
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 11.
+Hexadecimal [24-Bits]
+
+
+
+                                    275 
+                                    276 		; Set pages #0 primary slot equal to page #3 one
+                                    277 		in		a, (PPI_A)				; A=[P3|P2|P1|P0] Get primary slots info 
+                                    278 		and		a, #0b11111100			; A=[P3|P2|P1|00] Mask P0 slot 
+                                    279 		ld		b, a					; B=[P3|P2|P1|00] Backup
+                                    280 		and		a, #0b11000000			; A=[P3|00|00|00] Mask all pages slots but P3 
+                                    281 		rlca							;                 A<<1
+                                    282 		rlca							; A=[00|00|00|P3] A<<1
+                                    283 		or		a, b					; A=[P3|P2|P1|P3] Merge
+                                    284 		out		(PPI_A), a				;                 Set primary slots info
+                                    285 
+                                    286 		; Set page #0 seconday slot equal to page #3 one
+                                    287 		ld		a, (SLTSL)				; A=[~3|~2|~1|~0] Read secondary slots register of selected primary slot
+                                    288 		cpl								; A=[S3|S2|S1|S0] Reverses the bits
+                                    289 		and		a, #0b11111100			; A=[S3|S2|S1|00] Mask S0 slot 
+                                    290 		ld		b, a					; B=[S3|S2|S1|00] Backup
+                                    291 		and		a, #0b11000000			; A=[S3|00|00|00] Mask all pages slots but S3 
+                                    292 		rlca							;                 A<<1
+                                    293 		rlca							; A=[00|00|00|S3] A<<1
+                                    294 		or		a, b					; A=[S3|S2|S1|S3] Merge
+                                    295 		ld		(SLTSL), a				;                 Set secondary slot info
+                                    296 
+                                    297 		ld		a,(0)					; read from P0
+                                    298 		ld		h,a						; save for comparison
+                                    299 		cpl								; make it inverse
+                                    300 		ld		(0),a					; write back to P0
+                                    301 		ld		a,(0)					; read again
+                                    302 		cp		h						; compare against original
+                                    303 		jr		nz, #ram_found			; not the same ? RAM found here
+                                    304 
+                                    305 		; RAM deep search
+                                    306 		; this routine search for RAM on P0. It searches each subslot as the RAM might be fragmented (Victor HC-80 or Sony HB-F900 rev1)
+                                    307 		; it could be also MSX1s with RAM expansion cards
+                                    308 		; into several 16K chunks.
+                                    309 		; B = probing SSLOT (3 - 0)
+                                    310 		; C = probing SLOT (3 - 0) (P3|P0)
+                                    311 		; L = saved SLTSL reg for probing SLOT
+                                    312 
+                                    313 		ld		a,#0b11000011			; set probing SLOTs P0 and P3 to SLOT 3
+                                    314 
+                                    315 	slot_loop:
+                                    316 		ld		c,a						; save probing P0 and P3
+                                    317 
+                                    318 		in		a, (PPI_A)				; read current SLOTs
+                                    319 		and		#0b00111100				; mask out P0 and P3
+                                    320 		or		c						; set P0 and P3 to current probing SLOTs
+                                    321 		out		(PPI_A),a				
+                                    322 
+                                    323 		ld		b, #4					; probe for 4 SSLOTs	
+                                    324 	sslot_loop:
+                                    325 		ld		a, (SLTSL)				; read SSLOT reg
+                                    326 		cpl								; get current SSLOTs for probing SLOT
+                                    327 		ld		l, a					; save for later (L)
+                                    328 		and		#0b11111100				; mask out P0
+                                    329 		dec		b						; dec probing SSLOT (started on #4)
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 12.
+Hexadecimal [24-Bits]
+
+
+
+                                    330 		or		b						; set probing P0 SSLOT
+                                    331 		ld		(SLTSL), a				; write SSLOT reg
+                                    332 
+                                    333 		ld		a,(0)					; read from P0
+                                    334 		ld		h,a						; save for comparison
+                                    335 		cpl								; make it inverse
+                                    336 		ld		(0),a					; write back to P0
+                                    337 		ld		a,(0)					; read again
+                                    338 		cp		h						; compare against original
+                                    339 		jr		nz, #ram_found			; not the same ? RAM found here
+                                    340 
+                                    341 		xor		a						; this SSLOT is not RAM
+                                    342 		or 		b 						; check SSLOT counter
+                                    343 		jr		nz, #sslot_loop			; repeat if still SSLOT left
+                                    344 
+                                    345 		ld		a,l						; no more SSLOTs for this SLOT
+                                    346 		ld 		(SLTSL), a				; restore saved SSLOT for probing SLOT (L)
+                                    347 
+                                    348 		ld		a, e
+                                    349 		out		(PPI_A), a 				; restore saved SLOT (E)
+                                    350 		ld		a, d
+                                    351 		ld		(SLTSL), a 				; restore saved SSLOT (D)
+                                    352 
+                                    353 		xor		a
+                                    354 		or		c						; has ended ?
+                                    355 		jr		z, #ram_not_found
+                                    356 		sub		#0b01000001				; dec SLOTS P0 and P3
+                                    357 		jr		#slot_loop				; repeat next slot
+                                    358 
+                                    359 	ram_found:
+                                    360 		cpl								; ram has been found
+                                    361 		ld		(0),a 					; restore original RAM content
+                                    362 
+                                    363 		ld		a,e						; now we found P0 ram lets 
+                                    364 		and		#0b11000000				; extract P3 original SLOT
+                                    365 		ld		e,a						; keep only original P3
+                                    366 
+                                    367 		in		a,(PPI_A)				; read actual SLOT config
+                                    368 		and		#0b00111111				; mask out P3 from current config
+                                    369 		or		e
+                                    370 		out		(PPI_A),a				; set back original P3 SLOT
+                                    371 
+                                    372 		ld		a, d					; do the same now with SSLOT
+                                    373 		and		#0b11000000				; extract P3 from original SSLOT
+                                    374 		ld		d,a
+                                    375 		ld		a,(SLTSL)				; read actual SSLOT
+                                    376 		cpl
+                                    377 		and		#0b00111111				; mask out P3
+                                    378 		or		d						; set back original P3 SSLOT
+                                    379 		ld		(SLTSL), a 				; restore orig sslot
+                                    380 
+                                    381 	ram_not_found:
+                                    382 
+                                    383 .endm
+                                    384 
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 13.
+Hexadecimal [24-Bits]
+
+
+
+                                    385 ;------------------------------------------------------------------------------
+                                    386 ; Call event before BIOS release
+                                    387 ;------------------------------------------------------------------------------
+                                    388 .macro ON_BIOS_RELEASE
+                                    389 
+                                    390 	.if BIOS_RELEASE
+                                    391 	.globl _BIOS_OnRelease
+                                    392 	crt0_bios_release::
+                                    393 		call _BIOS_OnRelease
+                                    394 	.endif
+                                    395 
+                                    396 .endm
+                                    397 
+                                    398 ;------------------------------------------------------------------------------
+                                    399 ; Check for skip key press
+                                    400 ;------------------------------------------------------------------------------
+                                    401 .macro SKIP_BOOT
+                                    402 	.if ROM_SKIP
+                                    403 	; Check for 'ESC' key press
+                                    404 	ctr0_check_rom_skip:
+                                    405 		in		a, (PPI_C)
+                                    406 		and		#0xF0					; only change bits 0-3
+                                    407 		or		#7						; check row number 7
+                                    408 		out		(PPI_C), a
+                                    409 		in		a, (PPI_B)				; read row into A
+                                    410 		and		#ROM_SKIP_KEY
+                                    411 		ret		z
+                                    412 	.endif
+                                    413 .endm
+                                    414 
+                                    415 ;------------------------------------------------------------------------------
+                                    416 ; Delay boot using STKE hook
+                                    417 ;------------------------------------------------------------------------------
+                                    418 .macro DELAY_BOOT
+                                    419 	.if ROM_DELAY
+                                    420 	; Setup the hook H.STKE to run the ROM with disk support
+                                    421 	crt0_bdos_install::
+                                    422 		ld		a, c					; Get the ROM slot number
+                                    423 		ld		hl, #crt0_bdos_hook
+                                    424 		ld		de, #H_STKE
+                                    425 		ld		bc, #4
+                                    426 		ldir							; Copy the routine to execute the ROM to the hook
+                                    427 		ld		(H_STKE+1), a			; Put the ROM slot number to the hook
+                                    428 		ret								; Back to slots scanning
+                                    429 
+                                    430 	; Routine to execute the ROM
+                                    431 	crt0_bdos_hook:
+                                    432 		rst		0x30					; Inter-slot call
+                                    433 		.db		1						; This byte will be replaced by the slot number of ROM
+                                    434 		.dw		crt0_bdos_end			; Address to execute the ROM
+                                    435 
+                                    436 	; Remove the hook and resume the ROM boot sequence
+                                    437 	crt0_bdos_end:
+                                    438 		ld		a, #0xC9				; 'ret' instruction
+                                    439 		ld		(H_STKE), a
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 14.
+Hexadecimal [24-Bits]
+
+
+
+                                    440 	.endif
+                                    441 .endm
+                                    442 
+                                    443 ;------------------------------------------------------------------------------
+                                    444 ; Check MSX version
+                                    445 ;------------------------------------------------------------------------------
+                                    446 .macro DO_CHECK_MSX
+                                    447 	.ifne CHECK_MSX-MSX1
+                                    448 	; Check for minimal MSX version and display message if not correct
+                                    449 	crt0_check_msx::
+                                    450 		ld		a, (MSXVER)
+                                    451 		cp		#CHECK_MSX
+                                    452 		jp		nc, crt0_check_msx_end ; Version must be equal or higher
+                                    453 
+                                    454 		ld		a, #40
+                                    455 		ld		(LINL40), a			; Set number of columns
+                                    456 		call	INITXT				; Switch to Screen 0 (text mode)
+                                    457 
+                                    458 		ld		hl, #crt0_check_msx_message
+                                    459 		call	crt0_check_msx_print ; Display error message
+                                    460 
+                                    461 	crt0_check_msx_loop:
+                                    462 		call	CHGET				; Waiting for user to press a key
+                                    463 		cp		#67 				; Character 'C'
+                                    464 		jp		z, crt0_check_msx_end
+                                    465 		cp		#99 				; Character 'c'
+                                    466 		jp		z, crt0_check_msx_end
+                                    467 		jr		crt0_check_msx_loop
+                                    468 
+                                    469 	crt0_check_msx_print:
+                                    470 		ld		a, (hl)
+                                    471 		or		a
+                                    472 		ret		z
+                                    473 		call	CHPUT
+                                    474 		inc		hl
+                                    475 		jr		crt0_check_msx_print
+                                    476 
+                                    477 	crt0_check_msx_message:
+                                    478 		.ascii	"Error: A "
+                                    479 		.ifeq CHECK_MSX-MSX2
+                                    480 		.ascii	"MSX2"
+                                    481 		.endif
+                                    482 		.ifeq CHECK_MSX-MSX2P
+                                    483 		.ascii	"MSX2+"
+                                    484 		.endif
+                                    485 		.ifeq CHECK_MSX-MSXTR
+                                    486 		.ascii	"MSX turbo R"
+                                    487 		.endif
+                                    488 		.ascii	" is required!\n\n\n\rPress [C] to continue anyway.\0"
+                                    489 
+                                    490 	crt0_check_msx_end:
+                                    491 	.endif
+                                    492 .endm
+                                    493 
+                                    494 ;------------------------------------------------------------------------------
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 15.
+Hexadecimal [24-Bits]
+
+
+
+                                    495 ; Interrupt Service Routine
+                                    496 ;------------------------------------------------------------------------------
+                                    497 
+                                    498 ;..............................................................................
+                                    499 ; All interruption ISR
+                           000000   500 .ifeq ROM_ISR-ISR_ALL
+                                    501 .macro INCLUDE_ISR
+                                    502 		.globl	_VDP_InterruptHandler
+                                    503 	crt0_interrupt_start::
+                                    504 	; Backup registers
+                                    505 		push	af
+                                    506 		push	hl
+                                    507 		push	de
+                                    508 		push	bc
+                                    509 		exx
+                                    510 		ex		af, af'
+                                    511 		push	af
+                                    512 		push	hl
+                                    513 		push	de
+                                    514 		push	bc
+                                    515 		push	iy
+                                    516 		push	ix
+                                    517 	; Call interruption handler
+                                    518 		call	_VDP_InterruptHandler
+                                    519 	; Restore registers
+                                    520 		pop		ix
+                                    521 		pop		iy
+                                    522 		pop		bc
+                                    523 		pop		de
+                                    524 		pop		hl
+                                    525 		pop		af
+                                    526 		ex		af, af'
+                                    527 		exx
+                                    528 		pop		bc
+                                    529 		pop		de
+                                    530 		pop		hl
+                                    531 		pop		af
+                                    532 		ei
+                                    533 		reti
+                                    534 	crt0_interrupt_end:
+                                    535 .endm
+                                    536 .endif
+                                    537 
+                                    538 ;..............................................................................
+                                    539 ; V-Blank ISR
+                           000001   540 .ifeq ROM_ISR-ISR_VBLANK
+                                    541 .macro INCLUDE_ISR
+                                    542 		.globl	_VDP_InterruptHandler
+                                    543 	crt0_interrupt_start::
+                                    544 	; Skip interruptions that do not come from the VDP.
+                                    545 		push	af
+                                    546 	; Reset R#15 to S#0
+                                    547 	.if ISR_SET_S0
+                                    548 		xor		a
+                                    549 		out		(VDP_A), a
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 16.
+Hexadecimal [24-Bits]
+
+
+
+                                    550 		ld		a, #(0x80 + 15)
+                                    551 		out		(VDP_A),a
+                                    552 	.endif
+                                    553 		in		a, (VDP_S)
+                                    554 		rlca
+                                    555 		jr		nc, crt0_interrupt_skip
+                                    556 	; Backup registers
+                                    557 		push	hl
+                                    558 		push	de
+                                    559 		push	bc
+                                    560 		exx
+                                    561 		ex		af, af'
+                                    562 		push	af
+                                    563 		push	hl
+                                    564 		push	de
+                                    565 		push	bc
+                                    566 		push	iy
+                                    567 		push	ix
+                                    568 	; Call VDP interruption handler
+                                    569 		call	_VDP_InterruptHandler
+                                    570 	; Restore registers
+                                    571 		pop		ix
+                                    572 		pop		iy
+                                    573 		pop		bc
+                                    574 		pop		de
+                                    575 		pop		hl
+                                    576 		pop		af
+                                    577 		ex		af, af'
+                                    578 		exx
+                                    579 		pop		bc
+                                    580 		pop		de
+                                    581 		pop		hl
+                                    582 	; Restore registers
+                                    583 	crt0_interrupt_skip:
+                                    584 		pop		af
+                                    585 		ei
+                                    586 		reti
+                                    587 	crt0_interrupt_end:
+                                    588 .endm
+                                    589 .endif
+                                    590 
+                                    591 ;..............................................................................
+                                    592 ; V-Blank & H-Blank ISR
+                           000000   593 .ifeq ROM_ISR-ISR_VHBLANK
+                                    594 .macro INCLUDE_ISR
+                                    595 		.globl	_VDP_InterruptHandler
+                                    596 		.globl	_VDP_HBlankHandler
+                                    597 
+                                    598 	crt0_interrupt_start::
+                                    599 	; Backup registers
+                                    600 		push	af
+                                    601 		push	hl
+                                    602 		push	de
+                                    603 		push	bc
+                                    604 		exx
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 17.
+Hexadecimal [24-Bits]
+
+
+
+                                    605 		ex		af, af'
+                                    606 		push	af
+                                    607 		push	hl
+                                    608 		push	de
+                                    609 		push	bc
+                                    610 		push	iy
+                                    611 		push	ix
+                                    612 	; Reset R#15 to S#0
+                                    613 	.if ISR_SET_S0
+                                    614 		xor		a
+                                    615 		out		(VDP_A), a
+                                    616 		ld		a, #(0x80 + 15)
+                                    617 		out		(VDP_A),a
+                                    618 	.endif
+                                    619 	; Check V-Blank
+                                    620 		in		a, (VDP_S)					; Get S#0 value
+                                    621 		rlca
+                                    622 		call	c, _VDP_InterruptHandler 	; Call VDP interruption handler
+                                    623 	; Check H-Blank
+                                    624 		ld		a, #1
+                                    625 		out		(VDP_A), a
+                                    626 		ld		a, #(0x80 + 15)
+                                    627 		out		(VDP_A), a
+                                    628 		in		a, (VDP_S)
+                                    629 		rrca								; Call H-Blank if bit #0 of S#1 is set 
+                                    630 		call	c, _VDP_HBlankHandler		; call to C function HBlankHook()
+                                    631 	; Reset R#15 to S#0
+                                    632 		xor		a
+                                    633 		out		(VDP_A), a
+                                    634 		ld		a, #(0x80 + 15)
+                                    635 		out		(VDP_A),a
+                                    636 	; Restore registers
+                                    637 		pop		ix
+                                    638 		pop		iy
+                                    639 		pop		bc
+                                    640 		pop		de
+                                    641 		pop		hl
+                                    642 		pop		af
+                                    643 		ex		af, af'
+                                    644 		exx
+                                    645 		pop		bc
+                                    646 		pop		de
+                                    647 		pop		hl
+                                    648 		pop		af
+                                    649 		ei
+                                    650 		reti
+                                    651 	crt0_interrupt_end:
+                                    652 .endm
+                                    653 .endif
+                                    654 
+                                    655 ;..............................................................................
+                                    656 ; V9990 ISR
+                           000000   657 .ifeq ROM_ISR-ISR_V9990
+                                    658 .macro INCLUDE_ISR
+                                    659 		.globl	_V9_InterruptVBlank
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 18.
+Hexadecimal [24-Bits]
+
+
+
+                                    660 		.globl	_V9_InterruptHBlank
+                                    661 		.globl	_V9_InterruptCommand
+                                    662 
+                                    663 	crt0_interrupt_start::
+                                    664 	; Skip interruptions that do not come from the VDP.
+                                    665 		push	af
+                                    666 		in		a, (V9_P06)
+                                    667 		or		a
+                                    668 		jr		z, crt0_interrupt_skip ; Quick skip (before full register backup)
+                                    669 	; Backup registers
+                                    670 		push	hl
+                                    671 		push	de
+                                    672 		push	bc
+                                    673 		exx
+                                    674 		ex		af, af'
+                                    675 		push	af
+                                    676 		push	hl
+                                    677 		push	de
+                                    678 		push	bc
+                                    679 		push	iy
+                                    680 		push	ix
+                                    681 	; Call VDP interruption handler
+                                    682 		in		a, (V9_P06)			; Get P#6 again (quicker than push/pop the value)
+                                    683 		out		(V9_P06), a			; Reset interrupt bits
+                                    684 	; V-Blank interruption
+                                    685 		rra
+                                    686 		call	c, _V9_InterruptVBlank
+                                    687 	; H-Blank interruption
+                                    688 		rra
+                                    689 		call	c, _V9_InterruptHBlank
+                                    690 	; Command end interruption
+                                    691 		rra
+                                    692 		call	c, _V9_InterruptCommand
+                                    693 	; Restore registers
+                                    694 		pop		ix
+                                    695 		pop		iy
+                                    696 		pop		bc
+                                    697 		pop		de
+                                    698 		pop		hl
+                                    699 		pop		af
+                                    700 		ex		af, af'
+                                    701 		exx
+                                    702 		pop		bc
+                                    703 		pop		de
+                                    704 		pop		hl
+                                    705 	; Restore registers
+                                    706 	crt0_interrupt_skip:
+                                    707 		pop		af
+                                    708 		ei
+                                    709 		reti
+                                    710 	crt0_interrupt_end:
+                                    711 .endm
+                                    712 .endif
+                                    713 
+                                    714 ;------------------------------------------------------------------------------
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 19.
+Hexadecimal [24-Bits]
+
+
+
+                                    715 ; Backup Main-ROM's MSX info before switching out the BIOS from page 0
+                                    716 ;------------------------------------------------------------------------------
+                                    717 .macro ALLOC_ROMINFO
+                                    718 	_g_VersionROM::
+                                    719 		.ds		1
+                                    720 	_g_VersionMSX::
+                                    721 		.ds		1
+                                    722 .endm
+                                    723 
+                                    724 .macro BACKUP_ROMINFO
+                                    725 	ld		a, (ROMVER)
+                                    726 	ld		(_g_VersionROM), a
+                                    727 	ld		a, (MSXVER)
+                                    728 	ld		(_g_VersionMSX), a
+                                    729 .endm
+                                    730 
+                                    731 ;------------------------------------------------------------------------------
+                                    732 ; Install ISR in RAM
+                                    733 ; (needs 64 KB of RAM in Page #3's slot)
+                                    734 ;------------------------------------------------------------------------------
+                                    735 .macro INSTALL_RAM_ISR
+                                    736 	.ifne ROM_RAMISR-RAM0_NONE
+                                    737 
+                                    738 	crt0_select_ram::
+                                    739 		jp		crt0_interrupt_end
+                                    740 
+                                    741 	; ISR
+                                    742 		INCLUDE_ISR
+                                    743 
+                                    744 	; Switch page 0 to RAM
+                                    745 		INIT_P3_TO_P0
+                                    746 
+                                    747 	; Copy ISR to RAM
+                                    748 	crt0_install_isr::
+                                    749 		ld		hl, #crt0_interrupt_start
+                                    750 		ld		de, #0x0038
+                                    751 		ld		bc, #crt0_interrupt_end-crt0_interrupt_start
+                                    752 		ldir
+                                    753 
+                                    754 		.ifeq ROM_RAMISR-RAM0_SEGMENT
+                                    755 	crt0_install_seg::
+                                    756 
+                                    757 			.ifeq ROM_MAPPER-ROM_ASCII8
+                                    758 				ld		a, #4
+                                    759 				ld		(BANK2_ADDR), a ; Segment 4 in Bank 2
+                                    760 				inc		a
+                                    761 				ld		(BANK3_ADDR), a ; Segment 5 in Bank 3
+                                    762 			.endif
+                                    763 			.ifeq ROM_MAPPER-ROM_ASCII16
+                                    764 				ld		a, #2
+                                    765 				ld		(BANK1_ADDR), a ; Segment 2 in Bank 1
+                                    766 			.endif
+                                    767 			.ifeq ROM_MAPPER-ROM_KONAMI
+                                    768 				ld		a, #4
+                                    769 				ld		(BANK2_ADDR), a ; Segment 4 in Bank 2
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 20.
+Hexadecimal [24-Bits]
+
+
+
+                                    770 				inc		a
+                                    771 				ld		(BANK3_ADDR), a ; Segment 5 in Bank 3
+                                    772 			.endif
+                                    773 			.ifeq ROM_MAPPER-ROM_KONAMI_SCC
+                                    774 				ld		a, #4
+                                    775 				ld		(BANK2_ADDR), a ; Segment 4 in Bank 2
+                                    776 				inc		a
+                                    777 				ld		(BANK3_ADDR), a ; Segment 5 in Bank 3
+                                    778 			.endif
+                                    779 			.ifeq ROM_MAPPER-ROM_NEO8
+                                    780 				ld		a, #6
+                                    781 				ld		(BANK4_ADDR), a ; Segment 6 in Bank 4
+                                    782 				inc		a
+                                    783 				ld		(BANK5_ADDR), a ; Segment 7 in Bank 5
+                                    784 			.endif
+                                    785 			.ifeq ROM_MAPPER-ROM_NEO16
+                                    786 				ld		a, #3
+                                    787 				ld		(BANK2_ADDR), a ; Segment 3 in Bank 2
+                                    788 			.endif
+                                    789 			.ifeq ROM_MAPPER-ROM_YAMANOOTO
+                                    790 				ld		a, #4
+                                    791 				ld		(BANK2_ADDR), a ; Segment 4 in Bank 2
+                                    792 				inc		a
+                                    793 				ld		(BANK3_ADDR), a ; Segment 5 in Bank 3
+                                    794 			.endif
+                                    795 			.ifeq ROM_MAPPER-ROM_ASCII16X
+                                    796 				ld		a, #2
+                                    797 				ld		(BANK1_ADDR), a ; Segment 2 in Bank 1
+                                    798 			.endif
+                                    799 			.ifeq ROM_MAPPER-ROM_POPOLON
+                                    800 				ld		a, #4
+                                    801 				ld		(BANK2_ADDR), a ; Segment 4 in Bank 2
+                                    802 				inc		a
+                                    803 				ld		(BANK3_ADDR), a ; Segment 5 in Bank 3
+                                    804 			.endif
+                                    805 
+                                    806 		; Copy Segment content to RAM
+                                    807 			ld		hl, #0x8100 ; Page 2
+                                    808 			ld		de, #0x0100 ; Page 0 (after ISR)
+                                    809 			ld		bc, #0x3F00 ; 16 KB - 100h
+                                    810 			ldir
+                                    811 		.endif
+                                    812 
+                                    813 	.endif
+                                    814 .endm
+                                    815 
+                                    816 
+                                    817 ;------------------------------------------------------------------------------
+                                    818 ; Add banked call trampoline
+                                    819 ;------------------------------------------------------------------------------
+                                    820 .macro SUPPORT_BANKED_CALL
+                                    821 	.if ROM_BCALL
+                                    822 	; Set segment (get value from register A)
+                                    823 	set_bank::
+                                    824 		ld		(BANKED_ADDR), a ; Address used to switch defaut bank for banked call
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 21.
+Hexadecimal [24-Bits]
+
+
+
+                                    825 		ld		(_g_CurrentSegment), a
+                                    826 		ret
+                                    827 
+                                    828 	; Get segment (return value in register A)
+                                    829 	get_bank::
+                                    830 		ld		a, (_g_CurrentSegment)
+                                    831 		ret
+                                    832 	.endif
+                                    833 .endm
+                                    834 
+                                    835 ;==============================================================================
+                                    836 ; ROM MAPPER
+                                    837 ;==============================================================================
+                                    838 
+                                    839 ;------------------------------------------------------------------------------
+                                    840 ; ROM_PLAIN
+                                    841 ;------------------------------------------------------------------------------
+                           000001   842 .ifeq ROM_MAPPER-ROM_PLAIN
+                                    843 
+                                    844 	.macro ALLOC_MAPPER
+                                    845 	.endm
+                                    846 
+                                    847 	.macro INIT_MAPPER
+                                    848 	.endm
+                                    849 
+                                    850 .endif
+                                    851 
+                                    852 ;------------------------------------------------------------------------------
+                                    853 ; ROM_ASCII8
+                                    854 ;------------------------------------------------------------------------------
+                           000000   855 .ifeq ROM_MAPPER-ROM_ASCII8
+                                    856 
+                                    857 	.macro ALLOC_MAPPER
+                                    858 		_g_Bank0Segment::
+                                    859 			.ds 1
+                                    860 		_g_Bank1Segment::
+                                    861 			.ds 1
+                                    862 		_g_CurrentSegment::
+                                    863 		_g_Bank2Segment::
+                                    864 			.ds 1
+                                    865 		_g_Bank3Segment::
+                                    866 			.ds 1
+                                    867 	.endm
+                                    868 
+                                    869 	.macro INIT_MAPPER
+                                    870 		ctr0_init_mapper::
+                                    871 			xor		a
+                                    872 			ld		(BANK0_ADDR), a ; Segment 0 in Bank 0
+                                    873 			ld		(_g_Bank0Segment), a
+                                    874 			inc		a
+                                    875 			ld		(BANK1_ADDR), a ; Segment 1 in Bank 1
+                                    876 			ld		(_g_Bank1Segment), a
+                                    877 			inc		a
+                                    878 			ld		(BANK2_ADDR), a ; Segment 2 in Bank 2
+                                    879 			ld		(_g_Bank2Segment), a
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 22.
+Hexadecimal [24-Bits]
+
+
+
+                                    880 			inc		a
+                                    881 			ld		(BANK3_ADDR), a ; Segment 3 in Bank 3
+                                    882 			ld		(_g_Bank3Segment), a
+                                    883 	.endm
+                                    884 
+                                    885 .endif
+                                    886 
+                                    887 ;------------------------------------------------------------------------------
+                                    888 ; ROM_ASCII16
+                                    889 ;------------------------------------------------------------------------------
+                           000000   890 .ifeq ROM_MAPPER-ROM_ASCII16
+                                    891 
+                                    892 	.macro ALLOC_MAPPER
+                                    893 		_g_Bank0Segment::
+                                    894 			.ds 1
+                                    895 		_g_CurrentSegment::
+                                    896 		_g_Bank1Segment::
+                                    897 			.ds 1
+                                    898 	.endm
+                                    899 
+                                    900 	.macro INIT_MAPPER
+                                    901 		ctr0_init_mapper::
+                                    902 			xor		a
+                                    903 			ld		(BANK0_ADDR), a ; Segment 0 in Bank 0
+                                    904 			ld		(_g_Bank0Segment), a
+                                    905 			inc		a
+                                    906 			ld		(BANK1_ADDR), a ; Segment 1 in Bank 1
+                                    907 			ld		(_g_Bank1Segment), a
+                                    908 	.endm
+                                    909 
+                                    910 .endif
+                                    911 
+                                    912 ;------------------------------------------------------------------------------
+                                    913 ; ROM_KONAMI
+                                    914 ;------------------------------------------------------------------------------
+                           000000   915 .ifeq ROM_MAPPER-ROM_KONAMI
+                                    916 
+                                    917 	.macro ALLOC_MAPPER
+                                    918 		_g_Bank0Segment::
+                                    919 			.ds 1
+                                    920 		_g_Bank1Segment::
+                                    921 			.ds 1
+                                    922 		_g_CurrentSegment::
+                                    923 		_g_Bank2Segment::
+                                    924 			.ds 1
+                                    925 		_g_Bank3Segment::
+                                    926 			.ds 1
+                                    927 	.endm
+                                    928 
+                                    929 	.macro INIT_MAPPER
+                                    930 		ctr0_init_mapper::
+                                    931 			xor		a
+                                    932 			ld		(_g_Bank0Segment), a
+                                    933 			inc		a
+                                    934 			ld		(BANK1_ADDR), a ; Segment 1 in Bank 1
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 23.
+Hexadecimal [24-Bits]
+
+
+
+                                    935 			ld		(_g_Bank1Segment), a
+                                    936 			inc		a
+                                    937 			ld		(BANK2_ADDR), a ; Segment 2 in Bank 2
+                                    938 			ld		(_g_Bank2Segment), a
+                                    939 			inc		a
+                                    940 			ld		(BANK3_ADDR), a ; Segment 3 in Bank 3
+                                    941 			ld		(_g_Bank3Segment), a
+                                    942 	.endm
+                                    943 
+                                    944 .endif
+                                    945 
+                                    946 ;------------------------------------------------------------------------------
+                                    947 ; ROM_KONAMI_SCC
+                                    948 ;------------------------------------------------------------------------------
+                           000000   949 .ifeq ROM_MAPPER-ROM_KONAMI_SCC
+                                    950 
+                                    951 	.macro ALLOC_MAPPER
+                                    952 		_g_Bank0Segment::
+                                    953 			.ds 1
+                                    954 		_g_Bank1Segment::
+                                    955 			.ds 1
+                                    956 		_g_CurrentSegment::
+                                    957 		_g_Bank2Segment::
+                                    958 			.ds 1
+                                    959 		_g_Bank3Segment::
+                                    960 			.ds 1
+                                    961 	.endm
+                                    962 
+                                    963 	.macro INIT_MAPPER
+                                    964 		ctr0_init_mapper::
+                                    965 			xor		a
+                                    966 			ld		(BANK0_ADDR), a ; Segment 0 in Bank 0
+                                    967 			ld		(_g_Bank0Segment), a
+                                    968 			inc		a
+                                    969 			ld		(BANK1_ADDR), a ; Segment 1 in Bank 1
+                                    970 			ld		(_g_Bank1Segment), a
+                                    971 			inc		a
+                                    972 			ld		(BANK2_ADDR), a ; Segment 2 in Bank 2
+                                    973 			ld		(_g_Bank2Segment), a
+                                    974 			inc		a
+                                    975 			ld		(BANK3_ADDR), a ; Segment 3 in Bank 3
+                                    976 			ld		(_g_Bank3Segment), a
+                                    977 	.endm
+                                    978 
+                                    979 .endif
+                                    980 
+                                    981 ;------------------------------------------------------------------------------
+                                    982 ; ROM_NEO8
+                                    983 ;------------------------------------------------------------------------------
+                           000000   984 .ifeq ROM_MAPPER-ROM_NEO8
+                                    985 
+                                    986 	.macro ALLOC_MAPPER
+                                    987 		_g_Bank0Segment::
+                                    988 			.ds 2
+                                    989 		_g_Bank1Segment::
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 24.
+Hexadecimal [24-Bits]
+
+
+
+                                    990 			.ds 2
+                                    991 		_g_Bank2Segment::
+                                    992 			.ds 2
+                                    993 		_g_Bank3Segment::
+                                    994 			.ds 2
+                                    995 		_g_CurrentSegment::
+                                    996 		_g_Bank4Segment::
+                                    997 			.ds 2
+                                    998 		_g_Bank5Segment::
+                                    999 			.ds 2
+                                   1000 	.endm
+                                   1001 
+                                   1002 	.macro INIT_MAPPER
+                                   1003 		ctr0_init_mapper::
+                                   1004 			ld		hl, #0x0000
+                                   1005 			ld		(BANK2_ADDR), hl ; Segment 0 in Bank 2
+                                   1006 			ld		(_g_Bank2Segment), hl
+                                   1007 			inc		hl
+                                   1008 			ld		(BANK3_ADDR), hl ; Segment 1 in Bank 3
+                                   1009 			ld		(_g_Bank3Segment), hl
+                                   1010 			inc		hl
+                                   1011 			ld		(BANK4_ADDR), hl ; Segment 2 in Bank 4
+                                   1012 			ld		(_g_Bank4Segment), hl
+                                   1013 			inc		hl
+                                   1014 			ld		(BANK5_ADDR), hl ; Segment 3 in Bank 5
+                                   1015 			ld		(_g_Bank5Segment), hl
+                                   1016 			inc		hl
+                                   1017 			ld		(BANK0_ADDR), hl ; Segment 4 in Bank 0
+                                   1018 			ld		(_g_Bank0Segment), hl
+                                   1019 			inc		hl
+                                   1020 			ld		(BANK1_ADDR), hl ; Segment 5 in Bank 1
+                                   1021 			ld		(_g_Bank1Segment), hl
+                                   1022 	.endm
+                                   1023 
+                                   1024 .endif
+                                   1025 
+                                   1026 ;------------------------------------------------------------------------------
+                                   1027 ; ROM_NEO16
+                                   1028 ;------------------------------------------------------------------------------
+                           000000  1029 .ifeq ROM_MAPPER-ROM_NEO16
+                                   1030 
+                                   1031 	.macro ALLOC_MAPPER
+                                   1032 		_g_Bank0Segment::
+                                   1033 			.ds 2
+                                   1034 		_g_Bank1Segment::
+                                   1035 			.ds 2
+                                   1036 		_g_CurrentSegment::
+                                   1037 		_g_Bank2Segment::
+                                   1038 			.ds 2
+                                   1039 	.endm
+                                   1040 
+                                   1041 	.macro INIT_MAPPER
+                                   1042 		ctr0_init_mapper::
+                                   1043 			ld		hl, #0x0000
+                                   1044 			ld		(BANK1_ADDR), hl ; Segment 0 in Bank 1
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 25.
+Hexadecimal [24-Bits]
+
+
+
+                                   1045 			ld		(_g_Bank1Segment), hl
+                                   1046 			inc		hl
+                                   1047 			ld		(BANK2_ADDR), hl ; Segment 1 in Bank 2
+                                   1048 			ld		(_g_Bank2Segment), hl
+                                   1049 			inc		hl
+                                   1050 			ld		(BANK0_ADDR), hl ; Segment 2 in Bank 0
+                                   1051 			ld		(_g_Bank0Segment), hl
+                                   1052 	.endm
+                                   1053 
+                                   1054 .endif
+                                   1055 
+                                   1056 ;------------------------------------------------------------------------------
+                                   1057 ; ROM_YAMANOOTO
+                                   1058 ;------------------------------------------------------------------------------
+                           000000  1059 .ifeq ROM_MAPPER-ROM_YAMANOOTO
+                                   1060 
+                                   1061 	.macro ALLOC_MAPPER
+                                   1062 		_g_Bank0Segment::
+                                   1063 			.ds 2
+                                   1064 		_g_Bank1Segment::
+                                   1065 			.ds 2
+                                   1066 		_g_CurrentSegment::
+                                   1067 		_g_Bank2Segment::
+                                   1068 			.ds 2
+                                   1069 		_g_Bank3Segment::
+                                   1070 			.ds 2
+                                   1071 	.endm
+                                   1072 
+                                   1073 	.macro INIT_MAPPER
+                                   1074 		ctr0_init_mapper::
+                                   1075 			ld		a, #YAMA_ENAR_REGEN
+                                   1076 			ld		(YAMA_ENAR), a ; Enable mapper
+                                   1077 
+                                   1078 			xor		a
+                                   1079 			ld		(YAMA_OFFR), a ; Set mapper offset to 0
+                                   1080 			ld		(YAMA_CFGR), a ; Clear configuration
+                                   1081 			ld		(BANK0_ADDR), a ; Segment 0 in Bank 0
+                                   1082 			inc		a
+                                   1083 			ld		(BANK1_ADDR), a ; Segment 1 in Bank 1
+                                   1084 			inc		a
+                                   1085 			ld		(BANK2_ADDR), a ; Segment 2 in Bank 2
+                                   1086 			inc		a
+                                   1087 			ld		(BANK3_ADDR), a ; Segment 3 in Bank 3
+                                   1088 
+                                   1089 			ld		hl, #0x0000
+                                   1090 			ld		(_g_Bank0Segment), hl
+                                   1091 			inc		hl
+                                   1092 			ld		(_g_Bank1Segment), hl
+                                   1093 			inc		hl
+                                   1094 			ld		(_g_Bank2Segment), hl
+                                   1095 			inc		hl
+                                   1096 			ld		(_g_Bank3Segment), hl
+                                   1097 	.endm
+                                   1098 
+                                   1099 .endif
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 26.
+Hexadecimal [24-Bits]
+
+
+
+                                   1100 
+                                   1101 ;------------------------------------------------------------------------------
+                                   1102 ; ROM_ASCII16-X
+                                   1103 ;------------------------------------------------------------------------------
+                           000000  1104 .ifeq ROM_MAPPER-ROM_ASCII16X
+                                   1105 
+                                   1106 	.macro ALLOC_MAPPER
+                                   1107 		_g_Bank0Segment::
+                                   1108 			.ds 2
+                                   1109 		_g_CurrentSegment::
+                                   1110 		_g_Bank1Segment::
+                                   1111 			.ds 2
+                                   1112 	.endm
+                                   1113 
+                                   1114 	.macro INIT_MAPPER
+                                   1115 		ctr0_init_mapper::
+                                   1116 			xor		a
+                                   1117 			ld		(BANK0_ADDR), a ; Segment 0 in Bank 0
+                                   1118 			ld		(_g_Bank0Segment), a
+                                   1119 			inc		a
+                                   1120 			ld		(BANK1_ADDR), a ; Segment 1 in Bank 1
+                                   1121 			ld		(_g_Bank1Segment), a
+                                   1122 	.endm
+                                   1123 
+                                   1124 .endif
+                                   1125 
+                                   1126 ;------------------------------------------------------------------------------
+                                   1127 ; ROM_POPOLON_SCC
+                                   1128 ;------------------------------------------------------------------------------
+                           000000  1129 .ifeq ROM_MAPPER-ROM_POPOLON
+                                   1130 
+                                   1131 	.macro ALLOC_MAPPER
+                                   1132 		_g_Bank0Segment::
+                                   1133 			.ds 2
+                                   1134 		_g_Bank1Segment::
+                                   1135 			.ds 2
+                                   1136 		_g_CurrentSegment::
+                                   1137 		_g_Bank2Segment::
+                                   1138 			.ds 2
+                                   1139 		_g_Bank3Segment::
+                                   1140 			.ds 2
+                                   1141 	.endm
+                                   1142 
+                                   1143 	.macro INIT_MAPPER
+                                   1144 		ctr0_init_mapper::
+                                   1145 			; Disable offset
+                                   1146 			ld		a, (_g_ROMSlotID)
+                                   1147 			ld		hl, #POPOLON_CFGR
+                                   1148 			ld		e, #POPOLON_CFGR_OD
+                                   1149 			call	WRSLT
+                                   1150 
+                                   1151 			; Initialize banks register
+                                   1152 			xor		a
+                                   1153 			ld		(BANK0_ADDR), a ; Segment 0 in Bank 0
+                                   1154 			ld		(_g_Bank0Segment), a
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 27.
+Hexadecimal [24-Bits]
+
+
+
+                                   1155 			inc		a
+                                   1156 			ld		(BANK1_ADDR), a ; Segment 1 in Bank 1
+                                   1157 			ld		(_g_Bank1Segment), a
+                                   1158 			inc		a
+                                   1159 			ld		(BANK2_ADDR), a ; Segment 2 in Bank 2
+                                   1160 			ld		(_g_Bank2Segment), a
+                                   1161 			inc		a
+                                   1162 			ld		(BANK3_ADDR), a ; Segment 3 in Bank 3
+                                   1163 			ld		(_g_Bank3Segment), a
+                                   1164 	.endm
+                                   1165 
+                                   1166 .endif
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 28.
+Hexadecimal [24-Bits]
+
+
+
+                                     17 
+                                     18 ;==============================================================================
+                                     19 ; ROM
+                                     20 ;==============================================================================
+                                     21 	.area	_HEADER (ABS)
+      004000                         22 	.org	0x4000
+                                     23 
+                                     24 ;------------------------------------------------------------------------------
+                                     25 ; Header
+                                     26 	.area	_HOME
+                                     27 	.area	_CODE
+                                     28 
+      000000                         29 _g_FirstAddr::
+      000000                         30 _g_HeaderAddr::
+                                     31 	; ROM header
+      000000                         32 	ROM_HEADER crt0_init
+                                      1 
+      000000                          2 	crt0_rom_header::
+      000000 41 42                    3 		.ascii	"AB"
+      000002 14 00                    4 		.dw		crt0_init
+      000004 00 00                    5 		.dw		0x0000
+      000006 00 00                    6 		.dw		0x0000
+      000008 00 00                    7 		.dw		0x0000
+      00000A 00 00                    8 		.dw		0x0000
+      00000C 00 00                    9 		.dw		0x0000
+      00000E 00 00                   10 		.dw		0x0000
+                                     11 
+      000010                         12 		ROM_SIGN_MACRO ; empty if AddROMSignature build option is set to false
+                                     13 
+                           000001    14 	.if APP_SIGN
+      000010                         15 	_g_AppSignature::
+      000010 47 4C                   16 		.dw		APP_SIGN_NAME
+      000012 54 31                   17 		.dw		APP_SIGN_ID
+                                     18 	.endif
+                                     19 	; .ifdef APP_SIGN_EXTRA
+                                     20 		; .db		APP_SIGN_EXTRA
+                                     21 	; .endif
+                                     22 
+                                     33 
+                                     34 ;------------------------------------------------------------------------------
+                                     35 ; Initialization code
+      000014                         36 crt0_init:
+                                     37 	; Backup ROM's slot ID
+      000014 79               [ 4]   38 	ld		a, c
+      000015 32 02 00         [13]   39 	ld		(_g_ROMSlotID), a
+                                     40 
+                                     41 	; Check for minimum MSX version required (if CHECK_MSX is set)
+      000018                         42 	DO_CHECK_MSX
+                           000000     1 	.ifne CHECK_MSX-MSX1
+                                      2 	; Check for minimal MSX version and display message if not correct
+                                      3 	crt0_check_msx::
+                                      4 		ld		a, (MSXVER)
+                                      5 		cp		#CHECK_MSX
+                                      6 		jp		nc, crt0_check_msx_end ; Version must be equal or higher
+                                      7 
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 29.
+Hexadecimal [24-Bits]
+
+
+
+                                      8 		ld		a, #40
+                                      9 		ld		(LINL40), a			; Set number of columns
+                                     10 		call	INITXT				; Switch to Screen 0 (text mode)
+                                     11 
+                                     12 		ld		hl, #crt0_check_msx_message
+                                     13 		call	crt0_check_msx_print ; Display error message
+                                     14 
+                                     15 	crt0_check_msx_loop:
+                                     16 		call	CHGET				; Waiting for user to press a key
+                                     17 		cp		#67 				; Character 'C'
+                                     18 		jp		z, crt0_check_msx_end
+                                     19 		cp		#99 				; Character 'c'
+                                     20 		jp		z, crt0_check_msx_end
+                                     21 		jr		crt0_check_msx_loop
+                                     22 
+                                     23 	crt0_check_msx_print:
+                                     24 		ld		a, (hl)
+                                     25 		or		a
+                                     26 		ret		z
+                                     27 		call	CHPUT
+                                     28 		inc		hl
+                                     29 		jr		crt0_check_msx_print
+                                     30 
+                                     31 	crt0_check_msx_message:
+                                     32 		.ascii	"Error: A "
+                                     33 		.ifeq CHECK_MSX-MSX2
+                                     34 		.ascii	"MSX2"
+                                     35 		.endif
+                                     36 		.ifeq CHECK_MSX-MSX2P
+                                     37 		.ascii	"MSX2+"
+                                     38 		.endif
+                                     39 		.ifeq CHECK_MSX-MSXTR
+                                     40 		.ascii	"MSX turbo R"
+                                     41 		.endif
+                                     42 		.ascii	" is required!\n\n\n\rPress [C] to continue anyway.\0"
+                                     43 
+                                     44 	crt0_check_msx_end:
+                                     45 	.endif
+                                     43 
+                                     44 	; Check for skip key press (if ROM_SKIP is set to 1)
+      000018                         45 	SKIP_BOOT
+                           000000     1 	.if ROM_SKIP
+                                      2 	; Check for 'ESC' key press
+                                      3 	ctr0_check_rom_skip:
+                                      4 		in		a, (PPI_C)
+                                      5 		and		#0xF0					; only change bits 0-3
+                                      6 		or		#7						; check row number 7
+                                      7 		out		(PPI_C), a
+                                      8 		in		a, (PPI_B)				; read row into A
+                                      9 		and		#ROM_SKIP_KEY
+                                     10 		ret		z
+                                     11 	.endif
+                                     46 
+                                     47 	; Delay startup using STKE hook (if ROM_DELAY is set to 1)
+      000018                         48 	DELAY_BOOT
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 30.
+Hexadecimal [24-Bits]
+
+
+
+                           000000     1 	.if ROM_DELAY
+                                      2 	; Setup the hook H.STKE to run the ROM with disk support
+                                      3 	crt0_bdos_install::
+                                      4 		ld		a, c					; Get the ROM slot number
+                                      5 		ld		hl, #crt0_bdos_hook
+                                      6 		ld		de, #H_STKE
+                                      7 		ld		bc, #4
+                                      8 		ldir							; Copy the routine to execute the ROM to the hook
+                                      9 		ld		(H_STKE+1), a			; Put the ROM slot number to the hook
+                                     10 		ret								; Back to slots scanning
+                                     11 
+                                     12 	; Routine to execute the ROM
+                                     13 	crt0_bdos_hook:
+                                     14 		rst		0x30					; Inter-slot call
+                                     15 		.db		1						; This byte will be replaced by the slot number of ROM
+                                     16 		.dw		crt0_bdos_end			; Address to execute the ROM
+                                     17 
+                                     18 	; Remove the hook and resume the ROM boot sequence
+                                     19 	crt0_bdos_end:
+                                     20 		ld		a, #0xC9				; 'ret' instruction
+                                     21 		ld		(H_STKE), a
+                                     22 	.endif
+                                     49 
+      000018 F3               [ 4]   50 	di
+                                     51 	; Set stack address at the top of free memory
+      000019 ED 7B 4A FC      [20]   52 	ld		sp, (HIMEM)
+                                     53 
+                                     54 	; Initialize heap address
+      00001D 21 00 00         [10]   55 	ld		hl, #s__HEAP
+      000020 22 00 00         [16]   56 	ld		(_g_HeapStartAddress), hl
+                                     57 
+                                     58 	; Set Page 2 slot equal to Page 1 slot
+      000023                         59 	INIT_P1_TO_P2
+                                      1 
+      000023                          2 	crt0_p1_to_p2::
+      000023 DB A8            [11]    3 		in		a, (PPI_A)				; A=[P3|P2|P1|P0] Get primary slots info
+      000025 0F               [ 4]    4 		rrca
+      000026 0F               [ 4]    5 		rrca							; A=[P0|P3|P2|P1]
+      000027 E6 03            [ 7]    6 		and		a, #0b00000011			; A=[00|00|00|P1] Save Page 1 primary slot
+      000029 4F               [ 4]    7 		ld		c, a					; C=[00|00|00|P1]
+      00002A 21 C1 FC         [10]    8 		ld		hl, #EXPTBL				; HL=&EXPTBL
+      00002D 85               [ 4]    9 		add		a, l
+      00002E 6F               [ 4]   10 		ld		l, a
+      00002F 7E               [ 7]   11 		ld		a, (hl)					; A=EXPTBL[P1]    See if the slot is expanded or not
+      000030 E6 80            [ 7]   12 		and		a, #0x80				; A=[X|000|00|00] Keep only expansion flag
+      000032 B1               [ 4]   13 		or		a, c					; A=[X|000|00|P1] Set MSB if so
+      000033 4F               [ 4]   14 		ld		c, a					; C=[X|000|00|P1] Save it to [C]
+      000034 2C               [ 4]   15 		inc		l						;                 Point to primary slot's SLTTBL entry
+      000035 2C               [ 4]   16 		inc		l
+      000036 2C               [ 4]   17 		inc		l
+      000037 2C               [ 4]   18 		inc		l
+      000038 7E               [ 7]   19 		ld		a, (hl)					; A=SLTTBL[P1]    Get what is currently output to expansion slot register
+      000039 E6 0C            [ 7]   20 		and		a, #0b00001100			; A=[00|00|S1|00]
+      00003B B1               [ 4]   21 		or		c						; A=[X|000|S1|P1] Finally form slot address
+      00003C 26 80            [ 7]   22 		ld		h, #0x80				; H=Page 2
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 31.
+Hexadecimal [24-Bits]
+
+
+
+      00003E CD 24 00         [17]   23 		call	ENASLT					;                 Enable page 1's slot in page 2
+                                     60 
+                                     61 	; Initialize globals
+      000041                         62 	INIT_GLOBALS
+                                      1 
+      000041                          2 	crt0_init_globals:
+      000041 01 00 00         [10]    3 		ld		bc, #l__INITIALIZER
+      000044 78               [ 4]    4 		ld		a, b
+      000045 B1               [ 4]    5 		or		a, c
+      000046 CA 51 00         [10]    6 		jp		z, crt0_skip_globals
+      000049 11 00 00         [10]    7 		ld		de, #s__INITIALIZED
+      00004C 21 00 00         [10]    8 		ld		hl, #s__INITIALIZER
+      00004F ED B0            [21]    9 		ldir
+      000051                         10 	crt0_skip_globals:
+                                     11 
+                                     63 	
+                                     64 	; Install ISR in RAM (if ROM_RAMISR is set)
+      000051                         65 	INSTALL_RAM_ISR
+                           000000     1 	.ifne ROM_RAMISR-RAM0_NONE
+                                      2 
+                                      3 	crt0_select_ram::
+                                      4 		jp		crt0_interrupt_end
+                                      5 
+                                      6 	; ISR
+                                      7 		INCLUDE_ISR
+                                      8 
+                                      9 	; Switch page 0 to RAM
+                                     10 		INIT_P3_TO_P0
+                                     11 
+                                     12 	; Copy ISR to RAM
+                                     13 	crt0_install_isr::
+                                     14 		ld		hl, #crt0_interrupt_start
+                                     15 		ld		de, #0x0038
+                                     16 		ld		bc, #crt0_interrupt_end-crt0_interrupt_start
+                                     17 		ldir
+                                     18 
+                                     19 		.ifeq ROM_RAMISR-RAM0_SEGMENT
+                                     20 	crt0_install_seg::
+                                     21 
+                                     22 			.ifeq ROM_MAPPER-ROM_ASCII8
+                                     23 				ld		a, #4
+                                     24 				ld		(BANK2_ADDR), a ; Segment 4 in Bank 2
+                                     25 				inc		a
+                                     26 				ld		(BANK3_ADDR), a ; Segment 5 in Bank 3
+                                     27 			.endif
+                                     28 			.ifeq ROM_MAPPER-ROM_ASCII16
+                                     29 				ld		a, #2
+                                     30 				ld		(BANK1_ADDR), a ; Segment 2 in Bank 1
+                                     31 			.endif
+                                     32 			.ifeq ROM_MAPPER-ROM_KONAMI
+                                     33 				ld		a, #4
+                                     34 				ld		(BANK2_ADDR), a ; Segment 4 in Bank 2
+                                     35 				inc		a
+                                     36 				ld		(BANK3_ADDR), a ; Segment 5 in Bank 3
+                                     37 			.endif
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 32.
+Hexadecimal [24-Bits]
+
+
+
+                                     38 			.ifeq ROM_MAPPER-ROM_KONAMI_SCC
+                                     39 				ld		a, #4
+                                     40 				ld		(BANK2_ADDR), a ; Segment 4 in Bank 2
+                                     41 				inc		a
+                                     42 				ld		(BANK3_ADDR), a ; Segment 5 in Bank 3
+                                     43 			.endif
+                                     44 			.ifeq ROM_MAPPER-ROM_NEO8
+                                     45 				ld		a, #6
+                                     46 				ld		(BANK4_ADDR), a ; Segment 6 in Bank 4
+                                     47 				inc		a
+                                     48 				ld		(BANK5_ADDR), a ; Segment 7 in Bank 5
+                                     49 			.endif
+                                     50 			.ifeq ROM_MAPPER-ROM_NEO16
+                                     51 				ld		a, #3
+                                     52 				ld		(BANK2_ADDR), a ; Segment 3 in Bank 2
+                                     53 			.endif
+                                     54 			.ifeq ROM_MAPPER-ROM_YAMANOOTO
+                                     55 				ld		a, #4
+                                     56 				ld		(BANK2_ADDR), a ; Segment 4 in Bank 2
+                                     57 				inc		a
+                                     58 				ld		(BANK3_ADDR), a ; Segment 5 in Bank 3
+                                     59 			.endif
+                                     60 			.ifeq ROM_MAPPER-ROM_ASCII16X
+                                     61 				ld		a, #2
+                                     62 				ld		(BANK1_ADDR), a ; Segment 2 in Bank 1
+                                     63 			.endif
+                                     64 			.ifeq ROM_MAPPER-ROM_POPOLON
+                                     65 				ld		a, #4
+                                     66 				ld		(BANK2_ADDR), a ; Segment 4 in Bank 2
+                                     67 				inc		a
+                                     68 				ld		(BANK3_ADDR), a ; Segment 5 in Bank 3
+                                     69 			.endif
+                                     70 
+                                     71 		; Copy Segment content to RAM
+                                     72 			ld		hl, #0x8100 ; Page 2
+                                     73 			ld		de, #0x0100 ; Page 0 (after ISR)
+                                     74 			ld		bc, #0x3F00 ; 16 KB - 100h
+                                     75 			ldir
+                                     76 		.endif
+                                     77 
+                                     78 	.endif
+                                     66 
+      000051                         67 crt0_start:
+                                     68 	; start main() function
+      000051 FB               [ 4]   69 	ei
+      000052 CD 00 00         [17]   70 	call	_main
+      000055 C7               [11]   71 	rst		0
+                                     72 
+                                     73 ;------------------------------------------------------------------------------
+                                     74 ; Ordering of segments for the linker
+                                     75 	.area	_RODATA
+                                     76 	.area	_INITIALIZER 
+                                     77 	.area	_GSINIT
+                                     78 	.area	_GSFINAL
+      000000                         79 _g_LastAddr::
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 33.
+Hexadecimal [24-Bits]
+
+
+
+                                     80 
+                                     81 ;==============================================================================
+                                     82 ; RAM
+                                     83 ;==============================================================================
+                                     84 	.area	_DATA
+                                     85 
+      000000                         86 _g_HeapStartAddress::
+      000000                         87 	.ds		2
+                                     88 
+      000002                         89 _g_ROMSlotID::
+      000002                         90 	.ds		1
+                                     91 
+                           000000    92 	.if ROM_RAMISR
+                                     93 		ALLOC_ROMINFO
+                                     94 	.endif
+                                     95 
+                                     96 ;------------------------------------------------------------------------------
+                                     97 ; Ordering of segments for the linker
+                                     98 	.area	_INITIALIZED
+                                     99 	.area	_BSEG
+                                    100 	.area	_BSS
+                                    101 	.area	_HEAP

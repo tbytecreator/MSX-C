@@ -1,0 +1,13 @@
+-mjwx
+-i /home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/out/template.ihx
+-b _CODE = 0x4000
+-b _DATA = 0xc000
+-k /home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/tools/sdcc/lib/z80
+-k /home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/tools/sdcc/bin/../share/sdcc/lib/z80
+-k /usr/local/share/sdcc/lib/z80
+-l /home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/out/msxgl.lib
+-l z80
+/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/out/crt0_rom32.rel
+/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/out/template.rel
+
+-e

@@ -1,0 +1,1653 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ISO C Compiler
+                                      3 ; Version 4.5.0 #15242 (Linux)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module main
+                                      6 	
+                                      7 	.optsdcc -mz80 sdcccall(1)
+                                      8 ;--------------------------------------------------------
+                                      9 ; Public variables in this module
+                                     10 ;--------------------------------------------------------
+                                     11 	.globl _main
+                                     12 	.globl _init_game
+                                     13 	.globl _Print_At
+                                     14 	.globl _Print_Clear
+                                     15 	.globl _roll_dice
+                                     16 	.globl _VDP_ClearVRAM
+                                     17 	.globl _VDP_SetMode
+                                     18 	.globl _time
+                                     19 	.globl _srand
+                                     20 	.globl _getchar
+                                     21 	.globl _printf
+                                     22 	.globl _running
+                                     23 	.globl _game_state
+                                     24 	.globl _main_menu
+                                     25 	.globl _character_creation
+                                     26 	.globl _exploration
+                                     27 	.globl _handle_exploration_event
+                                     28 	.globl _handle_trap
+                                     29 	.globl _handle_treasure
+                                     30 	.globl _handle_encounter
+                                     31 	.globl _handle_combat
+                                     32 	.globl _show_full_status
+                                     33 	.globl _handle_exit_attempt
+                                     34 	.globl _show_help
+                                     35 	.globl _game_over_screen
+                                     36 ;--------------------------------------------------------
+                                     37 ; special function registers
+                                     38 ;--------------------------------------------------------
+                                     39 ;--------------------------------------------------------
+                                     40 ; ram data
+                                     41 ;--------------------------------------------------------
+                                     42 	.area _DATA
+    00000000                         43 _game_state::
+    00000000                         44 	.ds 29
+    0000001D                         45 _running::
+    0000001D                         46 	.ds 2
+                                     47 ;--------------------------------------------------------
+                                     48 ; ram data
+                                     49 ;--------------------------------------------------------
+                                     50 	.area _INITIALIZED
+                                     51 ;--------------------------------------------------------
+                                     52 ; absolute external ram data
+                                     53 ;--------------------------------------------------------
+                                     54 	.area _DABS (ABS)
+                                     55 ;--------------------------------------------------------
+                                     56 ; global & static initialisations
+                                     57 ;--------------------------------------------------------
+                                     58 	.area _HOME
+                                     59 	.area _GSINIT
+                                     60 	.area _GSFINAL
+                                     61 	.area _GSINIT
+                                     62 ;--------------------------------------------------------
+                                     63 ; Home
+                                     64 ;--------------------------------------------------------
+                                     65 	.area _HOME
+                                     66 	.area _HOME
+                                     67 ;--------------------------------------------------------
+                                     68 ; code
+                                     69 ;--------------------------------------------------------
+                                     70 	.area _CODE
+                                     71 ;src/main.c:31: void init_game(void) {
+                                     72 ;	---------------------------------
+                                     73 ; Function init_game
+                                     74 ; ---------------------------------
+    00000000                         75 _init_game::
+                                     76 ;src/main.c:32: srand((unsigned)time(NULL));
+    00000000 21 00 00         [10]   77 	ld	hl, #0x0000
+    00000003 CDr00r00         [17]   78 	call	_time
+    00000006 EB               [ 4]   79 	ex	de, hl
+    00000007 CDr00r00         [17]   80 	call	_srand
+                                     81 ;src/main.c:33: VDP_SetMode(VDP_MODE_TEXT1);
+    0000000A AF               [ 4]   82 	xor	a, a
+    0000000B CDr00r00         [17]   83 	call	_VDP_SetMode
+                                     84 ;src/main.c:34: VDP_ClearVRAM();
+    0000000E CDr00r00         [17]   85 	call	_VDP_ClearVRAM
+                                     86 ;src/main.c:35: memset(&game_state, 0, sizeof(Game_State));
+    00000011 01r00r00         [10]   87 	ld	bc, #_game_state+0
+    00000014 69               [ 4]   88 	ld	l, c
+    00000015 60               [ 4]   89 	ld	h, b
+    00000016 C5               [11]   90 	push	bc
+    00000017 06 1D            [ 7]   91 	ld	b, #0x1d
+    00000019                         92 00103$:
+    00000019 36 00            [10]   93 	ld	(hl), #0x00
+    0000001B 23               [ 6]   94 	inc	hl
+    0000001C 10 FB            [13]   95 	djnz	00103$
+    0000001E C1               [10]   96 	pop	bc
+                                     97 ;src/main.c:36: game_state.state = GAME_MENU;
+    0000001F AF               [ 4]   98 	xor	a, a
+    00000020 02               [ 7]   99 	ld	(bc), a
+                                    100 ;src/main.c:37: game_state.turn = 0;
+    00000021 21 00 00         [10]  101 	ld	hl, #0x0000
+    00000024 22r17r00         [16]  102 	ld	((_game_state + 23)), hl
+                                    103 ;src/main.c:38: game_state.player_alive = 1;
+    00000027 2E 01            [ 7]  104 	ld	l, #0x01
+    00000029 22r19r00         [16]  105 	ld	((_game_state + 25)), hl
+                                    106 ;src/main.c:39: running = 1;
+    0000002C 22r1Dr00         [16]  107 	ld	(_running), hl
+                                    108 ;src/main.c:40: }
+    0000002F C9               [10]  109 	ret
+                                    110 ;src/main.c:42: void main_menu(void) {
+                                    111 ;	---------------------------------
+                                    112 ; Function main_menu
+                                    113 ; ---------------------------------
+    00000030                        114 _main_menu::
+                                    115 ;src/main.c:43: Print_Clear();
+    00000030 CDr00r00         [17]  116 	call	_Print_Clear
+                                    117 ;src/main.c:44: Print_At(10, 2, "FORTALEZA DE BERDOLOCK");
+    00000033 21rC1r00         [10]  118 	ld	hl, #___str_0
+    00000036 E5               [11]  119 	push	hl
+    00000037 11 02 00         [10]  120 	ld	de, #0x0002
+    0000003A 21 0A 00         [10]  121 	ld	hl, #0x000a
+    0000003D CDr00r00         [17]  122 	call	_Print_At
+                                    123 ;src/main.c:45: Print_At(8, 4, "Um RPG Solitario em MSX");
+    00000040 21rD8r00         [10]  124 	ld	hl, #___str_1
+    00000043 E5               [11]  125 	push	hl
+    00000044 11 04 00         [10]  126 	ld	de, #0x0004
+    00000047 21 08 00         [10]  127 	ld	hl, #0x0008
+    0000004A CDr00r00         [17]  128 	call	_Print_At
+                                    129 ;src/main.c:46: Print_At(5, 7, "1 - Novo Jogo");
+    0000004D 21rF0r00         [10]  130 	ld	hl, #___str_2
+    00000050 E5               [11]  131 	push	hl
+    00000051 11 07 00         [10]  132 	ld	de, #0x0007
+    00000054 21 05 00         [10]  133 	ld	hl, #0x0005
+    00000057 CDr00r00         [17]  134 	call	_Print_At
+                                    135 ;src/main.c:47: Print_At(5, 8, "2 - Continuare");
+    0000005A 21rFEr00         [10]  136 	ld	hl, #___str_3
+    0000005D E5               [11]  137 	push	hl
+    0000005E 11 08 00         [10]  138 	ld	de, #0x0008
+    00000061 21 05 00         [10]  139 	ld	hl, #0x0005
+    00000064 CDr00r00         [17]  140 	call	_Print_At
+                                    141 ;src/main.c:48: Print_At(5, 9, "3 - Como Jogar");
+    00000067 21r0Dr01         [10]  142 	ld	hl, #___str_4
+    0000006A E5               [11]  143 	push	hl
+    0000006B 11 09 00         [10]  144 	ld	de, #0x0009
+    0000006E 21 05 00         [10]  145 	ld	hl, #0x0005
+    00000071 CDr00r00         [17]  146 	call	_Print_At
+                                    147 ;src/main.c:49: Print_At(5, 10, "4 - Sair");
+    00000074 21r1Cr01         [10]  148 	ld	hl, #___str_5
+    00000077 E5               [11]  149 	push	hl
+    00000078 11 0A 00         [10]  150 	ld	de, #0x000a
+    0000007B 21 05 00         [10]  151 	ld	hl, #0x0005
+    0000007E CDr00r00         [17]  152 	call	_Print_At
+                                    153 ;src/main.c:50: Print_At(5, 13, "Digite sua opcao: ");
+    00000081 21r25r01         [10]  154 	ld	hl, #___str_6
+    00000084 E5               [11]  155 	push	hl
+    00000085 11 0D 00         [10]  156 	ld	de, #0x000d
+    00000088 21 05 00         [10]  157 	ld	hl, #0x0005
+    0000008B CDr00r00         [17]  158 	call	_Print_At
+                                    159 ;src/main.c:52: int choice = getchar();
+    0000008E CDr00r00         [17]  160 	call	_getchar
+                                    161 ;src/main.c:53: if (choice == '1') game_state.state = GAME_CHARACTER_CREATION;
+    00000091 7B               [ 4]  162 	ld	a, e
+    00000092 D6 31            [ 7]  163 	sub	a, #0x31
+    00000094 B2               [ 4]  164 	or	a, d
+    00000095 20 06            [12]  165 	jr	NZ, 00110$
+    00000097 21r00r00         [10]  166 	ld	hl, #_game_state+0
+    0000009A 36 01            [10]  167 	ld	(hl), #0x01
+    0000009C C9               [10]  168 	ret
+    0000009D                        169 00110$:
+                                    170 ;src/main.c:54: else if (choice == '2') game_state.state = GAME_EXPLORATION;
+    0000009D 7B               [ 4]  171 	ld	a, e
+    0000009E D6 32            [ 7]  172 	sub	a, #0x32
+    000000A0 B2               [ 4]  173 	or	a, d
+    000000A1 20 06            [12]  174 	jr	NZ, 00107$
+    000000A3 21r00r00         [10]  175 	ld	hl, #_game_state+0
+    000000A6 36 02            [10]  176 	ld	(hl), #0x02
+    000000A8 C9               [10]  177 	ret
+    000000A9                        178 00107$:
+                                    179 ;src/main.c:55: else if (choice == '3') game_state.state = GAME_HELP;
+    000000A9 7B               [ 4]  180 	ld	a, e
+    000000AA D6 33            [ 7]  181 	sub	a, #0x33
+    000000AC B2               [ 4]  182 	or	a, d
+    000000AD 20 06            [12]  183 	jr	NZ, 00104$
+    000000AF 21r00r00         [10]  184 	ld	hl, #_game_state+0
+    000000B2 36 03            [10]  185 	ld	(hl), #0x03
+    000000B4 C9               [10]  186 	ret
+    000000B5                        187 00104$:
+                                    188 ;src/main.c:56: else if (choice == '4') running = 0;
+    000000B5 7B               [ 4]  189 	ld	a, e
+    000000B6 D6 34            [ 7]  190 	sub	a, #0x34
+    000000B8 B2               [ 4]  191 	or	a, d
+    000000B9 C0               [11]  192 	ret	NZ
+    000000BA 21 00 00         [10]  193 	ld	hl, #0x0000
+    000000BD 22r1Dr00         [16]  194 	ld	(_running), hl
+                                    195 ;src/main.c:57: }
+    000000C0 C9               [10]  196 	ret
+                                    197 	.area _CODE
+                                    198 	.area _CODE
+    000000C1                        199 ___str_0:
+    000000C1 46 4F 52 54 41 4C 45   200 	.ascii "FORTALEZA DE BERDOLOCK"
+             5A 41 20 44 45 20 42
+             45 52 44 4F 4C 4F 43
+             4B
+    000000D7 00                     201 	.db 0x00
+                                    202 	.area _CODE
+                                    203 	.area _CODE
+    000000D8                        204 ___str_1:
+    000000D8 55 6D 20 52 50 47 20   205 	.ascii "Um RPG Solitario em MSX"
+             53 6F 6C 69 74 61 72
+             69 6F 20 65 6D 20 4D
+             53 58
+    000000EF 00                     206 	.db 0x00
+                                    207 	.area _CODE
+                                    208 	.area _CODE
+    000000F0                        209 ___str_2:
+    000000F0 31 20 2D 20 4E 6F 76   210 	.ascii "1 - Novo Jogo"
+             6F 20 4A 6F 67 6F
+    000000FD 00                     211 	.db 0x00
+                                    212 	.area _CODE
+                                    213 	.area _CODE
+    000000FE                        214 ___str_3:
+    000000FE 32 20 2D 20 43 6F 6E   215 	.ascii "2 - Continuare"
+             74 69 6E 75 61 72 65
+    0000010C 00                     216 	.db 0x00
+                                    217 	.area _CODE
+                                    218 	.area _CODE
+    0000010D                        219 ___str_4:
+    0000010D 33 20 2D 20 43 6F 6D   220 	.ascii "3 - Como Jogar"
+             6F 20 4A 6F 67 61 72
+    0000011B 00                     221 	.db 0x00
+                                    222 	.area _CODE
+                                    223 	.area _CODE
+    0000011C                        224 ___str_5:
+    0000011C 34 20 2D 20 53 61 69   225 	.ascii "4 - Sair"
+             72
+    00000124 00                     226 	.db 0x00
+                                    227 	.area _CODE
+                                    228 	.area _CODE
+    00000125                        229 ___str_6:
+    00000125 44 69 67 69 74 65 20   230 	.ascii "Digite sua opcao: "
+             73 75 61 20 6F 70 63
+             61 6F 3A 20
+    00000137 00                     231 	.db 0x00
+                                    232 	.area _CODE
+                                    233 	.area _CODE
+                                    234 ;src/main.c:59: void character_creation(void) {
+                                    235 ;	---------------------------------
+                                    236 ; Function character_creation
+                                    237 ; ---------------------------------
+    00000138                        238 _character_creation::
+                                    239 ;src/main.c:60: Print_Clear();
+    00000138 CDr00r00         [17]  240 	call	_Print_Clear
+                                    241 ;src/main.c:61: Print_At(10, 2, "CRIACAO DO PERSONAGEM");
+    0000013B 21r26r02         [10]  242 	ld	hl, #___str_7
+    0000013E E5               [11]  243 	push	hl
+    0000013F 11 02 00         [10]  244 	ld	de, #0x0002
+    00000142 21 0A 00         [10]  245 	ld	hl, #0x000a
+    00000145 CDr00r00         [17]  246 	call	_Print_At
+                                    247 ;src/main.c:62: Print_At(2, 6, "Seu personagem comecara com:");
+    00000148 21r3Cr02         [10]  248 	ld	hl, #___str_8
+    0000014B E5               [11]  249 	push	hl
+    0000014C 11 06 00         [10]  250 	ld	de, #0x0006
+    0000014F 21 02 00         [10]  251 	ld	hl, #0x0002
+    00000152 CDr00r00         [17]  252 	call	_Print_At
+                                    253 ;src/main.c:63: Print_At(5, 8, "PA (Poder de Ataque): 2d6");
+    00000155 21r59r02         [10]  254 	ld	hl, #___str_9
+    00000158 E5               [11]  255 	push	hl
+    00000159 11 08 00         [10]  256 	ld	de, #0x0008
+    0000015C 21 05 00         [10]  257 	ld	hl, #0x0005
+    0000015F CDr00r00         [17]  258 	call	_Print_At
+                                    259 ;src/main.c:64: Print_At(5, 9, "PD (Poder de Defesa): 7");
+    00000162 21r73r02         [10]  260 	ld	hl, #___str_10
+    00000165 E5               [11]  261 	push	hl
+    00000166 11 09 00         [10]  262 	ld	de, #0x0009
+    00000169 21 05 00         [10]  263 	ld	hl, #0x0005
+    0000016C CDr00r00         [17]  264 	call	_Print_At
+                                    265 ;src/main.c:65: Print_At(5, 10, "PV (Pontos Vitais): 2d6");
+    0000016F 21r8Br02         [10]  266 	ld	hl, #___str_11
+    00000172 E5               [11]  267 	push	hl
+    00000173 11 0A 00         [10]  268 	ld	de, #0x000a
+    00000176 21 05 00         [10]  269 	ld	hl, #0x0005
+    00000179 CDr00r00         [17]  270 	call	_Print_At
+                                    271 ;src/main.c:67: game_state.player.pa = roll_dice(1, 6) + roll_dice(1, 6);
+    0000017C 11 06 00         [10]  272 	ld	de, #0x0006
+    0000017F 21 01 00         [10]  273 	ld	hl, #0x0001
+    00000182 CDr00r00         [17]  274 	call	_roll_dice
+    00000185 D5               [11]  275 	push	de
+    00000186 11 06 00         [10]  276 	ld	de, #0x0006
+    00000189 21 01 00         [10]  277 	ld	hl, #0x0001
+    0000018C CDr00r00         [17]  278 	call	_roll_dice
+    0000018F E1               [10]  279 	pop	hl
+    00000190 19               [11]  280 	add	hl, de
+    00000191 22r01r00         [16]  281 	ld	((_game_state + 1)), hl
+                                    282 ;src/main.c:68: game_state.player.pd = 7;
+    00000194 21 07 00         [10]  283 	ld	hl, #0x0007
+    00000197 22r03r00         [16]  284 	ld	((_game_state + 3)), hl
+                                    285 ;src/main.c:69: game_state.player.pv_max = roll_dice(1, 6) + roll_dice(1, 6);
+    0000019A 11 06 00         [10]  286 	ld	de, #0x0006
+    0000019D 2E 01            [ 7]  287 	ld	l, #0x01
+    0000019F CDr00r00         [17]  288 	call	_roll_dice
+    000001A2 D5               [11]  289 	push	de
+    000001A3 11 06 00         [10]  290 	ld	de, #0x0006
+    000001A6 21 01 00         [10]  291 	ld	hl, #0x0001
+    000001A9 CDr00r00         [17]  292 	call	_roll_dice
+    000001AC E1               [10]  293 	pop	hl
+    000001AD 19               [11]  294 	add	hl, de
+    000001AE 22r07r00         [16]  295 	ld	((_game_state + 7)), hl
+                                    296 ;src/main.c:70: game_state.player.pv = game_state.player.pv_max;
+    000001B1 22r05r00         [16]  297 	ld	((_game_state + 5)), hl
+                                    298 ;src/main.c:71: game_state.player.weapon = WEAPON_SWORD;
+    000001B4 21r09r00         [10]  299 	ld	hl, #_game_state + 9
+    000001B7 36 01            [10]  300 	ld	(hl), #0x01
+                                    301 ;src/main.c:72: game_state.player.armor = ARMOR_PLATE;
+    000001B9 21r0Ar00         [10]  302 	ld	hl, #_game_state + 10
+    000001BC 36 01            [10]  303 	ld	(hl), #0x01
+                                    304 ;src/main.c:73: game_state.player.shield = 1;
+    000001BE 21 01 00         [10]  305 	ld	hl, #0x0001
+    000001C1 22r0Br00         [16]  306 	ld	((_game_state + 11)), hl
+                                    307 ;src/main.c:74: game_state.player.potions = 0;
+    000001C4 6C               [ 4]  308 	ld	l, h
+    000001C5 22r0Dr00         [16]  309 	ld	((_game_state + 13)), hl
+                                    310 ;src/main.c:75: game_state.player.trap_ring = 0;
+    000001C8 22r0Fr00         [16]  311 	ld	((_game_state + 15)), hl
+                                    312 ;src/main.c:76: game_state.player.magic_sword = 0;
+    000001CB 22r11r00         [16]  313 	ld	((_game_state + 17)), hl
+                                    314 ;src/main.c:77: game_state.player.magic_armor = 0;
+    000001CE 22r13r00         [16]  315 	ld	((_game_state + 19)), hl
+                                    316 ;src/main.c:78: game_state.player.gold = 0;
+    000001D1 22r15r00         [16]  317 	ld	((_game_state + 21)), hl
+                                    318 ;src/main.c:80: Print_At(5, 12, "PA rolado: ");
+    000001D4 21rA3r02         [10]  319 	ld	hl, #___str_12
+    000001D7 E5               [11]  320 	push	hl
+    000001D8 11 0C 00         [10]  321 	ld	de, #0x000c
+    000001DB 21 05 00         [10]  322 	ld	hl, #0x0005
+    000001DE CDr00r00         [17]  323 	call	_Print_At
+                                    324 ;src/main.c:81: printf("%d", game_state.player.pa);
+    000001E1 ED 4Br01r00      [20]  325 	ld	bc, (#(_game_state + 1) + 0)
+    000001E5 C5               [11]  326 	push	bc
+    000001E6 21rAFr02         [10]  327 	ld	hl, #___str_13
+    000001E9 E5               [11]  328 	push	hl
+    000001EA CDr00r00         [17]  329 	call	_printf
+    000001ED F1               [10]  330 	pop	af
+                                    331 ;src/main.c:82: Print_At(5, 13, "PV rolado: ");
+    000001EE 21rB2r02         [10]  332 	ld	hl, #___str_14
+    000001F1 E3               [19]  333 	ex	(sp),hl
+    000001F2 11 0D 00         [10]  334 	ld	de, #0x000d
+    000001F5 21 05 00         [10]  335 	ld	hl, #0x0005
+    000001F8 CDr00r00         [17]  336 	call	_Print_At
+                                    337 ;src/main.c:83: printf("%d", game_state.player.pv_max);
+    000001FB 2Ar07r00         [16]  338 	ld	hl, (#(_game_state + 7) + 0)
+    000001FE E5               [11]  339 	push	hl
+    000001FF 21rAFr02         [10]  340 	ld	hl, #___str_13
+    00000202 E5               [11]  341 	push	hl
+    00000203 CDr00r00         [17]  342 	call	_printf
+    00000206 F1               [10]  343 	pop	af
+                                    344 ;src/main.c:84: Print_At(5, 15, "Pressione ENTER para continuar...");
+    00000207 21rBEr02         [10]  345 	ld	hl, #___str_15
+    0000020A E3               [19]  346 	ex	(sp),hl
+    0000020B 11 0F 00         [10]  347 	ld	de, #0x000f
+    0000020E 21 05 00         [10]  348 	ld	hl, #0x0005
+    00000211 CDr00r00         [17]  349 	call	_Print_At
+                                    350 ;src/main.c:86: getchar();
+    00000214 CDr00r00         [17]  351 	call	_getchar
+                                    352 ;src/main.c:87: game_state.state = GAME_EXPLORATION;
+    00000217 21r00r00         [10]  353 	ld	hl, #_game_state
+    0000021A 36 02            [10]  354 	ld	(hl), #0x02
+                                    355 ;src/main.c:88: game_state.turn = 1;
+    0000021C 21 01 00         [10]  356 	ld	hl, #0x0001
+    0000021F 22r17r00         [16]  357 	ld	((_game_state + 23)), hl
+                                    358 ;src/main.c:89: game_state.player_alive = 1;
+    00000222 22r19r00         [16]  359 	ld	((_game_state + 25)), hl
+                                    360 ;src/main.c:90: }
+    00000225 C9               [10]  361 	ret
+                                    362 	.area _CODE
+                                    363 	.area _CODE
+    00000226                        364 ___str_7:
+    00000226 43 52 49 41 43 41 4F   365 	.ascii "CRIACAO DO PERSONAGEM"
+             20 44 4F 20 50 45 52
+             53 4F 4E 41 47 45 4D
+    0000023B 00                     366 	.db 0x00
+                                    367 	.area _CODE
+                                    368 	.area _CODE
+    0000023C                        369 ___str_8:
+    0000023C 53 65 75 20 70 65 72   370 	.ascii "Seu personagem comecara com:"
+             73 6F 6E 61 67 65 6D
+             20 63 6F 6D 65 63 61
+             72 61 20 63 6F 6D 3A
+    00000258 00                     371 	.db 0x00
+                                    372 	.area _CODE
+                                    373 	.area _CODE
+    00000259                        374 ___str_9:
+    00000259 50 41 20 28 50 6F 64   375 	.ascii "PA (Poder de Ataque): 2d6"
+             65 72 20 64 65 20 41
+             74 61 71 75 65 29 3A
+             20 32 64 36
+    00000272 00                     376 	.db 0x00
+                                    377 	.area _CODE
+                                    378 	.area _CODE
+    00000273                        379 ___str_10:
+    00000273 50 44 20 28 50 6F 64   380 	.ascii "PD (Poder de Defesa): 7"
+             65 72 20 64 65 20 44
+             65 66 65 73 61 29 3A
+             20 37
+    0000028A 00                     381 	.db 0x00
+                                    382 	.area _CODE
+                                    383 	.area _CODE
+    0000028B                        384 ___str_11:
+    0000028B 50 56 20 28 50 6F 6E   385 	.ascii "PV (Pontos Vitais): 2d6"
+             74 6F 73 20 56 69 74
+             61 69 73 29 3A 20 32
+             64 36
+    000002A2 00                     386 	.db 0x00
+                                    387 	.area _CODE
+                                    388 	.area _CODE
+    000002A3                        389 ___str_12:
+    000002A3 50 41 20 72 6F 6C 61   390 	.ascii "PA rolado: "
+             64 6F 3A 20
+    000002AE 00                     391 	.db 0x00
+                                    392 	.area _CODE
+                                    393 	.area _CODE
+    000002AF                        394 ___str_13:
+    000002AF 25 64                  395 	.ascii "%d"
+    000002B1 00                     396 	.db 0x00
+                                    397 	.area _CODE
+                                    398 	.area _CODE
+    000002B2                        399 ___str_14:
+    000002B2 50 56 20 72 6F 6C 61   400 	.ascii "PV rolado: "
+             64 6F 3A 20
+    000002BD 00                     401 	.db 0x00
+                                    402 	.area _CODE
+                                    403 	.area _CODE
+    000002BE                        404 ___str_15:
+    000002BE 50 72 65 73 73 69 6F   405 	.ascii "Pressione ENTER para continuar..."
+             6E 65 20 45 4E 54 45
+             52 20 70 61 72 61 20
+             63 6F 6E 74 69 6E 75
+             61 72 2E 2E 2E
+    000002DF 00                     406 	.db 0x00
+                                    407 	.area _CODE
+                                    408 	.area _CODE
+                                    409 ;src/main.c:92: void exploration(void) {
+                                    410 ;	---------------------------------
+                                    411 ; Function exploration
+                                    412 ; ---------------------------------
+    000002E0                        413 _exploration::
+                                    414 ;src/main.c:93: Print_Clear();
+    000002E0 CDr00r00         [17]  415 	call	_Print_Clear
+                                    416 ;src/main.c:94: Print_At(5, 1, "=== FORTALEZA DE BERDOLOCK ===");
+    000002E3 21r37r04         [10]  417 	ld	hl, #___str_16
+    000002E6 E5               [11]  418 	push	hl
+    000002E7 11 01 00         [10]  419 	ld	de, #0x0001
+    000002EA 21 05 00         [10]  420 	ld	hl, #0x0005
+    000002ED CDr00r00         [17]  421 	call	_Print_At
+                                    422 ;src/main.c:95: Print_At(2, 3, "Turno: ");
+    000002F0 21r56r04         [10]  423 	ld	hl, #___str_17
+    000002F3 E5               [11]  424 	push	hl
+    000002F4 11 03 00         [10]  425 	ld	de, #0x0003
+    000002F7 21 02 00         [10]  426 	ld	hl, #0x0002
+    000002FA CDr00r00         [17]  427 	call	_Print_At
+                                    428 ;src/main.c:96: printf("%d/30", game_state.turn);
+    000002FD 2Ar17r00         [16]  429 	ld	hl, (#(_game_state + 23) + 0)
+    00000300 01r5Er04         [10]  430 	ld	bc, #___str_18+0
+    00000303 E5               [11]  431 	push	hl
+    00000304 C5               [11]  432 	push	bc
+    00000305 CDr00r00         [17]  433 	call	_printf
+    00000308 F1               [10]  434 	pop	af
+                                    435 ;src/main.c:98: Print_At(5, 6, "PA: ");
+    00000309 21r64r04         [10]  436 	ld	hl, #___str_19
+    0000030C E3               [19]  437 	ex	(sp),hl
+    0000030D 11 06 00         [10]  438 	ld	de, #0x0006
+    00000310 21 05 00         [10]  439 	ld	hl, #0x0005
+    00000313 CDr00r00         [17]  440 	call	_Print_At
+                                    441 ;src/main.c:99: printf("%d", game_state.player.pa);
+    00000316 ED 4Br01r00      [20]  442 	ld	bc, (#_game_state + 1)
+    0000031A C5               [11]  443 	push	bc
+    0000031B 21r69r04         [10]  444 	ld	hl, #___str_20
+    0000031E E5               [11]  445 	push	hl
+    0000031F CDr00r00         [17]  446 	call	_printf
+    00000322 F1               [10]  447 	pop	af
+                                    448 ;src/main.c:100: Print_At(20, 6, "PD: ");
+    00000323 21r6Cr04         [10]  449 	ld	hl, #___str_21
+    00000326 E3               [19]  450 	ex	(sp),hl
+    00000327 11 06 00         [10]  451 	ld	de, #0x0006
+    0000032A 21 14 00         [10]  452 	ld	hl, #0x0014
+    0000032D CDr00r00         [17]  453 	call	_Print_At
+                                    454 ;src/main.c:101: printf("%d", game_state.player.pd);
+    00000330 2Ar03r00         [16]  455 	ld	hl, (#_game_state + 3)
+    00000333 E5               [11]  456 	push	hl
+    00000334 21r69r04         [10]  457 	ld	hl, #___str_20
+    00000337 E5               [11]  458 	push	hl
+    00000338 CDr00r00         [17]  459 	call	_printf
+    0000033B F1               [10]  460 	pop	af
+                                    461 ;src/main.c:102: Print_At(5, 7, "PV: ");
+    0000033C 21r71r04         [10]  462 	ld	hl, #___str_22
+    0000033F E3               [19]  463 	ex	(sp),hl
+    00000340 11 07 00         [10]  464 	ld	de, #0x0007
+    00000343 21 05 00         [10]  465 	ld	hl, #0x0005
+    00000346 CDr00r00         [17]  466 	call	_Print_At
+                                    467 ;src/main.c:103: printf("%d/%d", game_state.player.pv, game_state.player.pv_max);
+    00000349 ED 5Br07r00      [20]  468 	ld	de, (#(_game_state + 7) + 0)
+    0000034D 2Ar05r00         [16]  469 	ld	hl, (#(_game_state + 5) + 0)
+    00000350 01r76r04         [10]  470 	ld	bc, #___str_23+0
+    00000353 D5               [11]  471 	push	de
+    00000354 E5               [11]  472 	push	hl
+    00000355 C5               [11]  473 	push	bc
+    00000356 CDr00r00         [17]  474 	call	_printf
+    00000359 F1               [10]  475 	pop	af
+    0000035A F1               [10]  476 	pop	af
+                                    477 ;src/main.c:104: Print_At(5, 10, "Pocoes: ");
+    0000035B 21r7Cr04         [10]  478 	ld	hl, #___str_24
+    0000035E E3               [19]  479 	ex	(sp),hl
+    0000035F 11 0A 00         [10]  480 	ld	de, #0x000a
+    00000362 21 05 00         [10]  481 	ld	hl, #0x0005
+    00000365 CDr00r00         [17]  482 	call	_Print_At
+                                    483 ;src/main.c:105: printf("%d", game_state.player.potions);
+    00000368 2Ar0Dr00         [16]  484 	ld	hl, (#(_game_state + 13) + 0)
+    0000036B E5               [11]  485 	push	hl
+    0000036C 21r69r04         [10]  486 	ld	hl, #___str_20
+    0000036F E5               [11]  487 	push	hl
+    00000370 CDr00r00         [17]  488 	call	_printf
+    00000373 F1               [10]  489 	pop	af
+                                    490 ;src/main.c:106: Print_At(5, 11, "Ouro: ");
+    00000374 21r85r04         [10]  491 	ld	hl, #___str_25
+    00000377 E3               [19]  492 	ex	(sp),hl
+    00000378 11 0B 00         [10]  493 	ld	de, #0x000b
+    0000037B 21 05 00         [10]  494 	ld	hl, #0x0005
+    0000037E CDr00r00         [17]  495 	call	_Print_At
+                                    496 ;src/main.c:107: printf("%d", game_state.player.gold);
+    00000381 2Ar15r00         [16]  497 	ld	hl, (#_game_state + 21)
+    00000384 E5               [11]  498 	push	hl
+    00000385 21r69r04         [10]  499 	ld	hl, #___str_20
+    00000388 E5               [11]  500 	push	hl
+    00000389 CDr00r00         [17]  501 	call	_printf
+    0000038C F1               [10]  502 	pop	af
+                                    503 ;src/main.c:109: Print_At(2, 14, "Acoes:");
+    0000038D 21r8Cr04         [10]  504 	ld	hl, #___str_26
+    00000390 E3               [19]  505 	ex	(sp),hl
+    00000391 11 0E 00         [10]  506 	ld	de, #0x000e
+    00000394 21 02 00         [10]  507 	ld	hl, #0x0002
+    00000397 CDr00r00         [17]  508 	call	_Print_At
+                                    509 ;src/main.c:110: Print_At(5, 15, "1 - Explorar");
+    0000039A 21r93r04         [10]  510 	ld	hl, #___str_27
+    0000039D E5               [11]  511 	push	hl
+    0000039E 11 0F 00         [10]  512 	ld	de, #0x000f
+    000003A1 21 05 00         [10]  513 	ld	hl, #0x0005
+    000003A4 CDr00r00         [17]  514 	call	_Print_At
+                                    515 ;src/main.c:111: Print_At(5, 16, "2 - Usar Pocao");
+    000003A7 21rA0r04         [10]  516 	ld	hl, #___str_28
+    000003AA E5               [11]  517 	push	hl
+    000003AB 11 10 00         [10]  518 	ld	de, #0x0010
+    000003AE 21 05 00         [10]  519 	ld	hl, #0x0005
+    000003B1 CDr00r00         [17]  520 	call	_Print_At
+                                    521 ;src/main.c:112: Print_At(5, 17, "3 - Status");
+    000003B4 21rAFr04         [10]  522 	ld	hl, #___str_29
+    000003B7 E5               [11]  523 	push	hl
+    000003B8 11 11 00         [10]  524 	ld	de, #0x0011
+    000003BB 21 05 00         [10]  525 	ld	hl, #0x0005
+    000003BE CDr00r00         [17]  526 	call	_Print_At
+                                    527 ;src/main.c:113: Print_At(5, 18, "4 - Menu");
+    000003C1 21rBAr04         [10]  528 	ld	hl, #___str_30
+    000003C4 E5               [11]  529 	push	hl
+    000003C5 11 12 00         [10]  530 	ld	de, #0x0012
+    000003C8 21 05 00         [10]  531 	ld	hl, #0x0005
+    000003CB CDr00r00         [17]  532 	call	_Print_At
+                                    533 ;src/main.c:115: Print_At(2, 22, "Escolha: ");
+    000003CE 21rC3r04         [10]  534 	ld	hl, #___str_31
+    000003D1 E5               [11]  535 	push	hl
+    000003D2 11 16 00         [10]  536 	ld	de, #0x0016
+    000003D5 21 02 00         [10]  537 	ld	hl, #0x0002
+    000003D8 CDr00r00         [17]  538 	call	_Print_At
+                                    539 ;src/main.c:117: int choice = getchar();
+    000003DB CDr00r00         [17]  540 	call	_getchar
+                                    541 ;src/main.c:119: if (choice == '1') {
+    000003DE 7B               [ 4]  542 	ld	a, e
+    000003DF D6 31            [ 7]  543 	sub	a, #0x31
+    000003E1 B2               [ 4]  544 	or	a, d
+    000003E2 20 1D            [12]  545 	jr	NZ, 00114$
+                                    546 ;src/main.c:120: handle_exploration_event();
+    000003E4 CDrCDr04         [17]  547 	call	_handle_exploration_event
+                                    548 ;src/main.c:121: game_state.turn++;
+    000003E7 2Ar17r00         [16]  549 	ld	hl, (#(_game_state + 23) + 0)
+    000003EA 23               [ 6]  550 	inc	hl
+    000003EB 22r17r00         [16]  551 	ld	((_game_state + 23)), hl
+                                    552 ;src/main.c:122: if (game_state.turn > 30) game_state.turn = 30;
+    000003EE 3E 1E            [ 7]  553 	ld	a, #0x1e
+    000003F0 BD               [ 4]  554 	cp	a, l
+    000003F1 3E 00            [ 7]  555 	ld	a, #0x00
+    000003F3 9C               [ 4]  556 	sbc	a, h
+    000003F4 E2rF9r03         [10]  557 	jp	PO, 00162$
+    000003F7 EE 80            [ 7]  558 	xor	a, #0x80
+    000003F9                        559 00162$:
+    000003F9 F0               [11]  560 	ret	P
+    000003FA 21 1E 00         [10]  561 	ld	hl, #0x001e
+    000003FD 22r17r00         [16]  562 	ld	((_game_state + 23)), hl
+    00000400 C9               [10]  563 	ret
+    00000401                        564 00114$:
+                                    565 ;src/main.c:123: } else if (choice == '2') {
+    00000401 7B               [ 4]  566 	ld	a, e
+    00000402 D6 32            [ 7]  567 	sub	a, #0x32
+    00000404 B2               [ 4]  568 	or	a, d
+    00000405 20 1E            [12]  569 	jr	NZ, 00111$
+                                    570 ;src/main.c:124: if (game_state.player.potions > 0) {
+    00000407 2Ar0Dr00         [16]  571 	ld	hl, (#(_game_state + 13) + 0)
+    0000040A AF               [ 4]  572 	xor	a, a
+    0000040B BD               [ 4]  573 	cp	a, l
+    0000040C 9C               [ 4]  574 	sbc	a, h
+    0000040D E2r12r04         [10]  575 	jp	PO, 00165$
+    00000410 EE 80            [ 7]  576 	xor	a, #0x80
+    00000412                        577 00165$:
+    00000412 F2r00r00         [10]  578 	jp	P, _getchar
+                                    579 ;src/main.c:125: game_state.player.pv = game_state.player.pv_max;
+    00000415 2Ar07r00         [16]  580 	ld	hl, (#(_game_state + 7) + 0)
+    00000418 22r05r00         [16]  581 	ld	((_game_state + 5)), hl
+                                    582 ;src/main.c:126: game_state.player.potions--;
+    0000041B 2Ar0Dr00         [16]  583 	ld	hl, (#(_game_state + 13) + 0)
+    0000041E 2B               [ 6]  584 	dec	hl
+                                    585 ;src/main.c:128: getchar();
+    0000041F 22r0Dr00         [16]  586 	ld	((_game_state + 13)), hl
+    00000422 C3r00r00         [10]  587 	jp	_getchar
+    00000425                        588 00111$:
+                                    589 ;src/main.c:129: } else if (choice == '3') {
+    00000425 7B               [ 4]  590 	ld	a, e
+    00000426 D6 33            [ 7]  591 	sub	a, #0x33
+    00000428 B2               [ 4]  592 	or	a, d
+    00000429 CAr7Br07         [10]  593 	jp	Z, _show_full_status
+                                    594 ;src/main.c:130: show_full_status();
+                                    595 ;src/main.c:131: } else if (choice == '4') {
+    0000042C 7B               [ 4]  596 	ld	a, e
+    0000042D D6 34            [ 7]  597 	sub	a, #0x34
+    0000042F B2               [ 4]  598 	or	a, d
+    00000430 C0               [11]  599 	ret	NZ
+                                    600 ;src/main.c:132: game_state.state = GAME_MENU;
+    00000431 21r00r00         [10]  601 	ld	hl, #_game_state
+    00000434 36 00            [10]  602 	ld	(hl), #0x00
+                                    603 ;src/main.c:134: }
+    00000436 C9               [10]  604 	ret
+                                    605 	.area _CODE
+                                    606 	.area _CODE
+    00000437                        607 ___str_16:
+    00000437 3D 3D 3D 20 46 4F 52   608 	.ascii "=== FORTALEZA DE BERDOLOCK ==="
+             54 41 4C 45 5A 41 20
+             44 45 20 42 45 52 44
+             4F 4C 4F 43 4B 20 3D
+             3D 3D
+    00000455 00                     609 	.db 0x00
+                                    610 	.area _CODE
+                                    611 	.area _CODE
+    00000456                        612 ___str_17:
+    00000456 54 75 72 6E 6F 3A 20   613 	.ascii "Turno: "
+    0000045D 00                     614 	.db 0x00
+                                    615 	.area _CODE
+                                    616 	.area _CODE
+    0000045E                        617 ___str_18:
+    0000045E 25 64 2F 33 30         618 	.ascii "%d/30"
+    00000463 00                     619 	.db 0x00
+                                    620 	.area _CODE
+                                    621 	.area _CODE
+    00000464                        622 ___str_19:
+    00000464 50 41 3A 20            623 	.ascii "PA: "
+    00000468 00                     624 	.db 0x00
+                                    625 	.area _CODE
+                                    626 	.area _CODE
+    00000469                        627 ___str_20:
+    00000469 25 64                  628 	.ascii "%d"
+    0000046B 00                     629 	.db 0x00
+                                    630 	.area _CODE
+                                    631 	.area _CODE
+    0000046C                        632 ___str_21:
+    0000046C 50 44 3A 20            633 	.ascii "PD: "
+    00000470 00                     634 	.db 0x00
+                                    635 	.area _CODE
+                                    636 	.area _CODE
+    00000471                        637 ___str_22:
+    00000471 50 56 3A 20            638 	.ascii "PV: "
+    00000475 00                     639 	.db 0x00
+                                    640 	.area _CODE
+                                    641 	.area _CODE
+    00000476                        642 ___str_23:
+    00000476 25 64 2F 25 64         643 	.ascii "%d/%d"
+    0000047B 00                     644 	.db 0x00
+                                    645 	.area _CODE
+                                    646 	.area _CODE
+    0000047C                        647 ___str_24:
+    0000047C 50 6F 63 6F 65 73 3A   648 	.ascii "Pocoes: "
+             20
+    00000484 00                     649 	.db 0x00
+                                    650 	.area _CODE
+                                    651 	.area _CODE
+    00000485                        652 ___str_25:
+    00000485 4F 75 72 6F 3A 20      653 	.ascii "Ouro: "
+    0000048B 00                     654 	.db 0x00
+                                    655 	.area _CODE
+                                    656 	.area _CODE
+    0000048C                        657 ___str_26:
+    0000048C 41 63 6F 65 73 3A      658 	.ascii "Acoes:"
+    00000492 00                     659 	.db 0x00
+                                    660 	.area _CODE
+                                    661 	.area _CODE
+    00000493                        662 ___str_27:
+    00000493 31 20 2D 20 45 78 70   663 	.ascii "1 - Explorar"
+             6C 6F 72 61 72
+    0000049F 00                     664 	.db 0x00
+                                    665 	.area _CODE
+                                    666 	.area _CODE
+    000004A0                        667 ___str_28:
+    000004A0 32 20 2D 20 55 73 61   668 	.ascii "2 - Usar Pocao"
+             72 20 50 6F 63 61 6F
+    000004AE 00                     669 	.db 0x00
+                                    670 	.area _CODE
+                                    671 	.area _CODE
+    000004AF                        672 ___str_29:
+    000004AF 33 20 2D 20 53 74 61   673 	.ascii "3 - Status"
+             74 75 73
+    000004B9 00                     674 	.db 0x00
+                                    675 	.area _CODE
+                                    676 	.area _CODE
+    000004BA                        677 ___str_30:
+    000004BA 34 20 2D 20 4D 65 6E   678 	.ascii "4 - Menu"
+             75
+    000004C2 00                     679 	.db 0x00
+                                    680 	.area _CODE
+                                    681 	.area _CODE
+    000004C3                        682 ___str_31:
+    000004C3 45 73 63 6F 6C 68 61   683 	.ascii "Escolha: "
+             3A 20
+    000004CC 00                     684 	.db 0x00
+                                    685 	.area _CODE
+                                    686 	.area _CODE
+                                    687 ;src/main.c:136: void handle_exploration_event(void) {
+                                    688 ;	---------------------------------
+                                    689 ; Function handle_exploration_event
+                                    690 ; ---------------------------------
+    000004CD                        691 _handle_exploration_event::
+                                    692 ;src/main.c:137: int roll = roll_dice(2, 6);
+    000004CD 11 06 00         [10]  693 	ld	de, #0x0006
+    000004D0 21 02 00         [10]  694 	ld	hl, #0x0002
+    000004D3 CDr00r00         [17]  695 	call	_roll_dice
+                                    696 ;src/main.c:139: Print_Clear();
+    000004D6 D5               [11]  697 	push	de
+    000004D7 CDr00r00         [17]  698 	call	_Print_Clear
+                                    699 ;src/main.c:140: Print_At(10, 2, "=== EVENTO ===");
+    000004DA 21r4Br05         [10]  700 	ld	hl, #___str_32
+    000004DD E5               [11]  701 	push	hl
+    000004DE 11 02 00         [10]  702 	ld	de, #0x0002
+    000004E1 21 0A 00         [10]  703 	ld	hl, #0x000a
+    000004E4 CDr00r00         [17]  704 	call	_Print_At
+                                    705 ;src/main.c:141: Print_At(2, 4, "Voce rolou: ");
+    000004E7 21r5Ar05         [10]  706 	ld	hl, #___str_33
+    000004EA E5               [11]  707 	push	hl
+    000004EB 11 04 00         [10]  708 	ld	de, #0x0004
+    000004EE 21 02 00         [10]  709 	ld	hl, #0x0002
+    000004F1 CDr00r00         [17]  710 	call	_Print_At
+    000004F4 D1               [10]  711 	pop	de
+                                    712 ;src/main.c:142: printf("%d", roll);
+    000004F5 D5               [11]  713 	push	de
+    000004F6 D5               [11]  714 	push	de
+    000004F7 21r67r05         [10]  715 	ld	hl, #___str_34
+    000004FA E5               [11]  716 	push	hl
+    000004FB CDr00r00         [17]  717 	call	_printf
+    000004FE F1               [10]  718 	pop	af
+    000004FF F1               [10]  719 	pop	af
+    00000500 D1               [10]  720 	pop	de
+                                    721 ;src/main.c:144: if (roll == 3) handle_trap();
+    00000501 7B               [ 4]  722 	ld	a, e
+    00000502 D6 03            [ 7]  723 	sub	a, #0x03
+    00000504 B2               [ 4]  724 	or	a, d
+    00000505 20 05            [12]  725 	jr	NZ, 00110$
+    00000507 CDr97r05         [17]  726 	call	_handle_trap
+    0000050A 18 2F            [12]  727 	jr	00111$
+    0000050C                        728 00110$:
+                                    729 ;src/main.c:145: else if (roll == 4 || roll == 12) handle_treasure();
+    0000050C 7B               [ 4]  730 	ld	a, e
+    0000050D D6 04            [ 7]  731 	sub	a, #0x04
+    0000050F B2               [ 4]  732 	or	a, d
+    00000510 28 06            [12]  733 	jr	Z, 00105$
+    00000512 7B               [ 4]  734 	ld	a, e
+    00000513 D6 0C            [ 7]  735 	sub	a, #0x0c
+    00000515 B2               [ 4]  736 	or	a, d
+    00000516 20 05            [12]  737 	jr	NZ, 00106$
+    00000518                        738 00105$:
+    00000518 CDr12r06         [17]  739 	call	_handle_treasure
+    0000051B 18 1E            [12]  740 	jr	00111$
+    0000051D                        741 00106$:
+                                    742 ;src/main.c:146: else if (roll == 7 || roll == 11) handle_encounter();
+    0000051D 7B               [ 4]  743 	ld	a, e
+    0000051E D6 07            [ 7]  744 	sub	a, #0x07
+    00000520 B2               [ 4]  745 	or	a, d
+    00000521 28 06            [12]  746 	jr	Z, 00101$
+    00000523 7B               [ 4]  747 	ld	a, e
+    00000524 D6 0B            [ 7]  748 	sub	a, #0x0b
+    00000526 B2               [ 4]  749 	or	a, d
+    00000527 20 05            [12]  750 	jr	NZ, 00102$
+    00000529                        751 00101$:
+    00000529 CDr7Ar06         [17]  752 	call	_handle_encounter
+    0000052C 18 0D            [12]  753 	jr	00111$
+    0000052E                        754 00102$:
+                                    755 ;src/main.c:147: else Print_At(2, 6, "Voce encontrou uma secao.");
+    0000052E 21r6Ar05         [10]  756 	ld	hl, #___str_35
+    00000531 E5               [11]  757 	push	hl
+    00000532 11 06 00         [10]  758 	ld	de, #0x0006
+    00000535 21 02 00         [10]  759 	ld	hl, #0x0002
+    00000538 CDr00r00         [17]  760 	call	_Print_At
+    0000053B                        761 00111$:
+                                    762 ;src/main.c:149: Print_At(2, 22, "Pressione ENTER...");
+    0000053B 21r84r05         [10]  763 	ld	hl, #___str_36
+    0000053E E5               [11]  764 	push	hl
+    0000053F 11 16 00         [10]  765 	ld	de, #0x0016
+    00000542 21 02 00         [10]  766 	ld	hl, #0x0002
+    00000545 CDr00r00         [17]  767 	call	_Print_At
+                                    768 ;src/main.c:150: getchar();
+                                    769 ;src/main.c:151: }
+    00000548 C3r00r00         [10]  770 	jp	_getchar
+                                    771 	.area _CODE
+                                    772 	.area _CODE
+    0000054B                        773 ___str_32:
+    0000054B 3D 3D 3D 20 45 56 45   774 	.ascii "=== EVENTO ==="
+             4E 54 4F 20 3D 3D 3D
+    00000559 00                     775 	.db 0x00
+                                    776 	.area _CODE
+                                    777 	.area _CODE
+    0000055A                        778 ___str_33:
+    0000055A 56 6F 63 65 20 72 6F   779 	.ascii "Voce rolou: "
+             6C 6F 75 3A 20
+    00000566 00                     780 	.db 0x00
+                                    781 	.area _CODE
+                                    782 	.area _CODE
+    00000567                        783 ___str_34:
+    00000567 25 64                  784 	.ascii "%d"
+    00000569 00                     785 	.db 0x00
+                                    786 	.area _CODE
+                                    787 	.area _CODE
+    0000056A                        788 ___str_35:
+    0000056A 56 6F 63 65 20 65 6E   789 	.ascii "Voce encontrou uma secao."
+             63 6F 6E 74 72 6F 75
+             20 75 6D 61 20 73 65
+             63 61 6F 2E
+    00000583 00                     790 	.db 0x00
+                                    791 	.area _CODE
+                                    792 	.area _CODE
+    00000584                        793 ___str_36:
+    00000584 50 72 65 73 73 69 6F   794 	.ascii "Pressione ENTER..."
+             6E 65 20 45 4E 54 45
+             52 2E 2E 2E
+    00000596 00                     795 	.db 0x00
+                                    796 	.area _CODE
+                                    797 	.area _CODE
+                                    798 ;src/main.c:153: void handle_trap(void) {
+                                    799 ;	---------------------------------
+                                    800 ; Function handle_trap
+                                    801 ; ---------------------------------
+    00000597                        802 _handle_trap::
+                                    803 ;src/main.c:154: int trap_type = roll_dice(1, 6);
+    00000597 11 06 00         [10]  804 	ld	de, #0x0006
+    0000059A 21 01 00         [10]  805 	ld	hl, #0x0001
+    0000059D CDr00r00         [17]  806 	call	_roll_dice
+                                    807 ;src/main.c:155: int damage = roll_dice(1, 6);
+    000005A0 D5               [11]  808 	push	de
+    000005A1 11 06 00         [10]  809 	ld	de, #0x0006
+    000005A4 21 01 00         [10]  810 	ld	hl, #0x0001
+    000005A7 CDr00r00         [17]  811 	call	_roll_dice
+                                    812 ;src/main.c:157: Print_At(2, 6, "Armadilha tipo: ");
+    000005AA 01rFEr05         [10]  813 	ld	bc, #___str_37+0
+    000005AD D5               [11]  814 	push	de
+    000005AE C5               [11]  815 	push	bc
+    000005AF 11 06 00         [10]  816 	ld	de, #0x0006
+    000005B2 21 02 00         [10]  817 	ld	hl, #0x0002
+    000005B5 CDr00r00         [17]  818 	call	_Print_At
+    000005B8 D1               [10]  819 	pop	de
+    000005B9 E1               [10]  820 	pop	hl
+                                    821 ;src/main.c:158: printf("%d", trap_type);
+    000005BA 01r0Fr06         [10]  822 	ld	bc, #___str_38+0
+    000005BD E5               [11]  823 	push	hl
+    000005BE D5               [11]  824 	push	de
+    000005BF E5               [11]  825 	push	hl
+    000005C0 C5               [11]  826 	push	bc
+    000005C1 CDr00r00         [17]  827 	call	_printf
+    000005C4 F1               [10]  828 	pop	af
+    000005C5 F1               [10]  829 	pop	af
+    000005C6 D1               [10]  830 	pop	de
+    000005C7 E1               [10]  831 	pop	hl
+                                    832 ;src/main.c:160: if (trap_type == 6) {
+    000005C8 7D               [ 4]  833 	ld	a, l
+    000005C9 D6 06            [ 7]  834 	sub	a, #0x06
+    000005CB B4               [ 4]  835 	or	a, h
+    000005CC 20 0F            [12]  836 	jr	NZ, 00104$
+                                    837 ;src/main.c:161: game_state.player.pv = 0;
+    000005CE 21 00 00         [10]  838 	ld	hl, #0x0000
+    000005D1 22r05r00         [16]  839 	ld	((_game_state + 5)), hl
+                                    840 ;src/main.c:162: game_state.player_alive = 0;
+    000005D4 22r19r00         [16]  841 	ld	((_game_state + 25)), hl
+                                    842 ;src/main.c:163: game_state.state = GAME_OVER;
+    000005D7 21r00r00         [10]  843 	ld	hl, #_game_state
+    000005DA 36 04            [10]  844 	ld	(hl), #0x04
+    000005DC C9               [10]  845 	ret
+    000005DD                        846 00104$:
+                                    847 ;src/main.c:165: game_state.player.pv -= damage;
+    000005DD 2Ar05r00         [16]  848 	ld	hl, (#(_game_state + 5) + 0)
+    000005E0 BF               [ 4]  849 	cp	a, a
+    000005E1 ED 52            [15]  850 	sbc	hl, de
+    000005E3 22r05r00         [16]  851 	ld	((_game_state + 5)), hl
+                                    852 ;src/main.c:166: if (game_state.player.pv <= 0) {
+    000005E6 AF               [ 4]  853 	xor	a, a
+    000005E7 BD               [ 4]  854 	cp	a, l
+    000005E8 9C               [ 4]  855 	sbc	a, h
+    000005E9 E2rEEr05         [10]  856 	jp	PO, 00124$
+    000005EC EE 80            [ 7]  857 	xor	a, #0x80
+    000005EE                        858 00124$:
+    000005EE F8               [11]  859 	ret	M
+                                    860 ;src/main.c:167: game_state.player.pv = 0;
+    000005EF 21 00 00         [10]  861 	ld	hl, #0x0000
+    000005F2 22r05r00         [16]  862 	ld	((_game_state + 5)), hl
+                                    863 ;src/main.c:168: game_state.player_alive = 0;
+    000005F5 22r19r00         [16]  864 	ld	((_game_state + 25)), hl
+                                    865 ;src/main.c:169: game_state.state = GAME_OVER;
+    000005F8 21r00r00         [10]  866 	ld	hl, #_game_state
+    000005FB 36 04            [10]  867 	ld	(hl), #0x04
+                                    868 ;src/main.c:172: }
+    000005FD C9               [10]  869 	ret
+                                    870 	.area _CODE
+                                    871 	.area _CODE
+    000005FE                        872 ___str_37:
+    000005FE 41 72 6D 61 64 69 6C   873 	.ascii "Armadilha tipo: "
+             68 61 20 74 69 70 6F
+             3A 20
+    0000060E 00                     874 	.db 0x00
+                                    875 	.area _CODE
+                                    876 	.area _CODE
+    0000060F                        877 ___str_38:
+    0000060F 25 64                  878 	.ascii "%d"
+    00000611 00                     879 	.db 0x00
+                                    880 	.area _CODE
+                                    881 	.area _CODE
+                                    882 ;src/main.c:174: void handle_treasure(void) {
+                                    883 ;	---------------------------------
+                                    884 ; Function handle_treasure
+                                    885 ; ---------------------------------
+    00000612                        886 _handle_treasure::
+                                    887 ;src/main.c:175: int treasure_type = roll_dice(1, 6);
+    00000612 11 06 00         [10]  888 	ld	de, #0x0006
+    00000615 21 01 00         [10]  889 	ld	hl, #0x0001
+    00000618 CDr00r00         [17]  890 	call	_roll_dice
+                                    891 ;src/main.c:177: Print_At(2, 8, "Tesouro: ");
+    0000061B D5               [11]  892 	push	de
+    0000061C 21r6Dr06         [10]  893 	ld	hl, #___str_39
+    0000061F E5               [11]  894 	push	hl
+    00000620 11 08 00         [10]  895 	ld	de, #0x0008
+    00000623 21 02 00         [10]  896 	ld	hl, #0x0002
+    00000626 CDr00r00         [17]  897 	call	_Print_At
+    00000629 D1               [10]  898 	pop	de
+                                    899 ;src/main.c:178: printf("%d", treasure_type);
+    0000062A D5               [11]  900 	push	de
+    0000062B D5               [11]  901 	push	de
+    0000062C 21r77r06         [10]  902 	ld	hl, #___str_40
+    0000062F E5               [11]  903 	push	hl
+    00000630 CDr00r00         [17]  904 	call	_printf
+    00000633 F1               [10]  905 	pop	af
+    00000634 F1               [10]  906 	pop	af
+    00000635 D1               [10]  907 	pop	de
+                                    908 ;src/main.c:180: if (treasure_type == 2) game_state.player.potions++;
+    00000636 7B               [ 4]  909 	ld	a, e
+    00000637 D6 02            [ 7]  910 	sub	a, #0x02
+    00000639 B2               [ 4]  911 	or	a, d
+    0000063A 20 08            [12]  912 	jr	NZ, 00104$
+    0000063C 2Ar0Dr00         [16]  913 	ld	hl, (#(_game_state + 13) + 0)
+    0000063F 23               [ 6]  914 	inc	hl
+    00000640 22r0Dr00         [16]  915 	ld	((_game_state + 13)), hl
+    00000643 C9               [10]  916 	ret
+    00000644                        917 00104$:
+                                    918 ;src/main.c:181: else if (treasure_type == 5) game_state.player.gold += roll_dice(1, 6) * 1000;
+    00000644 7B               [ 4]  919 	ld	a, e
+    00000645 D6 05            [ 7]  920 	sub	a, #0x05
+    00000647 B2               [ 4]  921 	or	a, d
+    00000648 C0               [11]  922 	ret	NZ
+    00000649 ED 4Br15r00      [20]  923 	ld	bc, (#(_game_state + 21) + 0)
+    0000064D C5               [11]  924 	push	bc
+    0000064E 11 06 00         [10]  925 	ld	de, #0x0006
+    00000651 21 01 00         [10]  926 	ld	hl, #0x0001
+    00000654 CDr00r00         [17]  927 	call	_roll_dice
+    00000657 C1               [10]  928 	pop	bc
+    00000658 6B               [ 4]  929 	ld	l, e
+    00000659 62               [ 4]  930 	ld	h, d
+    0000065A 29               [11]  931 	add	hl, hl
+    0000065B 19               [11]  932 	add	hl, de
+    0000065C 29               [11]  933 	add	hl, hl
+    0000065D 19               [11]  934 	add	hl, de
+    0000065E 29               [11]  935 	add	hl, hl
+    0000065F 19               [11]  936 	add	hl, de
+    00000660 29               [11]  937 	add	hl, hl
+    00000661 19               [11]  938 	add	hl, de
+    00000662 29               [11]  939 	add	hl, hl
+    00000663 29               [11]  940 	add	hl, hl
+    00000664 19               [11]  941 	add	hl, de
+    00000665 29               [11]  942 	add	hl, hl
+    00000666 29               [11]  943 	add	hl, hl
+    00000667 29               [11]  944 	add	hl, hl
+    00000668 09               [11]  945 	add	hl, bc
+    00000669 22r15r00         [16]  946 	ld	((_game_state + 21)), hl
+                                    947 ;src/main.c:182: }
+    0000066C C9               [10]  948 	ret
+                                    949 	.area _CODE
+                                    950 	.area _CODE
+    0000066D                        951 ___str_39:
+    0000066D 54 65 73 6F 75 72 6F   952 	.ascii "Tesouro: "
+             3A 20
+    00000676 00                     953 	.db 0x00
+                                    954 	.area _CODE
+                                    955 	.area _CODE
+    00000677                        956 ___str_40:
+    00000677 25 64                  957 	.ascii "%d"
+    00000679 00                     958 	.db 0x00
+                                    959 	.area _CODE
+                                    960 	.area _CODE
+                                    961 ;src/main.c:184: void handle_encounter(void) {
+                                    962 ;	---------------------------------
+                                    963 ; Function handle_encounter
+                                    964 ; ---------------------------------
+    0000067A                        965 _handle_encounter::
+    0000067A DD E5            [15]  966 	push	ix
+    0000067C DD 21 00 00      [14]  967 	ld	ix,#0
+    00000680 DD 39            [15]  968 	add	ix,sp
+    00000682 21 F8 FF         [10]  969 	ld	hl, #-8
+    00000685 39               [11]  970 	add	hl, sp
+    00000686 F9               [ 6]  971 	ld	sp, hl
+                                    972 ;src/main.c:185: int enemy_type = roll_dice(1, 6);
+    00000687 11 06 00         [10]  973 	ld	de, #0x0006
+    0000068A 21 01 00         [10]  974 	ld	hl, #0x0001
+    0000068D CDr00r00         [17]  975 	call	_roll_dice
+                                    976 ;src/main.c:188: Print_At(2, 8, "Inimigo tipo: ");
+    00000690 D5               [11]  977 	push	de
+    00000691 21rD3r06         [10]  978 	ld	hl, #___str_41
+    00000694 E5               [11]  979 	push	hl
+    00000695 11 08 00         [10]  980 	ld	de, #0x0008
+    00000698 21 02 00         [10]  981 	ld	hl, #0x0002
+    0000069B CDr00r00         [17]  982 	call	_Print_At
+    0000069E D1               [10]  983 	pop	de
+                                    984 ;src/main.c:189: printf("%d", enemy_type);
+    0000069F D5               [11]  985 	push	de
+    000006A0 D5               [11]  986 	push	de
+    000006A1 21rE2r06         [10]  987 	ld	hl, #___str_42
+    000006A4 E5               [11]  988 	push	hl
+    000006A5 CDr00r00         [17]  989 	call	_printf
+    000006A8 F1               [10]  990 	pop	af
+    000006A9 F1               [10]  991 	pop	af
+    000006AA D1               [10]  992 	pop	de
+                                    993 ;src/main.c:191: enemy.type = enemy_type;
+    000006AB 21 00 00         [10]  994 	ld	hl, #0
+    000006AE 39               [11]  995 	add	hl, sp
+    000006AF 73               [ 7]  996 	ld	(hl), e
+    000006B0 23               [ 6]  997 	inc	hl
+    000006B1 72               [ 7]  998 	ld	(hl), d
+    000006B2 2B               [ 6]  999 	dec	hl
+                                   1000 ;src/main.c:192: enemy.pa = 2;
+    000006B3 DD 36 FA 02      [19] 1001 	ld	-6 (ix), #0x02
+    000006B7 DD 36 FB 00      [19] 1002 	ld	-5 (ix), #0
+                                   1003 ;src/main.c:193: enemy.pd = 7;
+    000006BB DD 36 FC 07      [19] 1004 	ld	-4 (ix), #0x07
+    000006BF AF               [ 4] 1005 	xor	a, a
+    000006C0 DD 77 FD         [19] 1006 	ld	-3 (ix), a
+                                   1007 ;src/main.c:194: enemy.pv = 10;
+    000006C3 DD 36 FE 0A      [19] 1008 	ld	-2 (ix), #0x0a
+    000006C7 DD 36 FF 00      [19] 1009 	ld	-1 (ix), #0
+                                   1010 ;src/main.c:196: handle_combat(&enemy);
+    000006CB CDrE5r06         [17] 1011 	call	_handle_combat
+                                   1012 ;src/main.c:197: }
+    000006CE DD F9            [10] 1013 	ld	sp, ix
+    000006D0 DD E1            [14] 1014 	pop	ix
+    000006D2 C9               [10] 1015 	ret
+                                   1016 	.area _CODE
+                                   1017 	.area _CODE
+    000006D3                       1018 ___str_41:
+    000006D3 49 6E 69 6D 69 67 6F  1019 	.ascii "Inimigo tipo: "
+             20 74 69 70 6F 3A 20
+    000006E1 00                    1020 	.db 0x00
+                                   1021 	.area _CODE
+                                   1022 	.area _CODE
+    000006E2                       1023 ___str_42:
+    000006E2 25 64                 1024 	.ascii "%d"
+    000006E4 00                    1025 	.db 0x00
+                                   1026 	.area _CODE
+                                   1027 	.area _CODE
+                                   1028 ;src/main.c:199: void handle_combat(Enemy_t* enemy) {
+                                   1029 ;	---------------------------------
+                                   1030 ; Function handle_combat
+                                   1031 ; ---------------------------------
+    000006E5                       1032 _handle_combat::
+                                   1033 ;src/main.c:200: Print_Clear();
+    000006E5 E5               [11] 1034 	push	hl
+    000006E6 CDr00r00         [17] 1035 	call	_Print_Clear
+                                   1036 ;src/main.c:201: Print_At(5, 2, "=== COMBATE ===");
+    000006E9 21r3Er07         [10] 1037 	ld	hl, #___str_43
+    000006EC E5               [11] 1038 	push	hl
+    000006ED 11 02 00         [10] 1039 	ld	de, #0x0002
+    000006F0 21 05 00         [10] 1040 	ld	hl, #0x0005
+    000006F3 CDr00r00         [17] 1041 	call	_Print_At
+                                   1042 ;src/main.c:202: Print_At(2, 5, "Jogador: ");
+    000006F6 21r4Er07         [10] 1043 	ld	hl, #___str_44
+    000006F9 E5               [11] 1044 	push	hl
+    000006FA 11 05 00         [10] 1045 	ld	de, #0x0005
+    000006FD 21 02 00         [10] 1046 	ld	hl, #0x0002
+    00000700 CDr00r00         [17] 1047 	call	_Print_At
+                                   1048 ;src/main.c:203: printf("%d PV", game_state.player.pv);
+    00000703 ED 4Br05r00      [20] 1049 	ld	bc, (#(_game_state + 5) + 0)
+    00000707 C5               [11] 1050 	push	bc
+    00000708 21r58r07         [10] 1051 	ld	hl, #___str_45
+    0000070B E5               [11] 1052 	push	hl
+    0000070C CDr00r00         [17] 1053 	call	_printf
+    0000070F F1               [10] 1054 	pop	af
+                                   1055 ;src/main.c:204: Print_At(2, 6, "Inimigo: ");
+    00000710 21r5Er07         [10] 1056 	ld	hl, #___str_46
+    00000713 E3               [19] 1057 	ex	(sp),hl
+    00000714 11 06 00         [10] 1058 	ld	de, #0x0006
+    00000717 21 02 00         [10] 1059 	ld	hl, #0x0002
+    0000071A CDr00r00         [17] 1060 	call	_Print_At
+    0000071D D1               [10] 1061 	pop	de
+                                   1062 ;src/main.c:205: printf("%d PV", enemy->pv);
+    0000071E 21 06 00         [10] 1063 	ld	hl, #6
+    00000721 19               [11] 1064 	add	hl, de
+    00000722 4E               [ 7] 1065 	ld	c, (hl)
+    00000723 23               [ 6] 1066 	inc	hl
+    00000724 46               [ 7] 1067 	ld	b, (hl)
+    00000725 C5               [11] 1068 	push	bc
+    00000726 21r58r07         [10] 1069 	ld	hl, #___str_45
+    00000729 E5               [11] 1070 	push	hl
+    0000072A CDr00r00         [17] 1071 	call	_printf
+    0000072D F1               [10] 1072 	pop	af
+                                   1073 ;src/main.c:206: Print_At(2, 22, "Pressione ENTER...");
+    0000072E 21r68r07         [10] 1074 	ld	hl, #___str_47
+    00000731 E3               [19] 1075 	ex	(sp),hl
+    00000732 11 16 00         [10] 1076 	ld	de, #0x0016
+    00000735 21 02 00         [10] 1077 	ld	hl, #0x0002
+    00000738 CDr00r00         [17] 1078 	call	_Print_At
+                                   1079 ;src/main.c:207: getchar();
+                                   1080 ;src/main.c:208: }
+    0000073B C3r00r00         [10] 1081 	jp	_getchar
+                                   1082 	.area _CODE
+                                   1083 	.area _CODE
+    0000073E                       1084 ___str_43:
+    0000073E 3D 3D 3D 20 43 4F 4D  1085 	.ascii "=== COMBATE ==="
+             42 41 54 45 20 3D 3D
+             3D
+    0000074D 00                    1086 	.db 0x00
+                                   1087 	.area _CODE
+                                   1088 	.area _CODE
+    0000074E                       1089 ___str_44:
+    0000074E 4A 6F 67 61 64 6F 72  1090 	.ascii "Jogador: "
+             3A 20
+    00000757 00                    1091 	.db 0x00
+                                   1092 	.area _CODE
+                                   1093 	.area _CODE
+    00000758                       1094 ___str_45:
+    00000758 25 64 20 50 56        1095 	.ascii "%d PV"
+    0000075D 00                    1096 	.db 0x00
+                                   1097 	.area _CODE
+                                   1098 	.area _CODE
+    0000075E                       1099 ___str_46:
+    0000075E 49 6E 69 6D 69 67 6F  1100 	.ascii "Inimigo: "
+             3A 20
+    00000767 00                    1101 	.db 0x00
+                                   1102 	.area _CODE
+                                   1103 	.area _CODE
+    00000768                       1104 ___str_47:
+    00000768 50 72 65 73 73 69 6F  1105 	.ascii "Pressione ENTER..."
+             6E 65 20 45 4E 54 45
+             52 2E 2E 2E
+    0000077A 00                    1106 	.db 0x00
+                                   1107 	.area _CODE
+                                   1108 	.area _CODE
+                                   1109 ;src/main.c:210: void show_full_status(void) {
+                                   1110 ;	---------------------------------
+                                   1111 ; Function show_full_status
+                                   1112 ; ---------------------------------
+    0000077B                       1113 _show_full_status::
+                                   1114 ;src/main.c:211: Print_Clear();
+    0000077B CDr00r00         [17] 1115 	call	_Print_Clear
+                                   1116 ;src/main.c:212: Print_At(8, 2, "=== STATUS ===");
+    0000077E 21rEDr07         [10] 1117 	ld	hl, #___str_48
+    00000781 E5               [11] 1118 	push	hl
+    00000782 11 02 00         [10] 1119 	ld	de, #0x0002
+    00000785 21 08 00         [10] 1120 	ld	hl, #0x0008
+    00000788 CDr00r00         [17] 1121 	call	_Print_At
+                                   1122 ;src/main.c:213: Print_At(2, 4, "PA: ");
+    0000078B 21rFCr07         [10] 1123 	ld	hl, #___str_49
+    0000078E E5               [11] 1124 	push	hl
+    0000078F 11 04 00         [10] 1125 	ld	de, #0x0004
+    00000792 21 02 00         [10] 1126 	ld	hl, #0x0002
+    00000795 CDr00r00         [17] 1127 	call	_Print_At
+                                   1128 ;src/main.c:214: printf("%d", game_state.player.pa);
+    00000798 ED 4Br01r00      [20] 1129 	ld	bc, (#_game_state + 1)
+    0000079C C5               [11] 1130 	push	bc
+    0000079D 21r01r08         [10] 1131 	ld	hl, #___str_50
+    000007A0 E5               [11] 1132 	push	hl
+    000007A1 CDr00r00         [17] 1133 	call	_printf
+    000007A4 F1               [10] 1134 	pop	af
+                                   1135 ;src/main.c:215: Print_At(2, 5, "PD: ");
+    000007A5 21r04r08         [10] 1136 	ld	hl, #___str_51
+    000007A8 E3               [19] 1137 	ex	(sp),hl
+    000007A9 11 05 00         [10] 1138 	ld	de, #0x0005
+    000007AC 21 02 00         [10] 1139 	ld	hl, #0x0002
+    000007AF CDr00r00         [17] 1140 	call	_Print_At
+                                   1141 ;src/main.c:216: printf("%d", game_state.player.pd);
+    000007B2 2Ar03r00         [16] 1142 	ld	hl, (#_game_state + 3)
+    000007B5 E5               [11] 1143 	push	hl
+    000007B6 21r01r08         [10] 1144 	ld	hl, #___str_50
+    000007B9 E5               [11] 1145 	push	hl
+    000007BA CDr00r00         [17] 1146 	call	_printf
+    000007BD F1               [10] 1147 	pop	af
+                                   1148 ;src/main.c:217: Print_At(2, 6, "PV: ");
+    000007BE 21r09r08         [10] 1149 	ld	hl, #___str_52
+    000007C1 E3               [19] 1150 	ex	(sp),hl
+    000007C2 11 06 00         [10] 1151 	ld	de, #0x0006
+    000007C5 21 02 00         [10] 1152 	ld	hl, #0x0002
+    000007C8 CDr00r00         [17] 1153 	call	_Print_At
+                                   1154 ;src/main.c:218: printf("%d/%d", game_state.player.pv, game_state.player.pv_max);
+    000007CB ED 5Br07r00      [20] 1155 	ld	de, (#_game_state + 7)
+    000007CF 2Ar05r00         [16] 1156 	ld	hl, (#_game_state + 5)
+    000007D2 01r0Er08         [10] 1157 	ld	bc, #___str_53+0
+    000007D5 D5               [11] 1158 	push	de
+    000007D6 E5               [11] 1159 	push	hl
+    000007D7 C5               [11] 1160 	push	bc
+    000007D8 CDr00r00         [17] 1161 	call	_printf
+    000007DB F1               [10] 1162 	pop	af
+    000007DC F1               [10] 1163 	pop	af
+                                   1164 ;src/main.c:219: Print_At(2, 22, "Pressione ENTER...");
+    000007DD 21r14r08         [10] 1165 	ld	hl, #___str_54
+    000007E0 E3               [19] 1166 	ex	(sp),hl
+    000007E1 11 16 00         [10] 1167 	ld	de, #0x0016
+    000007E4 21 02 00         [10] 1168 	ld	hl, #0x0002
+    000007E7 CDr00r00         [17] 1169 	call	_Print_At
+                                   1170 ;src/main.c:220: getchar();
+                                   1171 ;src/main.c:221: }
+    000007EA C3r00r00         [10] 1172 	jp	_getchar
+                                   1173 	.area _CODE
+                                   1174 	.area _CODE
+    000007ED                       1175 ___str_48:
+    000007ED 3D 3D 3D 20 53 54 41  1176 	.ascii "=== STATUS ==="
+             54 55 53 20 3D 3D 3D
+    000007FB 00                    1177 	.db 0x00
+                                   1178 	.area _CODE
+                                   1179 	.area _CODE
+    000007FC                       1180 ___str_49:
+    000007FC 50 41 3A 20           1181 	.ascii "PA: "
+    00000800 00                    1182 	.db 0x00
+                                   1183 	.area _CODE
+                                   1184 	.area _CODE
+    00000801                       1185 ___str_50:
+    00000801 25 64                 1186 	.ascii "%d"
+    00000803 00                    1187 	.db 0x00
+                                   1188 	.area _CODE
+                                   1189 	.area _CODE
+    00000804                       1190 ___str_51:
+    00000804 50 44 3A 20           1191 	.ascii "PD: "
+    00000808 00                    1192 	.db 0x00
+                                   1193 	.area _CODE
+                                   1194 	.area _CODE
+    00000809                       1195 ___str_52:
+    00000809 50 56 3A 20           1196 	.ascii "PV: "
+    0000080D 00                    1197 	.db 0x00
+                                   1198 	.area _CODE
+                                   1199 	.area _CODE
+    0000080E                       1200 ___str_53:
+    0000080E 25 64 2F 25 64        1201 	.ascii "%d/%d"
+    00000813 00                    1202 	.db 0x00
+                                   1203 	.area _CODE
+                                   1204 	.area _CODE
+    00000814                       1205 ___str_54:
+    00000814 50 72 65 73 73 69 6F  1206 	.ascii "Pressione ENTER..."
+             6E 65 20 45 4E 54 45
+             52 2E 2E 2E
+    00000826 00                    1207 	.db 0x00
+                                   1208 	.area _CODE
+                                   1209 	.area _CODE
+                                   1210 ;src/main.c:223: void handle_exit_attempt(void) {
+                                   1211 ;	---------------------------------
+                                   1212 ; Function handle_exit_attempt
+                                   1213 ; ---------------------------------
+    00000827                       1214 _handle_exit_attempt::
+                                   1215 ;src/main.c:224: Print_Clear();
+    00000827 CDr00r00         [17] 1216 	call	_Print_Clear
+                                   1217 ;src/main.c:225: Print_At(5, 2, "=== SAIDA ===");
+    0000082A 21r4Ar08         [10] 1218 	ld	hl, #___str_55
+    0000082D E5               [11] 1219 	push	hl
+    0000082E 11 02 00         [10] 1220 	ld	de, #0x0002
+    00000831 21 05 00         [10] 1221 	ld	hl, #0x0005
+    00000834 CDr00r00         [17] 1222 	call	_Print_At
+                                   1223 ;src/main.c:226: Print_At(2, 6, "Voce escapou!");
+    00000837 21r58r08         [10] 1224 	ld	hl, #___str_56
+    0000083A E5               [11] 1225 	push	hl
+    0000083B 11 06 00         [10] 1226 	ld	de, #0x0006
+    0000083E 21 02 00         [10] 1227 	ld	hl, #0x0002
+    00000841 CDr00r00         [17] 1228 	call	_Print_At
+                                   1229 ;src/main.c:227: game_state.state = GAME_OVER;
+    00000844 21r00r00         [10] 1230 	ld	hl, #_game_state+0
+    00000847 36 04            [10] 1231 	ld	(hl), #0x04
+                                   1232 ;src/main.c:228: }
+    00000849 C9               [10] 1233 	ret
+                                   1234 	.area _CODE
+                                   1235 	.area _CODE
+    0000084A                       1236 ___str_55:
+    0000084A 3D 3D 3D 20 53 41 49  1237 	.ascii "=== SAIDA ==="
+             44 41 20 3D 3D 3D
+    00000857 00                    1238 	.db 0x00
+                                   1239 	.area _CODE
+                                   1240 	.area _CODE
+    00000858                       1241 ___str_56:
+    00000858 56 6F 63 65 20 65 73  1242 	.ascii "Voce escapou!"
+             63 61 70 6F 75 21
+    00000865 00                    1243 	.db 0x00
+                                   1244 	.area _CODE
+                                   1245 	.area _CODE
+                                   1246 ;src/main.c:230: void show_help(void) {
+                                   1247 ;	---------------------------------
+                                   1248 ; Function show_help
+                                   1249 ; ---------------------------------
+    00000866                       1250 _show_help::
+                                   1251 ;src/main.c:231: Print_Clear();
+    00000866 CDr00r00         [17] 1252 	call	_Print_Clear
+                                   1253 ;src/main.c:232: Print_At(8, 2, "=== COMO JOGAR ===");
+    00000869 21rC0r08         [10] 1254 	ld	hl, #___str_57
+    0000086C E5               [11] 1255 	push	hl
+    0000086D 11 02 00         [10] 1256 	ld	de, #0x0002
+    00000870 21 08 00         [10] 1257 	ld	hl, #0x0008
+    00000873 CDr00r00         [17] 1258 	call	_Print_At
+                                   1259 ;src/main.c:233: Print_At(2, 5, "Explore a masmorra");
+    00000876 21rD3r08         [10] 1260 	ld	hl, #___str_58
+    00000879 E5               [11] 1261 	push	hl
+    0000087A 11 05 00         [10] 1262 	ld	de, #0x0005
+    0000087D 21 02 00         [10] 1263 	ld	hl, #0x0002
+    00000880 CDr00r00         [17] 1264 	call	_Print_At
+                                   1265 ;src/main.c:234: Print_At(2, 6, "Derrote inimigos");
+    00000883 21rE6r08         [10] 1266 	ld	hl, #___str_59
+    00000886 E5               [11] 1267 	push	hl
+    00000887 11 06 00         [10] 1268 	ld	de, #0x0006
+    0000088A 21 02 00         [10] 1269 	ld	hl, #0x0002
+    0000088D CDr00r00         [17] 1270 	call	_Print_At
+                                   1271 ;src/main.c:235: Print_At(2, 7, "Colete tesouros");
+    00000890 21rF7r08         [10] 1272 	ld	hl, #___str_60
+    00000893 E5               [11] 1273 	push	hl
+    00000894 11 07 00         [10] 1274 	ld	de, #0x0007
+    00000897 21 02 00         [10] 1275 	ld	hl, #0x0002
+    0000089A CDr00r00         [17] 1276 	call	_Print_At
+                                   1277 ;src/main.c:236: Print_At(2, 8, "Escape em 30 turnos!");
+    0000089D 21r07r09         [10] 1278 	ld	hl, #___str_61
+    000008A0 E5               [11] 1279 	push	hl
+    000008A1 11 08 00         [10] 1280 	ld	de, #0x0008
+    000008A4 21 02 00         [10] 1281 	ld	hl, #0x0002
+    000008A7 CDr00r00         [17] 1282 	call	_Print_At
+                                   1283 ;src/main.c:237: Print_At(2, 22, "Pressione ENTER...");
+    000008AA 21r1Cr09         [10] 1284 	ld	hl, #___str_62
+    000008AD E5               [11] 1285 	push	hl
+    000008AE 11 16 00         [10] 1286 	ld	de, #0x0016
+    000008B1 21 02 00         [10] 1287 	ld	hl, #0x0002
+    000008B4 CDr00r00         [17] 1288 	call	_Print_At
+                                   1289 ;src/main.c:238: getchar();
+    000008B7 CDr00r00         [17] 1290 	call	_getchar
+                                   1291 ;src/main.c:239: game_state.state = GAME_MENU;
+    000008BA 21r00r00         [10] 1292 	ld	hl, #_game_state+0
+    000008BD 36 00            [10] 1293 	ld	(hl), #0x00
+                                   1294 ;src/main.c:240: }
+    000008BF C9               [10] 1295 	ret
+                                   1296 	.area _CODE
+                                   1297 	.area _CODE
+    000008C0                       1298 ___str_57:
+    000008C0 3D 3D 3D 20 43 4F 4D  1299 	.ascii "=== COMO JOGAR ==="
+             4F 20 4A 4F 47 41 52
+             20 3D 3D 3D
+    000008D2 00                    1300 	.db 0x00
+                                   1301 	.area _CODE
+                                   1302 	.area _CODE
+    000008D3                       1303 ___str_58:
+    000008D3 45 78 70 6C 6F 72 65  1304 	.ascii "Explore a masmorra"
+             20 61 20 6D 61 73 6D
+             6F 72 72 61
+    000008E5 00                    1305 	.db 0x00
+                                   1306 	.area _CODE
+                                   1307 	.area _CODE
+    000008E6                       1308 ___str_59:
+    000008E6 44 65 72 72 6F 74 65  1309 	.ascii "Derrote inimigos"
+             20 69 6E 69 6D 69 67
+             6F 73
+    000008F6 00                    1310 	.db 0x00
+                                   1311 	.area _CODE
+                                   1312 	.area _CODE
+    000008F7                       1313 ___str_60:
+    000008F7 43 6F 6C 65 74 65 20  1314 	.ascii "Colete tesouros"
+             74 65 73 6F 75 72 6F
+             73
+    00000906 00                    1315 	.db 0x00
+                                   1316 	.area _CODE
+                                   1317 	.area _CODE
+    00000907                       1318 ___str_61:
+    00000907 45 73 63 61 70 65 20  1319 	.ascii "Escape em 30 turnos!"
+             65 6D 20 33 30 20 74
+             75 72 6E 6F 73 21
+    0000091B 00                    1320 	.db 0x00
+                                   1321 	.area _CODE
+                                   1322 	.area _CODE
+    0000091C                       1323 ___str_62:
+    0000091C 50 72 65 73 73 69 6F  1324 	.ascii "Pressione ENTER..."
+             6E 65 20 45 4E 54 45
+             52 2E 2E 2E
+    0000092E 00                    1325 	.db 0x00
+                                   1326 	.area _CODE
+                                   1327 	.area _CODE
+                                   1328 ;src/main.c:242: void game_over_screen(void) {
+                                   1329 ;	---------------------------------
+                                   1330 ; Function game_over_screen
+                                   1331 ; ---------------------------------
+    0000092F                       1332 _game_over_screen::
+                                   1333 ;src/main.c:243: Print_Clear();
+    0000092F CDr00r00         [17] 1334 	call	_Print_Clear
+                                   1335 ;src/main.c:245: if (game_state.player_alive) {
+    00000932 2Ar19r00         [16] 1336 	ld	hl, (#_game_state + 25)
+    00000935 7C               [ 4] 1337 	ld	a, h
+    00000936 B5               [ 4] 1338 	or	a, l
+    00000937 28 0F            [12] 1339 	jr	Z, 00102$
+                                   1340 ;src/main.c:246: Print_At(10, 5, "=== VOCE VENCEU ===");
+    00000939 21rD1r09         [10] 1341 	ld	hl, #___str_63
+    0000093C E5               [11] 1342 	push	hl
+    0000093D 11 05 00         [10] 1343 	ld	de, #0x0005
+    00000940 21 0A 00         [10] 1344 	ld	hl, #0x000a
+    00000943 CDr00r00         [17] 1345 	call	_Print_At
+    00000946 18 0D            [12] 1346 	jr	00103$
+    00000948                       1347 00102$:
+                                   1348 ;src/main.c:248: Print_At(10, 5, "=== GAME OVER ===");
+    00000948 21rE5r09         [10] 1349 	ld	hl, #___str_64
+    0000094B E5               [11] 1350 	push	hl
+    0000094C 11 05 00         [10] 1351 	ld	de, #0x0005
+    0000094F 21 0A 00         [10] 1352 	ld	hl, #0x000a
+    00000952 CDr00r00         [17] 1353 	call	_Print_At
+    00000955                       1354 00103$:
+                                   1355 ;src/main.c:251: Print_At(5, 9, "Turnos: ");
+    00000955 21rF7r09         [10] 1356 	ld	hl, #___str_65
+    00000958 E5               [11] 1357 	push	hl
+    00000959 11 09 00         [10] 1358 	ld	de, #0x0009
+    0000095C 21 05 00         [10] 1359 	ld	hl, #0x0005
+    0000095F CDr00r00         [17] 1360 	call	_Print_At
+                                   1361 ;src/main.c:252: printf("%d/30", game_state.turn);
+    00000962 2Ar17r00         [16] 1362 	ld	hl, (#_game_state + 23)
+    00000965 01r00r0A         [10] 1363 	ld	bc, #___str_66+0
+    00000968 E5               [11] 1364 	push	hl
+    00000969 C5               [11] 1365 	push	bc
+    0000096A CDr00r00         [17] 1366 	call	_printf
+    0000096D F1               [10] 1367 	pop	af
+                                   1368 ;src/main.c:253: Print_At(5, 10, "Ouro: ");
+    0000096E 21r06r0A         [10] 1369 	ld	hl, #___str_67
+    00000971 E3               [19] 1370 	ex	(sp),hl
+    00000972 11 0A 00         [10] 1371 	ld	de, #0x000a
+    00000975 21 05 00         [10] 1372 	ld	hl, #0x0005
+    00000978 CDr00r00         [17] 1373 	call	_Print_At
+                                   1374 ;src/main.c:254: printf("%d", game_state.player.gold);
+    0000097B 2Ar15r00         [16] 1375 	ld	hl, (#_game_state + 21)
+    0000097E 01r0Dr0A         [10] 1376 	ld	bc, #___str_68+0
+    00000981 E5               [11] 1377 	push	hl
+    00000982 C5               [11] 1378 	push	bc
+    00000983 CDr00r00         [17] 1379 	call	_printf
+    00000986 F1               [10] 1380 	pop	af
+                                   1381 ;src/main.c:256: Print_At(2, 16, "1 - Novo Jogo");
+    00000987 21r10r0A         [10] 1382 	ld	hl, #___str_69
+    0000098A E3               [19] 1383 	ex	(sp),hl
+    0000098B 11 10 00         [10] 1384 	ld	de, #0x0010
+    0000098E 21 02 00         [10] 1385 	ld	hl, #0x0002
+    00000991 CDr00r00         [17] 1386 	call	_Print_At
+                                   1387 ;src/main.c:257: Print_At(2, 17, "2 - Menu");
+    00000994 21r1Er0A         [10] 1388 	ld	hl, #___str_70
+    00000997 E5               [11] 1389 	push	hl
+    00000998 11 11 00         [10] 1390 	ld	de, #0x0011
+    0000099B 21 02 00         [10] 1391 	ld	hl, #0x0002
+    0000099E CDr00r00         [17] 1392 	call	_Print_At
+                                   1393 ;src/main.c:258: Print_At(2, 18, "3 - Sair");
+    000009A1 21r27r0A         [10] 1394 	ld	hl, #___str_71
+    000009A4 E5               [11] 1395 	push	hl
+    000009A5 11 12 00         [10] 1396 	ld	de, #0x0012
+    000009A8 21 02 00         [10] 1397 	ld	hl, #0x0002
+    000009AB CDr00r00         [17] 1398 	call	_Print_At
+                                   1399 ;src/main.c:260: int choice = getchar();
+    000009AE CDr00r00         [17] 1400 	call	_getchar
+                                   1401 ;src/main.c:261: if (choice == '1') game_state.state = GAME_CHARACTER_CREATION;
+    000009B1 21r00r00         [10] 1402 	ld	hl, #_game_state
+    000009B4 7B               [ 4] 1403 	ld	a, e
+    000009B5 D6 31            [ 7] 1404 	sub	a, #0x31
+    000009B7 B2               [ 4] 1405 	or	a, d
+    000009B8 20 03            [12] 1406 	jr	NZ, 00110$
+    000009BA 36 01            [10] 1407 	ld	(hl), #0x01
+    000009BC C9               [10] 1408 	ret
+    000009BD                       1409 00110$:
+                                   1410 ;src/main.c:262: else if (choice == '2') game_state.state = GAME_MENU;
+    000009BD 7B               [ 4] 1411 	ld	a, e
+    000009BE D6 32            [ 7] 1412 	sub	a, #0x32
+    000009C0 B2               [ 4] 1413 	or	a, d
+    000009C1 20 02            [12] 1414 	jr	NZ, 00107$
+    000009C3 77               [ 7] 1415 	ld	(hl), a
+    000009C4 C9               [10] 1416 	ret
+    000009C5                       1417 00107$:
+                                   1418 ;src/main.c:263: else if (choice == '3') running = 0;
+    000009C5 7B               [ 4] 1419 	ld	a, e
+    000009C6 D6 33            [ 7] 1420 	sub	a, #0x33
+    000009C8 B2               [ 4] 1421 	or	a, d
+    000009C9 C0               [11] 1422 	ret	NZ
+    000009CA 21 00 00         [10] 1423 	ld	hl, #0x0000
+    000009CD 22r1Dr00         [16] 1424 	ld	(_running), hl
+                                   1425 ;src/main.c:264: }
+    000009D0 C9               [10] 1426 	ret
+                                   1427 	.area _CODE
+                                   1428 	.area _CODE
+    000009D1                       1429 ___str_63:
+    000009D1 3D 3D 3D 20 56 4F 43  1430 	.ascii "=== VOCE VENCEU ==="
+             45 20 56 45 4E 43 45
+             55 20 3D 3D 3D
+    000009E4 00                    1431 	.db 0x00
+                                   1432 	.area _CODE
+                                   1433 	.area _CODE
+    000009E5                       1434 ___str_64:
+    000009E5 3D 3D 3D 20 47 41 4D  1435 	.ascii "=== GAME OVER ==="
+             45 20 4F 56 45 52 20
+             3D 3D 3D
+    000009F6 00                    1436 	.db 0x00
+                                   1437 	.area _CODE
+                                   1438 	.area _CODE
+    000009F7                       1439 ___str_65:
+    000009F7 54 75 72 6E 6F 73 3A  1440 	.ascii "Turnos: "
+             20
+    000009FF 00                    1441 	.db 0x00
+                                   1442 	.area _CODE
+                                   1443 	.area _CODE
+    00000A00                       1444 ___str_66:
+    00000A00 25 64 2F 33 30        1445 	.ascii "%d/30"
+    00000A05 00                    1446 	.db 0x00
+                                   1447 	.area _CODE
+                                   1448 	.area _CODE
+    00000A06                       1449 ___str_67:
+    00000A06 4F 75 72 6F 3A 20     1450 	.ascii "Ouro: "
+    00000A0C 00                    1451 	.db 0x00
+                                   1452 	.area _CODE
+                                   1453 	.area _CODE
+    00000A0D                       1454 ___str_68:
+    00000A0D 25 64                 1455 	.ascii "%d"
+    00000A0F 00                    1456 	.db 0x00
+                                   1457 	.area _CODE
+                                   1458 	.area _CODE
+    00000A10                       1459 ___str_69:
+    00000A10 31 20 2D 20 4E 6F 76  1460 	.ascii "1 - Novo Jogo"
+             6F 20 4A 6F 67 6F
+    00000A1D 00                    1461 	.db 0x00
+                                   1462 	.area _CODE
+                                   1463 	.area _CODE
+    00000A1E                       1464 ___str_70:
+    00000A1E 32 20 2D 20 4D 65 6E  1465 	.ascii "2 - Menu"
+             75
+    00000A26 00                    1466 	.db 0x00
+                                   1467 	.area _CODE
+                                   1468 	.area _CODE
+    00000A27                       1469 ___str_71:
+    00000A27 33 20 2D 20 53 61 69  1470 	.ascii "3 - Sair"
+             72
+    00000A2F 00                    1471 	.db 0x00
+                                   1472 	.area _CODE
+                                   1473 	.area _CODE
+                                   1474 ;src/main.c:266: int main(void) {
+                                   1475 ;	---------------------------------
+                                   1476 ; Function main
+                                   1477 ; ---------------------------------
+    00000A30                       1478 _main::
+                                   1479 ;src/main.c:267: init_game();
+    00000A30 CDr00r00         [17] 1480 	call	_init_game
+                                   1481 ;src/main.c:269: while (running) {
+    00000A33                       1482 00108$:
+    00000A33 3Ar1Er00         [13] 1483 	ld	a, (_running+1)
+    00000A36 FD 21r1Dr00      [14] 1484 	ld	iy, #_running
+    00000A3A FD B6 00         [19] 1485 	or	a, 0 (iy)
+    00000A3D 28 3C            [12] 1486 	jr	Z, 00110$
+                                   1487 ;src/main.c:270: switch (game_state.state) {
+    00000A3F 21r00r00         [10] 1488 	ld	hl, #_game_state
+    00000A42 4E               [ 7] 1489 	ld	c, (hl)
+    00000A43 3E 04            [ 7] 1490 	ld	a, #0x04
+    00000A45 91               [ 4] 1491 	sub	a, c
+    00000A46 38 2F            [12] 1492 	jr	C, 00106$
+    00000A48 06 00            [ 7] 1493 	ld	b, #0x00
+    00000A4A 21r54r0A         [10] 1494 	ld	hl, #00134$
+    00000A4D 09               [11] 1495 	add	hl, bc
+    00000A4E 09               [11] 1496 	add	hl, bc
+    00000A4F 4E               [ 7] 1497 	ld	c, (hl)
+    00000A50 23               [ 6] 1498 	inc	hl
+    00000A51 66               [ 7] 1499 	ld	h, (hl)
+    00000A52 69               [ 4] 1500 	ld	l, c
+    00000A53 E9               [ 4] 1501 	jp	(hl)
+    00000A54                       1502 00134$:
+    00000A54r5Er0A                 1503 	.dw	00101$
+    00000A56r63r0A                 1504 	.dw	00102$
+    00000A58r68r0A                 1505 	.dw	00103$
+    00000A5Ar6Dr0A                 1506 	.dw	00104$
+    00000A5Cr72r0A                 1507 	.dw	00105$
+                                   1508 ;src/main.c:271: case GAME_MENU:
+    00000A5E                       1509 00101$:
+                                   1510 ;src/main.c:272: main_menu();
+    00000A5E CDr30r00         [17] 1511 	call	_main_menu
+                                   1512 ;src/main.c:273: break;
+    00000A61 18 D0            [12] 1513 	jr	00108$
+                                   1514 ;src/main.c:274: case GAME_CHARACTER_CREATION:
+    00000A63                       1515 00102$:
+                                   1516 ;src/main.c:275: character_creation();
+    00000A63 CDr38r01         [17] 1517 	call	_character_creation
+                                   1518 ;src/main.c:276: break;
+    00000A66 18 CB            [12] 1519 	jr	00108$
+                                   1520 ;src/main.c:277: case GAME_EXPLORATION:
+    00000A68                       1521 00103$:
+                                   1522 ;src/main.c:278: exploration();
+    00000A68 CDrE0r02         [17] 1523 	call	_exploration
+                                   1524 ;src/main.c:279: break;
+    00000A6B 18 C6            [12] 1525 	jr	00108$
+                                   1526 ;src/main.c:280: case GAME_HELP:
+    00000A6D                       1527 00104$:
+                                   1528 ;src/main.c:281: show_help();
+    00000A6D CDr66r08         [17] 1529 	call	_show_help
+                                   1530 ;src/main.c:282: break;
+    00000A70 18 C1            [12] 1531 	jr	00108$
+                                   1532 ;src/main.c:283: case GAME_OVER:
+    00000A72                       1533 00105$:
+                                   1534 ;src/main.c:284: game_over_screen();
+    00000A72 CDr2Fr09         [17] 1535 	call	_game_over_screen
+                                   1536 ;src/main.c:285: break;
+    00000A75 18 BC            [12] 1537 	jr	00108$
+                                   1538 ;src/main.c:286: default:
+    00000A77                       1539 00106$:
+                                   1540 ;src/main.c:287: game_state.state = GAME_MENU;
+    00000A77 36 00            [10] 1541 	ld	(hl), #0x00
+                                   1542 ;src/main.c:289: }
+    00000A79 18 B8            [12] 1543 	jr	00108$
+    00000A7B                       1544 00110$:
+                                   1545 ;src/main.c:292: Print_Clear();
+    00000A7B CDr00r00         [17] 1546 	call	_Print_Clear
+                                   1547 ;src/main.c:293: Print_At(8, 12, "Obrigado por jogar!");
+    00000A7E 21r8Fr0A         [10] 1548 	ld	hl, #___str_72
+    00000A81 E5               [11] 1549 	push	hl
+    00000A82 11 0C 00         [10] 1550 	ld	de, #0x000c
+    00000A85 21 08 00         [10] 1551 	ld	hl, #0x0008
+    00000A88 CDr00r00         [17] 1552 	call	_Print_At
+                                   1553 ;src/main.c:295: return 0;
+    00000A8B 11 00 00         [10] 1554 	ld	de, #0x0000
+                                   1555 ;src/main.c:296: }
+    00000A8E C9               [10] 1556 	ret
+                                   1557 	.area _CODE
+                                   1558 	.area _CODE
+    00000A8F                       1559 ___str_72:
+    00000A8F 4F 62 72 69 67 61 64  1560 	.ascii "Obrigado por jogar!"
+             6F 20 70 6F 72 20 6A
+             6F 67 61 72 21
+    00000AA2 00                    1561 	.db 0x00
+                                   1562 	.area _CODE
+                                   1563 	.area _CODE
+                                   1564 	.area _CODE
+                                   1565 	.area _CODE
+                                   1566 	.area _INITIALIZER
+                                   1567 	.area _CABS (ABS)

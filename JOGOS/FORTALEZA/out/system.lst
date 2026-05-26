@@ -1,0 +1,693 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ANSI-C Compiler
+                                      3 ; Version 4.2.0 #13081 (Linux)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module system
+                                      6 	.optsdcc -mz80
+                                      7 	
+                                      8 ;--------------------------------------------------------
+                                      9 ; Public variables in this module
+                                     10 ;--------------------------------------------------------
+                                     11 	.globl _g_SLTSL
+                                     12 	.globl _g_GRPACY
+                                     13 	.globl _g_GRPACX
+                                     14 	.globl _g_LOGOPR
+                                     15 	.globl _g_CMASK
+                                     16 	.globl _g_CLOC
+                                     17 	.globl _g_FNKSTR
+                                     18 	.globl _g_ATRBYT
+                                     19 	.globl _g_BDRCLR
+                                     20 	.globl _g_BAKCLR
+                                     21 	.globl _g_FORCLR
+                                     22 	.globl _g_CSRX
+                                     23 	.globl _g_CSRY
+                                     24 	.globl _g_CLIKSW
+                                     25 	.globl _g_MLTPAT
+                                     26 	.globl _g_MLTATR
+                                     27 	.globl _g_MLTCGP
+                                     28 	.globl _g_MLTCOL
+                                     29 	.globl _g_MLTNAM
+                                     30 	.globl _g_GRPPAT
+                                     31 	.globl _g_GRPATR
+                                     32 	.globl _g_GRPCGP
+                                     33 	.globl _g_GRPCOL
+                                     34 	.globl _g_GRPNAM
+                                     35 	.globl _g_T32PAT
+                                     36 	.globl _g_T32ATR
+                                     37 	.globl _g_T32CGP
+                                     38 	.globl _g_T32COL
+                                     39 	.globl _g_T32NAM
+                                     40 	.globl _g_TXTPAT
+                                     41 	.globl _g_TXTATR
+                                     42 	.globl _g_TXTCGP
+                                     43 	.globl _g_TXTCOL
+                                     44 	.globl _g_TXTNAM
+                                     45 	.globl _g_CLMLST
+                                     46 	.globl _g_CRTCNT
+                                     47 	.globl _g_LINLEN
+                                     48 	.globl _g_LINL32
+                                     49 	.globl _g_LINL40
+                                     50 	.globl _g_CHAR_16
+                                     51 	.globl _g_MSXMID
+                                     52 	.globl _g_MSXVER
+                                     53 	.globl _g_ROMVersion
+                                     54 	.globl _g_BASRVN
+                                     55 	.globl _g_VDP_DW
+                                     56 	.globl _g_VDP_DR
+                                     57 	.globl _g_CGTABL
+                                     58 	.globl _g_SVFFFD
+                                     59 	.globl _g_RG27SAV
+                                     60 	.globl _g_RG26SAV
+                                     61 	.globl _g_RG25SAV
+                                     62 	.globl _g_SVFFF8
+                                     63 	.globl _g_MINROM
+                                     64 	.globl _g_RG23SAV
+                                     65 	.globl _g_RG22SAV
+                                     66 	.globl _g_RG21SAV
+                                     67 	.globl _g_RG20SAV
+                                     68 	.globl _g_RG19SAV
+                                     69 	.globl _g_RG18SAV
+                                     70 	.globl _g_RG17SAV
+                                     71 	.globl _g_RG16SAV
+                                     72 	.globl _g_RG15SAV
+                                     73 	.globl _g_RG14SAV
+                                     74 	.globl _g_RG13SAV
+                                     75 	.globl _g_RG12SAV
+                                     76 	.globl _g_RG11SAV
+                                     77 	.globl _g_RG10SAV
+                                     78 	.globl _g_RG09SAV
+                                     79 	.globl _g_RG08SAV
+                                     80 	.globl _g_PROCNM
+                                     81 	.globl _g_SLTWRK
+                                     82 	.globl _g_SLTATR
+                                     83 	.globl _g_SLTTBL
+                                     84 	.globl _g_EXPTBL
+                                     85 	.globl _g_MNROM
+                                     86 	.globl _g_DRWANG
+                                     87 	.globl _g_DRWSCL
+                                     88 	.globl _g_DRWFLG
+                                     89 	.globl _g_GYPOS
+                                     90 	.globl _g_GXPOS
+                                     91 	.globl _g_BRDATR
+                                     92 	.globl _g_CASPRV
+                                     93 	.globl _g_OLDSCR
+                                     94 	.globl _g_SCRMOD
+                                     95 	.globl _g_FLBMEM
+                                     96 	.globl _g_KANAMD
+                                     97 	.globl _g_KANAST
+                                     98 	.globl _g_CAPST
+                                     99 	.globl _g_CSTYLE
+                                    100 	.globl _g_CSRSW
+                                    101 	.globl _g_INSFLG
+                                    102 	.globl _g_ESCCNT
+                                    103 	.globl _g_GRPHED
+                                    104 	.globl _g_WINWID
+                                    105 	.globl _g_LOWLIM
+                                    106 	.globl _g_INTCNT
+                                    107 	.globl _g_INTVAL
+                                    108 	.globl _g_JIFFY
+                                    109 	.globl _g_PADX
+                                    110 	.globl _g_PADY
+                                    111 	.globl _g_INTFLG
+                                    112 	.globl _g_RTYCNT
+                                    113 	.globl _g_TRPTBL
+                                    114 	.globl _g_HIMEM
+                                    115 	.globl _g_BOTTOM
+                                    116 	.globl _g_PATWRK
+                                    117 	.globl _g_LINWRK
+                                    118 	.globl _g_KEYBUF
+                                    119 	.globl _g_NEWKEY
+                                    120 	.globl _g_OLDKEY
+                                    121 	.globl _g_CLIKFL
+                                    122 	.globl _g_ONGSBF
+                                    123 	.globl _g_FNKFLG
+                                    124 	.globl _g_FNKSWI
+                                    125 	.globl _g_CODSAV
+                                    126 	.globl _g_FSTPOS
+                                    127 	.globl _g_LINTTB
+                                    128 	.globl _g_BASROM
+                                    129 	.globl _g_ENSTOP
+                                    130 	.globl _g_VCBC
+                                    131 	.globl _g_VCBB
+                                    132 	.globl _g_VCBA
+                                    133 	.globl _g_PLYCNT
+                                    134 	.globl _g_MUSICF
+                                    135 	.globl _g_QUEUEN
+                                    136 	.globl _g_MCLPTR
+                                    137 	.globl _g_MCLLEN
+                                    138 	.globl _g_SAVVOL
+                                    139 	.globl _g_VOICEN
+                                    140 	.globl _g_SAVSP
+                                    141 	.globl _g_PRSCNT
+                                    142 	.globl _g_LSTMOD
+                                    143 	.globl _g_LSTCOM
+                                    144 	.globl _g_COMMSK
+                                    145 	.globl _g_ESTBLS
+                                    146 	.globl _g_FLAGS
+                                    147 	.globl _g_ERRORS
+                                    148 	.globl _g_DATCNT
+                                    149 	.globl _g_DEVNUM
+                                    150 	.globl _g_OLDINT
+                                    151 	.globl _g_OLDSTT
+                                    152 	.globl _g_MEXBIh
+                                    153 	.globl _g_RSIQLN
+                                    154 	.globl _g_RSFCB
+                                    155 	.globl _g_TOCNT
+                                    156 	.globl _g_RSTMP
+                                    157 	.globl _g_YSAVE
+                                    158 	.globl _g_XSAVE
+                                    159 	.globl _g_NORUSE
+                                    160 	.globl _g_MODE
+                                    161 	.globl _g_ROMA
+                                    162 	.globl _g_CHRCNT
+                                    163 	.globl _g_EXBRSA
+                                    164 	.globl _g_AVCSAV
+                                    165 	.globl _g_ACPAGE
+                                    166 	.globl _g_DPPAGE
+                                    167 	.globl _g_RS2IQ
+                                    168 	.globl _g_VOICCQ
+                                    169 	.globl _g_VOICBQ
+                                    170 	.globl _g_VOICAQ
+                                    171 	.globl _g_QUEBAK
+                                    172 	.globl _g_QUETAB
+                                    173 	.globl _g_ASPCT2
+                                    174 	.globl _g_ASPCT1
+                                    175 	.globl _g_HEADER
+                                    176 	.globl _g_HIGH
+                                    177 	.globl _g_LOW
+                                    178 	.globl _g_CS240
+                                    179 	.globl _g_CS120
+                                    180 	.globl _g_GETPNT
+                                    181 	.globl _g_PUTPNT
+                                    182 	.globl _g_REPCNT
+                                    183 	.globl _g_SCNCNT
+                                    184 	.globl _g_FRCNEW
+                                    185 	.globl _g_QUEUES
+                                    186 	.globl _g_MINUPD
+                                    187 	.globl _g_MAXUPD
+                                    188 	.globl _g_TRGFLG
+                                    189 	.globl _g_STATFL
+                                    190 	.globl _g_RG7SAV
+                                    191 	.globl _g_RG6SAV
+                                    192 	.globl _g_RG5SAV
+                                    193 	.globl _g_RG4SAV
+                                    194 	.globl _g_RG3SAV
+                                    195 	.globl _g_RG2SAV
+                                    196 	.globl _g_RG1SAV
+                                    197 	.globl _g_RG0SAV
+                                    198 	.globl _g_CNSDFG
+                                    199 	.globl _g_USRTAB
+                                    200 	.globl _g_CLPRIM
+                                    201 	.globl _g_WRPRIM
+                                    202 	.globl _g_RDPRIM
+                                    203 	.globl _Sys_GetPageSlot
+                                    204 	.globl _Sys_SetPageSlot
+                                    205 	.globl _Sys_SetPage0Slot
+                                    206 	.globl _Sys_CheckSlot
+                                    207 ;--------------------------------------------------------
+                                    208 ; special function registers
+                                    209 ;--------------------------------------------------------
+                           0000A0   210 _g_PSG_RegPort	=	0x00a0
+                           0000A1   211 _g_PSG_DataPort	=	0x00a1
+                           0000A2   212 _g_PSG_StatPort	=	0x00a2
+                           000010   213 _g_PSG_Ext_RegPort	=	0x0010
+                           000011   214 _g_PSG_Ext_DataPort	=	0x0011
+                           000012   215 _g_PSG_Ext_StatPort	=	0x0012
+                           000090   216 _g_Printer_ControlPort	=	0x0090
+                           000091   217 _g_Printer_DataPort	=	0x0091
+                           00007C   218 _g_MSXMusic_IndexPort	=	0x007c
+                           000098   219 _g_VDP_DataPort	=	0x0098
+                           000099   220 _g_VDP_RegPort	=	0x0099
+                           000099   221 _g_VDP_AddrPort	=	0x0099
+                           000099   222 _g_VDP_StatPort	=	0x0099
+                           0000A8   223 _g_PortPrimarySlot	=	0x00a8
+                           0000A9   224 _g_PortReadKeyboard	=	0x00a9
+                           0000AA   225 _g_PortAccessKeyboard	=	0x00aa
+                           0000AB   226 _g_PortControl	=	0x00ab
+                           0000B4   227 _g_RTC_AddrPort	=	0x00b4
+                           0000B5   228 _g_RTC_DataPort	=	0x00b5
+                           0000C0   229 _g_MSXAudio_IndexPort	=	0x00c0
+                           0000C1   230 _g_MSXAudio_DataPort	=	0x00c1
+                           0000C2   231 _g_MSXAudio_IndexPort2	=	0x00c2
+                           0000C3   232 _g_MSXAudio_DataPort2	=	0x00c3
+                                    233 ;--------------------------------------------------------
+                                    234 ; ram data
+                                    235 ;--------------------------------------------------------
+                                    236 	.area _DATA
+                           00F3AE   237 _g_LINL40	=	0xf3ae
+                           00F3AF   238 _g_LINL32	=	0xf3af
+                           00F3B0   239 _g_LINLEN	=	0xf3b0
+                           00F3B1   240 _g_CRTCNT	=	0xf3b1
+                           00F3B2   241 _g_CLMLST	=	0xf3b2
+                           00F3B3   242 _g_TXTNAM	=	0xf3b3
+                           00F3B5   243 _g_TXTCOL	=	0xf3b5
+                           00F3B7   244 _g_TXTCGP	=	0xf3b7
+                           00F3B9   245 _g_TXTATR	=	0xf3b9
+                           00F3BB   246 _g_TXTPAT	=	0xf3bb
+                           00F3BD   247 _g_T32NAM	=	0xf3bd
+                           00F3BF   248 _g_T32COL	=	0xf3bf
+                           00F3C1   249 _g_T32CGP	=	0xf3c1
+                           00F3C3   250 _g_T32ATR	=	0xf3c3
+                           00F3C5   251 _g_T32PAT	=	0xf3c5
+                           00F3C7   252 _g_GRPNAM	=	0xf3c7
+                           00F3C9   253 _g_GRPCOL	=	0xf3c9
+                           00F3CB   254 _g_GRPCGP	=	0xf3cb
+                           00F3CD   255 _g_GRPATR	=	0xf3cd
+                           00F3CF   256 _g_GRPPAT	=	0xf3cf
+                           00F3D1   257 _g_MLTNAM	=	0xf3d1
+                           00F3D3   258 _g_MLTCOL	=	0xf3d3
+                           00F3D5   259 _g_MLTCGP	=	0xf3d5
+                           00F3D7   260 _g_MLTATR	=	0xf3d7
+                           00F3D9   261 _g_MLTPAT	=	0xf3d9
+                           00F3DB   262 _g_CLIKSW	=	0xf3db
+                           00F3DC   263 _g_CSRY	=	0xf3dc
+                           00F3DD   264 _g_CSRX	=	0xf3dd
+                           00F3E9   265 _g_FORCLR	=	0xf3e9
+                           00F3EA   266 _g_BAKCLR	=	0xf3ea
+                           00F3EB   267 _g_BDRCLR	=	0xf3eb
+                           00F3F2   268 _g_ATRBYT	=	0xf3f2
+                           00F87F   269 _g_FNKSTR	=	0xf87f
+                           00F92A   270 _g_CLOC	=	0xf92a
+                           00F92C   271 _g_CMASK	=	0xf92c
+                           00FB02   272 _g_LOGOPR	=	0xfb02
+                           00FCB7   273 _g_GRPACX	=	0xfcb7
+                           00FCB9   274 _g_GRPACY	=	0xfcb9
+                           00FFFF   275 _g_SLTSL	=	0xffff
+                                    276 ;--------------------------------------------------------
+                                    277 ; ram data
+                                    278 ;--------------------------------------------------------
+                                    279 	.area _INITIALIZED
+                                    280 ;--------------------------------------------------------
+                                    281 ; absolute external ram data
+                                    282 ;--------------------------------------------------------
+                                    283 	.area _DABS (ABS)
+                                    284 ;--------------------------------------------------------
+                                    285 ; global & static initialisations
+                                    286 ;--------------------------------------------------------
+                                    287 	.area _HOME
+                                    288 	.area _GSINIT
+                                    289 	.area _GSFINAL
+                                    290 	.area _GSINIT
+                                    291 ;--------------------------------------------------------
+                                    292 ; Home
+                                    293 ;--------------------------------------------------------
+                                    294 	.area _HOME
+                                    295 	.area _HOME
+                                    296 ;--------------------------------------------------------
+                                    297 ; code
+                                    298 ;--------------------------------------------------------
+                                    299 	.area _CODE
+                                    300 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:12: u8 Sys_GetPageSlot(u8 page)
+                                    301 ;	---------------------------------
+                                    302 ; Function Sys_GetPageSlot
+                                    303 ; ---------------------------------
+      000000                        304 _Sys_GetPageSlot::
+      000000 5F               [ 4]  305 	ld	e, a
+                                    306 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:15: u8 slot = (g_PortPrimarySlot >> (page * 2)) & 0x03;
+      000001 CB 23            [ 8]  307 	sla	e
+      000003 43               [ 4]  308 	ld	b, e
+      000004 DB A8            [11]  309 	in	a, (_g_PortPrimarySlot)
+      000006 4F               [ 4]  310 	ld	c, a
+      000007 04               [ 4]  311 	inc	b
+      000008 C3r0Dr00         [10]  312 	jp	00113$
+      00000B                        313 00112$:
+      00000B CB 39            [ 8]  314 	srl	c
+      00000D                        315 00113$:
+      00000D 10 FC            [13]  316 	djnz	00112$
+      00000F 79               [ 4]  317 	ld	a, c
+      000010 E6 03            [ 7]  318 	and	a, #0x03
+      000012 4F               [ 4]  319 	ld	c, a
+                                    320 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:18: if (g_EXPTBL[slot] & SLOT_EXP)
+      000013 21 C1 FC         [10]  321 	ld	hl, #_g_EXPTBL+0
+      000016 06 00            [ 7]  322 	ld	b, #0x00
+      000018 09               [11]  323 	add	hl, bc
+      000019 7E               [ 7]  324 	ld	a, (hl)
+      00001A 07               [ 4]  325 	rlca
+      00001B 30 34            [12]  326 	jr	NC, 00102$
+                                    327 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:20: u8 prevSlot = g_PortPrimarySlot; // Backup current primary slots register
+      00001D DB A8            [11]  328 	in	a, (_g_PortPrimarySlot)
+      00001F 47               [ 4]  329 	ld	b, a
+                                    330 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.h:141: inline void DisableInterrupt() { __asm__("di"); }
+      000020 F3               [ 4]  331 	di
+                                    332 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:22: g_PortPrimarySlot = (prevSlot & 0x3F) | (slot << 6); // Select primary slot in page 3
+      000021 78               [ 4]  333 	ld	a, b
+      000022 E6 3F            [ 7]  334 	and	a, #0x3f
+      000024 6F               [ 4]  335 	ld	l, a
+                                    336 ;	spillPairReg hl
+                                    337 ;	spillPairReg hl
+      000025 79               [ 4]  338 	ld	a, c
+      000026 0F               [ 4]  339 	rrca
+      000027 0F               [ 4]  340 	rrca
+      000028 E6 C0            [ 7]  341 	and	a, #0xc0
+      00002A B5               [ 4]  342 	or	a, l
+      00002B D3 A8            [11]  343 	out	(_g_PortPrimarySlot), a
+                                    344 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:23: slot |= SLOT_EXP;
+      00002D CB F9            [ 8]  345 	set	7, c
+                                    346 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:24: slot |= (((~g_SLTSL) >> (page * 2)) & 0x03) << 2;
+      00002F 3A FF FF         [13]  347 	ld	a, (_g_SLTSL+0)
+      000032 6F               [ 4]  348 	ld	l, a
+                                    349 ;	spillPairReg hl
+                                    350 ;	spillPairReg hl
+      000033 26 00            [ 7]  351 	ld	h, #0x00
+                                    352 ;	spillPairReg hl
+                                    353 ;	spillPairReg hl
+      000035 7D               [ 4]  354 	ld	a, l
+      000036 2F               [ 4]  355 	cpl
+      000037 6F               [ 4]  356 	ld	l, a
+                                    357 ;	spillPairReg hl
+                                    358 ;	spillPairReg hl
+      000038 7C               [ 4]  359 	ld	a, h
+      000039 2F               [ 4]  360 	cpl
+      00003A 67               [ 4]  361 	ld	h, a
+                                    362 ;	spillPairReg hl
+                                    363 ;	spillPairReg hl
+      00003B 1C               [ 4]  364 	inc	e
+      00003C C3r43r00         [10]  365 	jp	00116$
+      00003F                        366 00115$:
+      00003F CB 2C            [ 8]  367 	sra	h
+      000041 CB 1D            [ 8]  368 	rr	l
+      000043                        369 00116$:
+      000043 1D               [ 4]  370 	dec	e
+      000044 20 F9            [12]  371 	jr	NZ, 00115$
+      000046 7D               [ 4]  372 	ld	a, l
+      000047 E6 03            [ 7]  373 	and	a, #0x03
+      000049 87               [ 4]  374 	add	a, a
+      00004A 87               [ 4]  375 	add	a, a
+      00004B B1               [ 4]  376 	or	a, c
+      00004C 4F               [ 4]  377 	ld	c, a
+                                    378 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:25: g_PortPrimarySlot = prevSlot; // Restore primary slots register
+      00004D 78               [ 4]  379 	ld	a, b
+      00004E D3 A8            [11]  380 	out	(_g_PortPrimarySlot), a
+                                    381 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.h:137: inline void EnableInterrupt() { __asm__("ei"); }
+      000050 FB               [ 4]  382 	ei
+                                    383 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:26: EnableInterrupt();
+      000051                        384 00102$:
+                                    385 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:28: return slot;
+      000051 79               [ 4]  386 	ld	a, c
+                                    387 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:29: }
+      000052 C9               [10]  388 	ret
+                           00F380   389 _g_RDPRIM	=	0xf380
+                           00F385   390 _g_WRPRIM	=	0xf385
+                           00F38C   391 _g_CLPRIM	=	0xf38c
+                           00F39A   392 _g_USRTAB	=	0xf39a
+                           00F3DE   393 _g_CNSDFG	=	0xf3de
+                           00F3DF   394 _g_RG0SAV	=	0xf3df
+                           00F3E0   395 _g_RG1SAV	=	0xf3e0
+                           00F3E1   396 _g_RG2SAV	=	0xf3e1
+                           00F3E2   397 _g_RG3SAV	=	0xf3e2
+                           00F3E3   398 _g_RG4SAV	=	0xf3e3
+                           00F3E4   399 _g_RG5SAV	=	0xf3e4
+                           00F3E5   400 _g_RG6SAV	=	0xf3e5
+                           00F3E6   401 _g_RG7SAV	=	0xf3e6
+                           00F3E7   402 _g_STATFL	=	0xf3e7
+                           00F3E8   403 _g_TRGFLG	=	0xf3e8
+                           00F3EC   404 _g_MAXUPD	=	0xf3ec
+                           00F3EF   405 _g_MINUPD	=	0xf3ef
+                           00F3F3   406 _g_QUEUES	=	0xf3f3
+                           00F3F5   407 _g_FRCNEW	=	0xf3f5
+                           00F3F6   408 _g_SCNCNT	=	0xf3f6
+                           00F3F7   409 _g_REPCNT	=	0xf3f7
+                           00F3F8   410 _g_PUTPNT	=	0xf3f8
+                           00F3FA   411 _g_GETPNT	=	0xf3fa
+                           00F3FC   412 _g_CS120	=	0xf3fc
+                           00F401   413 _g_CS240	=	0xf401
+                           00F406   414 _g_LOW	=	0xf406
+                           00F408   415 _g_HIGH	=	0xf408
+                           00F40A   416 _g_HEADER	=	0xf40a
+                           00F40B   417 _g_ASPCT1	=	0xf40b
+                           00F40D   418 _g_ASPCT2	=	0xf40d
+                           00F959   419 _g_QUETAB	=	0xf959
+                           00F971   420 _g_QUEBAK	=	0xf971
+                           00F975   421 _g_VOICAQ	=	0xf975
+                           00F9F5   422 _g_VOICBQ	=	0xf9f5
+                           00FA75   423 _g_VOICCQ	=	0xfa75
+                           00FAF5   424 _g_RS2IQ	=	0xfaf5
+                           00FAF5   425 _g_DPPAGE	=	0xfaf5
+                           00FAF6   426 _g_ACPAGE	=	0xfaf6
+                           00FAF7   427 _g_AVCSAV	=	0xfaf7
+                           00FAF8   428 _g_EXBRSA	=	0xfaf8
+                           00FAF9   429 _g_CHRCNT	=	0xfaf9
+                           00FAFA   430 _g_ROMA	=	0xfafa
+                           00FAFC   431 _g_MODE	=	0xfafc
+                           00FAFD   432 _g_NORUSE	=	0xfafd
+                           00FAFE   433 _g_XSAVE	=	0xfafe
+                           00FB00   434 _g_YSAVE	=	0xfb00
+                           00FB03   435 _g_RSTMP	=	0xfb03
+                           00FB03   436 _g_TOCNT	=	0xfb03
+                           00FB04   437 _g_RSFCB	=	0xfb04
+                           00FB06   438 _g_RSIQLN	=	0xfb06
+                           00FB07   439 _g_MEXBIh	=	0xfb07
+                           00FB0C   440 _g_OLDSTT	=	0xfb0c
+                           00FB0C   441 _g_OLDINT	=	0xfb0c
+                           00FB16   442 _g_DEVNUM	=	0xfb16
+                           00FB17   443 _g_DATCNT	=	0xfb17
+                           00FB1A   444 _g_ERRORS	=	0xfb1a
+                           00FB1B   445 _g_FLAGS	=	0xfb1b
+                           00FB1C   446 _g_ESTBLS	=	0xfb1c
+                           00FB1D   447 _g_COMMSK	=	0xfb1d
+                           00FB1E   448 _g_LSTCOM	=	0xfb1e
+                           00FB1F   449 _g_LSTMOD	=	0xfb1f
+                           00FB35   450 _g_PRSCNT	=	0xfb35
+                           00FB36   451 _g_SAVSP	=	0xfb36
+                           00FB38   452 _g_VOICEN	=	0xfb38
+                           00FB39   453 _g_SAVVOL	=	0xfb39
+                           00FB3B   454 _g_MCLLEN	=	0xfb3b
+                           00FB3C   455 _g_MCLPTR	=	0xfb3c
+                           00FB3E   456 _g_QUEUEN	=	0xfb3e
+                           00FB3F   457 _g_MUSICF	=	0xfb3f
+                           00FB40   458 _g_PLYCNT	=	0xfb40
+                           00FB41   459 _g_VCBA	=	0xfb41
+                           00FB66   460 _g_VCBB	=	0xfb66
+                           00FB8B   461 _g_VCBC	=	0xfb8b
+                           00FBB0   462 _g_ENSTOP	=	0xfbb0
+                           00FBB1   463 _g_BASROM	=	0xfbb1
+                           00FBB2   464 _g_LINTTB	=	0xfbb2
+                           00FBCA   465 _g_FSTPOS	=	0xfbca
+                           00FBCC   466 _g_CODSAV	=	0xfbcc
+                           00FBCD   467 _g_FNKSWI	=	0xfbcd
+                           00FBCE   468 _g_FNKFLG	=	0xfbce
+                           00FBD8   469 _g_ONGSBF	=	0xfbd8
+                           00FBD9   470 _g_CLIKFL	=	0xfbd9
+                           00FBDA   471 _g_OLDKEY	=	0xfbda
+                           00FBE5   472 _g_NEWKEY	=	0xfbe5
+                           00FBF0   473 _g_KEYBUF	=	0xfbf0
+                           00FC18   474 _g_LINWRK	=	0xfc18
+                           00FC40   475 _g_PATWRK	=	0xfc40
+                           00FC48   476 _g_BOTTOM	=	0xfc48
+                           00FC4A   477 _g_HIMEM	=	0xfc4a
+                           00FC4C   478 _g_TRPTBL	=	0xfc4c
+                           00FC9A   479 _g_RTYCNT	=	0xfc9a
+                           00FC9B   480 _g_INTFLG	=	0xfc9b
+                           00FC9C   481 _g_PADY	=	0xfc9c
+                           00FC9D   482 _g_PADX	=	0xfc9d
+                           00FC9E   483 _g_JIFFY	=	0xfc9e
+                           00FCA0   484 _g_INTVAL	=	0xfca0
+                           00FCA2   485 _g_INTCNT	=	0xfca2
+                           00FCA4   486 _g_LOWLIM	=	0xfca4
+                           00FCA5   487 _g_WINWID	=	0xfca5
+                           00FCA6   488 _g_GRPHED	=	0xfca6
+                           00FCA7   489 _g_ESCCNT	=	0xfca7
+                           00FCA8   490 _g_INSFLG	=	0xfca8
+                           00FCA9   491 _g_CSRSW	=	0xfca9
+                           00FCAA   492 _g_CSTYLE	=	0xfcaa
+                           00FCAB   493 _g_CAPST	=	0xfcab
+                           00FCAC   494 _g_KANAST	=	0xfcac
+                           00FCAD   495 _g_KANAMD	=	0xfcad
+                           00FCAE   496 _g_FLBMEM	=	0xfcae
+                           00FCAF   497 _g_SCRMOD	=	0xfcaf
+                           00FCB0   498 _g_OLDSCR	=	0xfcb0
+                           00FCB1   499 _g_CASPRV	=	0xfcb1
+                           00FCB2   500 _g_BRDATR	=	0xfcb2
+                           00FCB3   501 _g_GXPOS	=	0xfcb3
+                           00FCB5   502 _g_GYPOS	=	0xfcb5
+                           00FCBB   503 _g_DRWFLG	=	0xfcbb
+                           00FCBC   504 _g_DRWSCL	=	0xfcbc
+                           00FCBD   505 _g_DRWANG	=	0xfcbd
+                           00FCC1   506 _g_MNROM	=	0xfcc1
+                           00FCC1   507 _g_EXPTBL	=	0xfcc1
+                           00FCC5   508 _g_SLTTBL	=	0xfcc5
+                           00FCC9   509 _g_SLTATR	=	0xfcc9
+                           00FD09   510 _g_SLTWRK	=	0xfd09
+                           00FD89   511 _g_PROCNM	=	0xfd89
+                           00FFE7   512 _g_RG08SAV	=	0xffe7
+                           00FFE8   513 _g_RG09SAV	=	0xffe8
+                           00FFE9   514 _g_RG10SAV	=	0xffe9
+                           00FFEA   515 _g_RG11SAV	=	0xffea
+                           00FFEB   516 _g_RG12SAV	=	0xffeb
+                           00FFEC   517 _g_RG13SAV	=	0xffec
+                           00FFED   518 _g_RG14SAV	=	0xffed
+                           00FFEE   519 _g_RG15SAV	=	0xffee
+                           00FFEF   520 _g_RG16SAV	=	0xffef
+                           00FFF0   521 _g_RG17SAV	=	0xfff0
+                           00FFF1   522 _g_RG18SAV	=	0xfff1
+                           00FFF2   523 _g_RG19SAV	=	0xfff2
+                           00FFF3   524 _g_RG20SAV	=	0xfff3
+                           00FFF4   525 _g_RG21SAV	=	0xfff4
+                           00FFF5   526 _g_RG22SAV	=	0xfff5
+                           00FFF6   527 _g_RG23SAV	=	0xfff6
+                           00FFF7   528 _g_MINROM	=	0xfff7
+                           00FFF8   529 _g_SVFFF8	=	0xfff8
+                           00FFFA   530 _g_RG25SAV	=	0xfffa
+                           00FFFB   531 _g_RG26SAV	=	0xfffb
+                           00FFFC   532 _g_RG27SAV	=	0xfffc
+                           00FFFD   533 _g_SVFFFD	=	0xfffd
+                           000004   534 _g_CGTABL	=	0x0004
+                           000006   535 _g_VDP_DR	=	0x0006
+                           000007   536 _g_VDP_DW	=	0x0007
+                           00002B   537 _g_BASRVN	=	0x002b
+                           00002B   538 _g_ROMVersion	=	0x002b
+                           00002D   539 _g_MSXVER	=	0x002d
+                           00002E   540 _g_MSXMID	=	0x002e
+                           000034   541 _g_CHAR_16	=	0x0034
+                                    542 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:33: void Sys_SetPageSlot(u8 page, u8 slotId)
+                                    543 ;	---------------------------------
+                                    544 ; Function Sys_SetPageSlot
+                                    545 ; ---------------------------------
+      000053                        546 _Sys_SetPageSlot::
+                                    547 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:36: slotId;
+                                    548 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:60: }
+      000053 C9               [10]  549 	ret
+                                    550 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:64: void Sys_SetPage0Slot(u8 slotId) __NAKED
+                                    551 ;	---------------------------------
+                                    552 ; Function Sys_SetPage0Slot
+                                    553 ; ---------------------------------
+      000054                        554 _Sys_SetPage0Slot::
+                                    555 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:134: __endasm;
+      000054 4F               [ 4]  556 	ld	c, a
+      000055 E6 80            [ 7]  557 	and	#0b10000000
+      000057 CAr8Br00         [10]  558 	jp	z, SetNonExpendedSlot
+      00005A                        559 	SetExpendedSlot:
+      00005A 79               [ 4]  560 	ld	a, c
+      00005B E6 03            [ 7]  561 	and	#0b00000011
+      00005D 57               [ 4]  562 	ld	d, a
+      00005E 0F               [ 4]  563 	rrca	
+      00005F 0F               [ 4]  564 	rrca 
+      000060 E6 C0            [ 7]  565 	and a, #0xC0
+      000062 B2               [ 4]  566 	or	d
+      000063 57               [ 4]  567 	ld	d, a
+      000064 DB A8            [11]  568 	in	a, (0xA8)
+      000066 47               [ 4]  569 	ld	b, a
+      000067 E6 3C            [ 7]  570 	and	#0b00111100
+      000069 B2               [ 4]  571 	or	d
+      00006A F3               [ 4]  572 	di
+      00006B D3 A8            [11]  573 	out	(0xA8), a
+      00006D 79               [ 4]  574 	ld	a, c
+      00006E 0F               [ 4]  575 	rrca	
+      00006F 0F               [ 4]  576 	rrca 
+      000070 E6 3F            [ 7]  577 	and a, #0x3F
+      000072 E6 03            [ 7]  578 	and	#0b00000011
+      000074 57               [ 4]  579 	ld	d, a
+      000075 3A FF FF         [13]  580 	ld	a,(0xFFFF)
+      000078 2F               [ 4]  581 	cpl
+      000079 E6 FC            [ 7]  582 	and	#0b11111100
+      00007B B2               [ 4]  583 	or	d
+      00007C 32 FF FF         [13]  584 	ld	(0xFFFF), a
+      00007F 78               [ 4]  585 	ld	a, b
+      000080 E6 C0            [ 7]  586 	and	#0b11000000
+      000082 47               [ 4]  587 	ld	b, a
+      000083 DB A8            [11]  588 	in	a, (0xA8)
+      000085 E6 3F            [ 7]  589 	and	#0b00111111
+      000087 B0               [ 4]  590 	or	b
+      000088 D3 A8            [11]  591 	out	(0xA8), a
+      00008A C9               [10]  592 	ret
+      00008B                        593 	SetNonExpendedSlot:
+      00008B 79               [ 4]  594 	ld	a, c
+      00008C E6 03            [ 7]  595 	and	#0b00000011
+      00008E 57               [ 4]  596 	ld	d, a
+      00008F DB A8            [11]  597 	in	a, (0xA8)
+      000091 47               [ 4]  598 	ld	b, a
+      000092 E6 FC            [ 7]  599 	and	#0b11111100
+      000094 B2               [ 4]  600 	or	d
+      000095 F3               [ 4]  601 	di
+      000096 D3 A8            [11]  602 	out	(0xA8), a
+      000098 C9               [10]  603 	ret
+                                    604 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:135: }
+                                    605 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:139: u8 Sys_CheckSlot(CheckSlotCallback cb)
+                                    606 ;	---------------------------------
+                                    607 ; Function Sys_CheckSlot
+                                    608 ; ---------------------------------
+      000099                        609 _Sys_CheckSlot::
+      000099 DD E5            [15]  610 	push	ix
+      00009B DD 21 00 00      [14]  611 	ld	ix,#0
+      00009F DD 39            [15]  612 	add	ix,sp
+      0000A1 3B               [ 6]  613 	dec	sp
+                                    614 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:141: for (u8 slot = 0; slot < 4; ++slot)
+      0000A2 01 00 00         [10]  615 	ld	bc, #0x0
+      0000A5                        616 00114$:
+      0000A5 78               [ 4]  617 	ld	a, b
+      0000A6 D6 04            [ 7]  618 	sub	a, #0x04
+      0000A8 30 4D            [12]  619 	jr	NC, 00109$
+                                    620 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:143: if (g_EXPTBL[slot] & SLOT_EXP)
+      0000AA 11 C1 FC         [10]  621 	ld	de, #_g_EXPTBL+0
+      0000AD 7B               [ 4]  622 	ld	a, e
+      0000AE 80               [ 4]  623 	add	a, b
+      0000AF 5F               [ 4]  624 	ld	e, a
+      0000B0 30 01            [12]  625 	jr	NC, 00153$
+      0000B2 14               [ 4]  626 	inc	d
+      0000B3                        627 00153$:
+      0000B3 1A               [ 7]  628 	ld	a, (de)
+      0000B4 07               [ 4]  629 	rlca
+      0000B5 30 2C            [12]  630 	jr	NC, 00107$
+                                    631 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:145: for (u8 sub = 0; sub < 4; ++sub)
+      0000B7 78               [ 4]  632 	ld	a, b
+      0000B8 E6 03            [ 7]  633 	and	a, #0x03
+      0000BA DD 77 FF         [19]  634 	ld	-1 (ix), a
+      0000BD 0E 00            [ 7]  635 	ld	c, #0x00
+      0000BF                        636 00111$:
+                                    637 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:147: u8 slotId = SLOTEX(slot, sub);
+      0000BF 79               [ 4]  638 	ld	a,c
+      0000C0 FE 04            [ 7]  639 	cp	a,#0x04
+      0000C2 30 2E            [12]  640 	jr	NC, 00115$
+      0000C4 E6 03            [ 7]  641 	and	a, #0x03
+      0000C6 87               [ 4]  642 	add	a, a
+      0000C7 87               [ 4]  643 	add	a, a
+      0000C8 DD B6 FF         [19]  644 	or	a, -1 (ix)
+      0000CB 5F               [ 4]  645 	ld	e, a
+      0000CC CB FB            [ 8]  646 	set	7, e
+                                    647 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:148: if (cb(slotId))
+      0000CE E5               [11]  648 	push	hl
+      0000CF C5               [11]  649 	push	bc
+      0000D0 D5               [11]  650 	push	de
+      0000D1 7B               [ 4]  651 	ld	a, e
+      0000D2 CDr00r00         [17]  652 	call	___sdcc_call_hl
+      0000D5 D1               [10]  653 	pop	de
+      0000D6 C1               [10]  654 	pop	bc
+      0000D7 E1               [10]  655 	pop	hl
+      0000D8 B7               [ 4]  656 	or	a, a
+      0000D9 28 04            [12]  657 	jr	Z, 00112$
+                                    658 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:149: return slotId;
+      0000DB 7B               [ 4]  659 	ld	a, e
+      0000DC C3rF9r00         [10]  660 	jp	00116$
+      0000DF                        661 00112$:
+                                    662 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:145: for (u8 sub = 0; sub < 4; ++sub)
+      0000DF 0C               [ 4]  663 	inc	c
+      0000E0 C3rBFr00         [10]  664 	jp	00111$
+      0000E3                        665 00107$:
+                                    666 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:152: else if (cb(slot))
+      0000E3 E5               [11]  667 	push	hl
+      0000E4 C5               [11]  668 	push	bc
+      0000E5 78               [ 4]  669 	ld	a, b
+      0000E6 CDr00r00         [17]  670 	call	___sdcc_call_hl
+      0000E9 C1               [10]  671 	pop	bc
+      0000EA E1               [10]  672 	pop	hl
+      0000EB B7               [ 4]  673 	or	a, a
+      0000EC 28 04            [12]  674 	jr	Z, 00115$
+                                    675 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:153: return slot;
+      0000EE 79               [ 4]  676 	ld	a, c
+      0000EF C3rF9r00         [10]  677 	jp	00116$
+      0000F2                        678 00115$:
+                                    679 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:141: for (u8 slot = 0; slot < 4; ++slot)
+      0000F2 04               [ 4]  680 	inc	b
+      0000F3 48               [ 4]  681 	ld	c, b
+      0000F4 C3rA5r00         [10]  682 	jp	00114$
+      0000F7                        683 00109$:
+                                    684 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:155: return SLOT_NOTFOUND;
+      0000F7 3E FF            [ 7]  685 	ld	a, #0xff
+      0000F9                        686 00116$:
+                                    687 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/system.c:156: }
+      0000F9 33               [ 6]  688 	inc	sp
+      0000FA DD E1            [14]  689 	pop	ix
+      0000FC C9               [10]  690 	ret
+                                    691 	.area _CODE
+                                    692 	.area _INITIALIZER
+                                    693 	.area _CABS (ABS)

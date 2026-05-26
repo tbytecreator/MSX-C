@@ -1,0 +1,62 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 1.
+Hexadecimal [24-Bits]
+
+Symbol Table
+
+    .__.$$$.=  002710 L   |     .__.ABS.=  000000 G   |     .__.CPU.=  000000 L
+    .__.H$L.=  000000 L   |     ADDR_BOO=  004000     |     APP_SIGN=  000001 
+    APP_SIGN=  003154     |     APP_SIGN=  004C47     |     BIOS_REL=  000000 
+    CHECK_MS=  000000     |     CHGET   =  00009F     |     CHPUT   =  0000A2 
+    CLS     =  0000C3     |     DOS_ISR =  000000     |     DOS_PARS=  000001 
+    ENASLT  =  000024     |     EXPTBL  =  00FCC1     |     HIMEM   =  00FC4A 
+    H_STKE  =  00FEDA     |     INITXT  =  00006C     |     ISR_ALL =  000001 
+    ISR_NONE=  000000     |     ISR_SET_=  000000     |     ISR_V999=  000004 
+    ISR_VBLA=  000002     |     ISR_VHBL=  000003     |     KEY_BS  =  000020 
+    KEY_ESC =  000004     |     KEY_F4  =  000001     |     KEY_F5  =  000002 
+    KEY_RETU=  000080     |     KEY_SELE=  000040     |     KEY_STOP=  000010 
+    KEY_TAB =  000008     |     LINL40  =  00F3AE     |     MSX1    =  000000 
+    MSX2    =  000001     |     MSX2P   =  000002     |     MSX2PP  =  000004 
+    MSX2S   =  000005     |     MSXTR   =  000003     |     MSXVER  =  00002D 
+    POPOLON_=  003804     |     POPOLON_=  000001     |     POPOLON_=  000000 
+    POPOLON_=  003800     |     PPI_A   =  0000A8     |     PPI_B   =  0000A9 
+    PPI_C   =  0000AA     |     PPI_MODE=  0000AB     |     RAM0_ISR=  000001 
+    RAM0_NON=  000000     |     RAM0_SEG=  000002     |     ROMVER  =  00002B 
+    ROM_ASCI=  00000A     |     ROM_ASCI=  00000C     |     ROM_ASCI=  000002 
+    ROM_BCAL=  000000     |     ROM_DELA=  000000     |     ROM_ISR =  000002 
+    ROM_KONA=  000003     |     ROM_KONA=  000004     |     ROM_MAPP=  000000 
+    ROM_MAPP=  00000A     |     ROM_MAPP=  000002     |     ROM_NEO1=  00000B 
+    ROM_NEO8=  000005     |     ROM_PLAI=  000000     |     ROM_POPO=  000007 
+    ROM_RAMI=  000000     |     ROM_SKIP=  000000     |     ROM_SKIP=  000004 
+    ROM_YAMA=  000006     |     RSLREG  =  000138     |     SETTXT  =  000078 
+    SLTSL   =  00FFFF     |     START_AD=  004000     |     V9_P06  =  000066 
+    VDP_A   =  000099     |     VDP_S   =  000099     |     WRSLT   =  000014 
+    YAMA_CFG=  007FFD     |     YAMA_CFG=  000002     |     YAMA_CFG=  000008 
+    YAMA_CFG=  000001     |     YAMA_CFG=  000004     |     YAMA_ENA=  007FFF 
+    YAMA_ENA=  000001     |     YAMA_ENA=  000010     |     YAMA_OFF=  007FFE 
+  0 _g_AppSi   000010 GR  |   0 _g_First   000000 GR  |   0 _g_Heade   000000 GR
+  8 _g_HeapS   000000 GR  |   7 _g_LastA   000000 GR  |   8 _g_ROMSl   000002 GR
+    _main      ****** GX  |   0 crt0_ini   000014 R   |   0 crt0_ini   000041 R
+  0 crt0_p1_   000023 GR  |   0 crt0_rom   000000 GR  |   0 crt0_ski   000051 R
+  0 crt0_sta   000051 R   |     l__INITI   ****** GX  |     s__GSFIN   ****** GX
+    s__HEADE   ****** GX  |     s__HEAP    ****** GX  |     s__INITI   ****** GX
+    s__INITI   ****** GX
+
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80), page 2.
+Hexadecimal [24-Bits]
+
+Area Table
+
+   0 _CODE      size     56   flags    0
+   1 _HEADER    size      0   flags    8
+   2 _HEADER0   size      0   flags    8
+   3 _HOME      size      0   flags    0
+   4 _RODATA    size      0   flags    0
+   5 _INITIAL   size      0   flags    0
+   6 _GSINIT    size      0   flags    0
+   7 _GSFINAL   size      0   flags    0
+   8 _DATA      size      3   flags    0
+   9 _INITIAL   size      0   flags    0
+   A _BSEG      size      0   flags    0
+   B _BSS       size      0   flags    0
+   C _HEAP      size      0   flags    0
+

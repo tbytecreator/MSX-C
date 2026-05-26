@@ -1,0 +1,429 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ISO C Compiler
+                                      3 ; Version 4.5.0 #15242 (Linux)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module ui
+                                      6 	
+                                      7 	.optsdcc -mz80 sdcccall(1)
+                                      8 ;--------------------------------------------------------
+                                      9 ; Public variables in this module
+                                     10 ;--------------------------------------------------------
+                                     11 	.globl _getchar
+                                     12 	.globl _printf
+                                     13 	.globl _Print_Clear
+                                     14 	.globl _Print_At
+                                     15 	.globl _Print_Char
+                                     16 	.globl _Print_String
+                                     17 	.globl _Print_SetCursor
+                                     18 	.globl _Print_GetChar
+                                     19 	.globl _Print_Int
+                                     20 	.globl _Print_HLine
+                                     21 	.globl _Print_VLine
+                                     22 	.globl _Print_Box
+                                     23 ;--------------------------------------------------------
+                                     24 ; special function registers
+                                     25 ;--------------------------------------------------------
+                                     26 ;--------------------------------------------------------
+                                     27 ; ram data
+                                     28 ;--------------------------------------------------------
+                                     29 	.area _DATA
+                                     30 ;--------------------------------------------------------
+                                     31 ; ram data
+                                     32 ;--------------------------------------------------------
+                                     33 	.area _INITIALIZED
+                                     34 ;--------------------------------------------------------
+                                     35 ; absolute external ram data
+                                     36 ;--------------------------------------------------------
+                                     37 	.area _DABS (ABS)
+                                     38 ;--------------------------------------------------------
+                                     39 ; global & static initialisations
+                                     40 ;--------------------------------------------------------
+                                     41 	.area _HOME
+                                     42 	.area _GSINIT
+                                     43 	.area _GSFINAL
+                                     44 	.area _GSINIT
+                                     45 ;--------------------------------------------------------
+                                     46 ; Home
+                                     47 ;--------------------------------------------------------
+                                     48 	.area _HOME
+                                     49 	.area _HOME
+                                     50 ;--------------------------------------------------------
+                                     51 ; code
+                                     52 ;--------------------------------------------------------
+                                     53 	.area _CODE
+                                     54 ;src/ui.c:9: void Print_Clear(void) {
+                                     55 ;	---------------------------------
+                                     56 ; Function Print_Clear
+                                     57 ; ---------------------------------
+    00000000                         58 _Print_Clear::
+                                     59 ;src/ui.c:11: printf("\033[2J\033[H");  // ANSI: clear screen and move cursor to home
+    00000000 21r09r00         [10]   60 	ld	hl, #___str_0
+    00000003 E5               [11]   61 	push	hl
+    00000004 CDr00r00         [17]   62 	call	_printf
+    00000007 F1               [10]   63 	pop	af
+                                     64 ;src/ui.c:12: }
+    00000008 C9               [10]   65 	ret
+                                     66 	.area _CODE
+                                     67 	.area _CODE
+    00000009                         68 ___str_0:
+    00000009 1B                      69 	.db 0x1b
+    0000000A 5B 32 4A                70 	.ascii "[2J"
+    0000000D 1B                      71 	.db 0x1b
+    0000000E 5B 48                   72 	.ascii "[H"
+    00000010 00                      73 	.db 0x00
+                                     74 	.area _CODE
+                                     75 	.area _CODE
+                                     76 ;src/ui.c:14: void Print_At(int x, int y, const char* text) {
+                                     77 ;	---------------------------------
+                                     78 ; Function Print_At
+                                     79 ; ---------------------------------
+    00000011                         80 _Print_At::
+                                     81 ;src/ui.c:16: printf("\033[%d;%dH", y + 1, x + 1);  // ANSI: move cursor (1-based)
+    00000011 23               [ 6]   82 	inc	hl
+    00000012 DD E5            [15]   83 	push	ix
+    00000014 DD 21 00 00      [14]   84 	ld	ix, #0
+    00000018 DD 39            [15]   85 	add	ix, sp
+    0000001A 13               [ 6]   86 	inc	de
+    0000001B 01r3Cr00         [10]   87 	ld	bc, #___str_1+0
+    0000001E E5               [11]   88 	push	hl
+    0000001F D5               [11]   89 	push	de
+    00000020 C5               [11]   90 	push	bc
+    00000021 CDr00r00         [17]   91 	call	_printf
+    00000024 F1               [10]   92 	pop	af
+    00000025 F1               [10]   93 	pop	af
+    00000026 F1               [10]   94 	pop	af
+                                     95 ;src/ui.c:17: printf("%s", text);
+    00000027 DD 6E 04         [19]   96 	ld	l, 4 (ix)
+    0000002A DD 66 05         [19]   97 	ld	h, 5 (ix)
+    0000002D E5               [11]   98 	push	hl
+    0000002E 21r45r00         [10]   99 	ld	hl, #___str_2
+    00000031 E5               [11]  100 	push	hl
+    00000032 CDr00r00         [17]  101 	call	_printf
+    00000035 F1               [10]  102 	pop	af
+    00000036 F1               [10]  103 	pop	af
+                                    104 ;src/ui.c:18: }
+    00000037 DD E1            [14]  105 	pop	ix
+    00000039 E1               [10]  106 	pop	hl
+    0000003A F1               [10]  107 	pop	af
+    0000003B E9               [ 4]  108 	jp	(hl)
+                                    109 	.area _CODE
+                                    110 	.area _CODE
+    0000003C                        111 ___str_1:
+    0000003C 1B                     112 	.db 0x1b
+    0000003D 5B 25 64 3B 25 64 48   113 	.ascii "[%d;%dH"
+    00000044 00                     114 	.db 0x00
+                                    115 	.area _CODE
+                                    116 	.area _CODE
+    00000045                        117 ___str_2:
+    00000045 25 73                  118 	.ascii "%s"
+    00000047 00                     119 	.db 0x00
+                                    120 	.area _CODE
+                                    121 	.area _CODE
+                                    122 ;src/ui.c:20: void Print_Char(char c) {
+                                    123 ;	---------------------------------
+                                    124 ; Function Print_Char
+                                    125 ; ---------------------------------
+    00000048                        126 _Print_Char::
+                                    127 ;src/ui.c:21: printf("%c", c);
+    00000048 4F               [ 4]  128 	ld	c, a
+    00000049 06 00            [ 7]  129 	ld	b, #0x00
+    0000004B C5               [11]  130 	push	bc
+    0000004C 21r56r00         [10]  131 	ld	hl, #___str_3
+    0000004F E5               [11]  132 	push	hl
+    00000050 CDr00r00         [17]  133 	call	_printf
+    00000053 F1               [10]  134 	pop	af
+    00000054 F1               [10]  135 	pop	af
+                                    136 ;src/ui.c:22: }
+    00000055 C9               [10]  137 	ret
+                                    138 	.area _CODE
+                                    139 	.area _CODE
+    00000056                        140 ___str_3:
+    00000056 25 63                  141 	.ascii "%c"
+    00000058 00                     142 	.db 0x00
+                                    143 	.area _CODE
+                                    144 	.area _CODE
+                                    145 ;src/ui.c:24: void Print_String(const char* str) {
+                                    146 ;	---------------------------------
+                                    147 ; Function Print_String
+                                    148 ; ---------------------------------
+    00000059                        149 _Print_String::
+                                    150 ;src/ui.c:25: printf("%s", str);
+    00000059 01r64r00         [10]  151 	ld	bc, #___str_4+0
+    0000005C E5               [11]  152 	push	hl
+    0000005D C5               [11]  153 	push	bc
+    0000005E CDr00r00         [17]  154 	call	_printf
+    00000061 F1               [10]  155 	pop	af
+    00000062 F1               [10]  156 	pop	af
+                                    157 ;src/ui.c:26: }
+    00000063 C9               [10]  158 	ret
+                                    159 	.area _CODE
+                                    160 	.area _CODE
+    00000064                        161 ___str_4:
+    00000064 25 73                  162 	.ascii "%s"
+    00000066 00                     163 	.db 0x00
+                                    164 	.area _CODE
+                                    165 	.area _CODE
+                                    166 ;src/ui.c:28: void Print_SetCursor(int x, int y) {
+                                    167 ;	---------------------------------
+                                    168 ; Function Print_SetCursor
+                                    169 ; ---------------------------------
+    00000067                        170 _Print_SetCursor::
+                                    171 ;src/ui.c:29: printf("\033[%d;%dH", y + 1, x + 1);
+    00000067 23               [ 6]  172 	inc	hl
+    00000068 13               [ 6]  173 	inc	de
+    00000069 01r76r00         [10]  174 	ld	bc, #___str_5+0
+    0000006C E5               [11]  175 	push	hl
+    0000006D D5               [11]  176 	push	de
+    0000006E C5               [11]  177 	push	bc
+    0000006F CDr00r00         [17]  178 	call	_printf
+    00000072 F1               [10]  179 	pop	af
+    00000073 F1               [10]  180 	pop	af
+    00000074 F1               [10]  181 	pop	af
+                                    182 ;src/ui.c:30: }
+    00000075 C9               [10]  183 	ret
+                                    184 	.area _CODE
+                                    185 	.area _CODE
+    00000076                        186 ___str_5:
+    00000076 1B                     187 	.db 0x1b
+    00000077 5B 25 64 3B 25 64 48   188 	.ascii "[%d;%dH"
+    0000007E 00                     189 	.db 0x00
+                                    190 	.area _CODE
+                                    191 	.area _CODE
+                                    192 ;src/ui.c:32: char Print_GetChar(void) {
+                                    193 ;	---------------------------------
+                                    194 ; Function Print_GetChar
+                                    195 ; ---------------------------------
+    0000007F                        196 _Print_GetChar::
+                                    197 ;src/ui.c:33: return getchar();
+    0000007F CDr00r00         [17]  198 	call	_getchar
+    00000082 7B               [ 4]  199 	ld	a, e
+                                    200 ;src/ui.c:34: }
+    00000083 C9               [10]  201 	ret
+                                    202 ;src/ui.c:36: void Print_Int(int value) {
+                                    203 ;	---------------------------------
+                                    204 ; Function Print_Int
+                                    205 ; ---------------------------------
+    00000084                        206 _Print_Int::
+                                    207 ;src/ui.c:37: printf("%d", value);
+    00000084 01r8Fr00         [10]  208 	ld	bc, #___str_6+0
+    00000087 E5               [11]  209 	push	hl
+    00000088 C5               [11]  210 	push	bc
+    00000089 CDr00r00         [17]  211 	call	_printf
+    0000008C F1               [10]  212 	pop	af
+    0000008D F1               [10]  213 	pop	af
+                                    214 ;src/ui.c:38: }
+    0000008E C9               [10]  215 	ret
+                                    216 	.area _CODE
+                                    217 	.area _CODE
+    0000008F                        218 ___str_6:
+    0000008F 25 64                  219 	.ascii "%d"
+    00000091 00                     220 	.db 0x00
+                                    221 	.area _CODE
+                                    222 	.area _CODE
+                                    223 ;src/ui.c:40: void Print_HLine(int x, int y, int length, char ch) {
+                                    224 ;	---------------------------------
+                                    225 ; Function Print_HLine
+                                    226 ; ---------------------------------
+    00000092                        227 _Print_HLine::
+                                    228 ;src/ui.c:42: Print_SetCursor(x, y);
+    00000092 CDr67r00         [17]  229 	call	_Print_SetCursor
+                                    230 ;src/ui.c:43: for (i = 0; i < length; i++) {
+    00000095 01 00 00         [10]  231 	ld	bc, #0x0000
+    00000098                        232 00103$:
+    00000098 21 02 00         [10]  233 	ld	hl, #2
+    0000009B 39               [11]  234 	add	hl, sp
+    0000009C 79               [ 4]  235 	ld	a, c
+    0000009D 96               [ 7]  236 	sub	a, (hl)
+    0000009E 23               [ 6]  237 	inc	hl
+    0000009F 78               [ 4]  238 	ld	a, b
+    000000A0 9E               [ 7]  239 	sbc	a, (hl)
+    000000A1 E2rA6r00         [10]  240 	jp	PO, 00122$
+    000000A4 EE 80            [ 7]  241 	xor	a, #0x80
+    000000A6                        242 00122$:
+    000000A6 F2rB6r00         [10]  243 	jp	P, 00105$
+                                    244 ;src/ui.c:44: Print_Char(ch);
+    000000A9 C5               [11]  245 	push	bc
+    000000AA 21 06 00         [10]  246 	ld	hl, #6
+    000000AD 39               [11]  247 	add	hl, sp
+    000000AE 7E               [ 7]  248 	ld	a, (hl)
+    000000AF CDr48r00         [17]  249 	call	_Print_Char
+    000000B2 C1               [10]  250 	pop	bc
+                                    251 ;src/ui.c:43: for (i = 0; i < length; i++) {
+    000000B3 03               [ 6]  252 	inc	bc
+    000000B4 18 E2            [12]  253 	jr	00103$
+    000000B6                        254 00105$:
+                                    255 ;src/ui.c:46: }
+    000000B6 E1               [10]  256 	pop	hl
+    000000B7 F1               [10]  257 	pop	af
+    000000B8 33               [ 6]  258 	inc	sp
+    000000B9 E9               [ 4]  259 	jp	(hl)
+                                    260 ;src/ui.c:48: void Print_VLine(int x, int y, int length, char ch) {
+                                    261 ;	---------------------------------
+                                    262 ; Function Print_VLine
+                                    263 ; ---------------------------------
+    000000BA                        264 _Print_VLine::
+    000000BA DD E5            [15]  265 	push	ix
+    000000BC DD 21 00 00      [14]  266 	ld	ix,#0
+    000000C0 DD 39            [15]  267 	add	ix,sp
+    000000C2 F5               [11]  268 	push	af
+    000000C3 F5               [11]  269 	push	af
+    000000C4 DD 75 FE         [19]  270 	ld	-2 (ix), l
+    000000C7 DD 74 FF         [19]  271 	ld	-1 (ix), h
+    000000CA 33               [ 6]  272 	inc	sp
+    000000CB 33               [ 6]  273 	inc	sp
+    000000CC D5               [11]  274 	push	de
+                                    275 ;src/ui.c:50: for (i = 0; i < length; i++) {
+    000000CD 01 00 00         [10]  276 	ld	bc, #0x0000
+    000000D0                        277 00103$:
+    000000D0 79               [ 4]  278 	ld	a, c
+    000000D1 DD 96 04         [19]  279 	sub	a, 4 (ix)
+    000000D4 78               [ 4]  280 	ld	a, b
+    000000D5 DD 9E 05         [19]  281 	sbc	a, 5 (ix)
+    000000D8 E2rDDr00         [10]  282 	jp	PO, 00122$
+    000000DB EE 80            [ 7]  283 	xor	a, #0x80
+    000000DD                        284 00122$:
+    000000DD F2rF8r00         [10]  285 	jp	P, 00105$
+                                    286 ;src/ui.c:51: Print_At(x, y + i, &ch);
+    000000E0 21 0A 00         [10]  287 	ld	hl, #10
+    000000E3 39               [11]  288 	add	hl, sp
+    000000E4 EB               [ 4]  289 	ex	de, hl
+    000000E5 E1               [10]  290 	pop	hl
+    000000E6 E5               [11]  291 	push	hl
+    000000E7 09               [11]  292 	add	hl, bc
+    000000E8 C5               [11]  293 	push	bc
+    000000E9 EB               [ 4]  294 	ex	de, hl
+    000000EA E5               [11]  295 	push	hl
+    000000EB DD 6E FE         [19]  296 	ld	l, -2 (ix)
+    000000EE DD 66 FF         [19]  297 	ld	h, -1 (ix)
+    000000F1 CDr11r00         [17]  298 	call	_Print_At
+    000000F4 C1               [10]  299 	pop	bc
+                                    300 ;src/ui.c:50: for (i = 0; i < length; i++) {
+    000000F5 03               [ 6]  301 	inc	bc
+    000000F6 18 D8            [12]  302 	jr	00103$
+    000000F8                        303 00105$:
+                                    304 ;src/ui.c:53: }
+    000000F8 DD F9            [10]  305 	ld	sp, ix
+    000000FA DD E1            [14]  306 	pop	ix
+    000000FC E1               [10]  307 	pop	hl
+    000000FD F1               [10]  308 	pop	af
+    000000FE 33               [ 6]  309 	inc	sp
+    000000FF E9               [ 4]  310 	jp	(hl)
+                                    311 ;src/ui.c:55: void Print_Box(int x, int y, int width, int height, char ch) {
+                                    312 ;	---------------------------------
+                                    313 ; Function Print_Box
+                                    314 ; ---------------------------------
+    00000100                        315 _Print_Box::
+    00000100 DD E5            [15]  316 	push	ix
+    00000102 DD 21 00 00      [14]  317 	ld	ix,#0
+    00000106 DD 39            [15]  318 	add	ix,sp
+    00000108 FD 21 F8 FF      [14]  319 	ld	iy, #-8
+    0000010C FD 39            [15]  320 	add	iy, sp
+    0000010E FD F9            [10]  321 	ld	sp, iy
+    00000110 4D               [ 4]  322 	ld	c, l
+    00000111 44               [ 4]  323 	ld	b, h
+    00000112 DD 73 FC         [19]  324 	ld	-4 (ix), e
+    00000115 DD 72 FD         [19]  325 	ld	-3 (ix), d
+                                    326 ;src/ui.c:59: Print_HLine(x, y, width, ch);
+    00000118 C5               [11]  327 	push	bc
+    00000119 DD 7E 08         [19]  328 	ld	a, 8 (ix)
+    0000011C F5               [11]  329 	push	af
+    0000011D 33               [ 6]  330 	inc	sp
+    0000011E DD 6E 04         [19]  331 	ld	l, 4 (ix)
+    00000121 DD 66 05         [19]  332 	ld	h, 5 (ix)
+    00000124 E5               [11]  333 	push	hl
+    00000125 DD 5E FC         [19]  334 	ld	e, -4 (ix)
+    00000128 DD 56 FD         [19]  335 	ld	d, -3 (ix)
+    0000012B 69               [ 4]  336 	ld	l, c
+    0000012C 60               [ 4]  337 	ld	h, b
+    0000012D CDr92r00         [17]  338 	call	_Print_HLine
+    00000130 C1               [10]  339 	pop	bc
+                                    340 ;src/ui.c:62: Print_HLine(x, y + height - 1, width, ch);
+    00000131 DD 7E 06         [19]  341 	ld	a, 6 (ix)
+    00000134 DD 86 FC         [19]  342 	add	a, -4 (ix)
+    00000137 5F               [ 4]  343 	ld	e, a
+    00000138 DD 7E 07         [19]  344 	ld	a, 7 (ix)
+    0000013B DD 8E FD         [19]  345 	adc	a, -3 (ix)
+    0000013E 57               [ 4]  346 	ld	d, a
+    0000013F 1B               [ 6]  347 	dec	de
+    00000140 C5               [11]  348 	push	bc
+    00000141 DD 7E 08         [19]  349 	ld	a, 8 (ix)
+    00000144 F5               [11]  350 	push	af
+    00000145 33               [ 6]  351 	inc	sp
+    00000146 DD 6E 04         [19]  352 	ld	l, 4 (ix)
+    00000149 DD 66 05         [19]  353 	ld	h, 5 (ix)
+    0000014C E5               [11]  354 	push	hl
+    0000014D 69               [ 4]  355 	ld	l, c
+    0000014E 60               [ 4]  356 	ld	h, b
+    0000014F CDr92r00         [17]  357 	call	_Print_HLine
+    00000152 C1               [10]  358 	pop	bc
+                                    359 ;src/ui.c:65: for (i = 1; i < height - 1; i++) {
+    00000153 DD 6E 04         [19]  360 	ld	l, 4 (ix)
+    00000156 DD 66 05         [19]  361 	ld	h, 5 (ix)
+    00000159 09               [11]  362 	add	hl, bc
+    0000015A 7D               [ 4]  363 	ld	a, l
+    0000015B C6 FF            [ 7]  364 	add	a, #0xff
+    0000015D DD 77 F8         [19]  365 	ld	-8 (ix), a
+    00000160 7C               [ 4]  366 	ld	a, h
+    00000161 CE FF            [ 7]  367 	adc	a, #0xff
+    00000163 DD 77 F9         [19]  368 	ld	-7 (ix), a
+    00000166 DD 7E 06         [19]  369 	ld	a, 6 (ix)
+    00000169 C6 FF            [ 7]  370 	add	a, #0xff
+    0000016B DD 77 FA         [19]  371 	ld	-6 (ix), a
+    0000016E DD 7E 07         [19]  372 	ld	a, 7 (ix)
+    00000171 CE FF            [ 7]  373 	adc	a, #0xff
+    00000173 DD 77 FB         [19]  374 	ld	-5 (ix), a
+    00000176 DD 36 FE 01      [19]  375 	ld	-2 (ix), #0x01
+    0000017A DD 36 FF 00      [19]  376 	ld	-1 (ix), #0
+    0000017E                        377 00103$:
+    0000017E DD 7E FE         [19]  378 	ld	a, -2 (ix)
+    00000181 DD 96 FA         [19]  379 	sub	a, -6 (ix)
+    00000184 DD 7E FF         [19]  380 	ld	a, -1 (ix)
+    00000187 DD 9E FB         [19]  381 	sbc	a, -5 (ix)
+    0000018A E2r8Fr01         [10]  382 	jp	PO, 00122$
+    0000018D EE 80            [ 7]  383 	xor	a, #0x80
+    0000018F                        384 00122$:
+    0000018F F2rC6r01         [10]  385 	jp	P, 00105$
+                                    386 ;src/ui.c:66: Print_At(x, y + i, &ch);
+    00000192 21 10 00         [10]  387 	ld	hl, #16
+    00000195 39               [11]  388 	add	hl, sp
+    00000196 DD 7E FC         [19]  389 	ld	a, -4 (ix)
+    00000199 DD 86 FE         [19]  390 	add	a, -2 (ix)
+    0000019C 5F               [ 4]  391 	ld	e, a
+    0000019D DD 7E FD         [19]  392 	ld	a, -3 (ix)
+    000001A0 DD 8E FF         [19]  393 	adc	a, -1 (ix)
+    000001A3 57               [ 4]  394 	ld	d, a
+    000001A4 E5               [11]  395 	push	hl
+    000001A5 C5               [11]  396 	push	bc
+    000001A6 D5               [11]  397 	push	de
+    000001A7 E5               [11]  398 	push	hl
+    000001A8 69               [ 4]  399 	ld	l, c
+    000001A9 60               [ 4]  400 	ld	h, b
+    000001AA CDr11r00         [17]  401 	call	_Print_At
+    000001AD D1               [10]  402 	pop	de
+    000001AE C1               [10]  403 	pop	bc
+    000001AF E1               [10]  404 	pop	hl
+                                    405 ;src/ui.c:67: Print_At(x + width - 1, y + i, &ch);
+    000001B0 C5               [11]  406 	push	bc
+    000001B1 E5               [11]  407 	push	hl
+    000001B2 DD 6E F8         [19]  408 	ld	l, -8 (ix)
+    000001B5 DD 66 F9         [19]  409 	ld	h, -7 (ix)
+    000001B8 CDr11r00         [17]  410 	call	_Print_At
+    000001BB C1               [10]  411 	pop	bc
+                                    412 ;src/ui.c:65: for (i = 1; i < height - 1; i++) {
+    000001BC DD 34 FE         [23]  413 	inc	-2 (ix)
+    000001BF 20 BD            [12]  414 	jr	NZ, 00103$
+    000001C1 DD 34 FF         [23]  415 	inc	-1 (ix)
+    000001C4 18 B8            [12]  416 	jr	00103$
+    000001C6                        417 00105$:
+                                    418 ;src/ui.c:69: }
+    000001C6 DD F9            [10]  419 	ld	sp, ix
+    000001C8 DD E1            [14]  420 	pop	ix
+    000001CA E1               [10]  421 	pop	hl
+    000001CB F1               [10]  422 	pop	af
+    000001CC F1               [10]  423 	pop	af
+    000001CD 33               [ 6]  424 	inc	sp
+    000001CE E9               [ 4]  425 	jp	(hl)
+                                    426 	.area _CODE
+                                    427 	.area _CODE
+                                    428 	.area _INITIALIZER
+                                    429 	.area _CABS (ABS)

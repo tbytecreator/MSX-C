@@ -1,0 +1,128 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 1
+Hexadecimal [32-Bits]
+
+Symbol Table
+
+    .__.$$$.                                                    =   00002710 L
+    .__.ABS.                                                    =   00000000 G
+    .__.CPU.                                                    =   00000000 L
+    .__.H$L.                                                    =   00000000 L
+    _Print_At                                                       ******** GX
+    _Print_Clear                                                    ******** GX
+    _VDP_ClearVRAM                                                  ******** GX
+    _VDP_SetMode                                                    ******** GX
+  0 ___str_0                                                        000000C1 R
+  0 ___str_1                                                        000000D8 R
+  0 ___str_10                                                       00000273 R
+  0 ___str_11                                                       0000028B R
+  0 ___str_12                                                       000002A3 R
+  0 ___str_13                                                       000002AF R
+  0 ___str_14                                                       000002B2 R
+  0 ___str_15                                                       000002BE R
+  0 ___str_16                                                       00000437 R
+  0 ___str_17                                                       00000456 R
+  0 ___str_18                                                       0000045E R
+  0 ___str_19                                                       00000464 R
+  0 ___str_2                                                        000000F0 R
+  0 ___str_20                                                       00000469 R
+  0 ___str_21                                                       0000046C R
+  0 ___str_22                                                       00000471 R
+  0 ___str_23                                                       00000476 R
+  0 ___str_24                                                       0000047C R
+  0 ___str_25                                                       00000485 R
+  0 ___str_26                                                       0000048C R
+  0 ___str_27                                                       00000493 R
+  0 ___str_28                                                       000004A0 R
+  0 ___str_29                                                       000004AF R
+  0 ___str_3                                                        000000FE R
+  0 ___str_30                                                       000004BA R
+  0 ___str_31                                                       000004C3 R
+  0 ___str_32                                                       0000054B R
+  0 ___str_33                                                       0000055A R
+  0 ___str_34                                                       00000567 R
+  0 ___str_35                                                       0000056A R
+  0 ___str_36                                                       00000584 R
+  0 ___str_37                                                       000005FE R
+  0 ___str_38                                                       0000060F R
+  0 ___str_39                                                       0000066D R
+  0 ___str_4                                                        0000010D R
+  0 ___str_40                                                       00000677 R
+  0 ___str_41                                                       000006D3 R
+  0 ___str_42                                                       000006E2 R
+  0 ___str_43                                                       0000073E R
+  0 ___str_44                                                       0000074E R
+  0 ___str_45                                                       00000758 R
+  0 ___str_46                                                       0000075E R
+  0 ___str_47                                                       00000768 R
+  0 ___str_48                                                       000007ED R
+  0 ___str_49                                                       000007FC R
+  0 ___str_5                                                        0000011C R
+  0 ___str_50                                                       00000801 R
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 2
+Hexadecimal [32-Bits]
+
+Symbol Table
+
+  0 ___str_51                                                       00000804 R
+  0 ___str_52                                                       00000809 R
+  0 ___str_53                                                       0000080E R
+  0 ___str_54                                                       00000814 R
+  0 ___str_55                                                       0000084A R
+  0 ___str_56                                                       00000858 R
+  0 ___str_57                                                       000008C0 R
+  0 ___str_58                                                       000008D3 R
+  0 ___str_59                                                       000008E6 R
+  0 ___str_6                                                        00000125 R
+  0 ___str_60                                                       000008F7 R
+  0 ___str_61                                                       00000907 R
+  0 ___str_62                                                       0000091C R
+  0 ___str_63                                                       000009D1 R
+  0 ___str_64                                                       000009E5 R
+  0 ___str_65                                                       000009F7 R
+  0 ___str_66                                                       00000A00 R
+  0 ___str_67                                                       00000A06 R
+  0 ___str_68                                                       00000A0D R
+  0 ___str_69                                                       00000A10 R
+  0 ___str_7                                                        00000226 R
+  0 ___str_70                                                       00000A1E R
+  0 ___str_71                                                       00000A27 R
+  0 ___str_72                                                       00000A8F R
+  0 ___str_8                                                        0000023C R
+  0 ___str_9                                                        00000259 R
+  0 _character_creation                                             00000138 GR
+  0 _exploration                                                    000002E0 GR
+  0 _game_over_screen                                               0000092F GR
+  1 _game_state                                                     00000000 GR
+    _getchar                                                        ******** GX
+  0 _handle_combat                                                  000006E5 GR
+  0 _handle_encounter                                               0000067A GR
+  0 _handle_exit_attempt                                            00000827 GR
+  0 _handle_exploration_event                                       000004CD GR
+  0 _handle_trap                                                    00000597 GR
+  0 _handle_treasure                                                00000612 GR
+  0 _init_game                                                      00000000 GR
+  0 _main                                                           00000A30 GR
+  0 _main_menu                                                      00000030 GR
+    _printf                                                         ******** GX
+    _roll_dice                                                      ******** GX
+  1 _running                                                        0000001D GR
+  0 _show_full_status                                               0000077B GR
+  0 _show_help                                                      00000866 GR
+    _srand                                                          ******** GX
+    _time                                                           ******** GX
+
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180 / ZX-Next / eZ80 / R800)                          Page 3
+Hexadecimal [32-Bits]
+
+Area Table
+
+   0 _CODE                                      size      AA3   flags    0
+   1 _DATA                                      size       1F   flags    0
+   2 _INITIALIZED                               size        0   flags    0
+   3 _DABS                                      size        0   flags    8
+   4 _HOME                                      size        0   flags    0
+   5 _GSINIT                                    size        0   flags    0
+   6 _GSFINAL                                   size        0   flags    0
+   7 _INITIALIZER                               size        0   flags    0
+   8 _CABS                                      size        0   flags    8
+

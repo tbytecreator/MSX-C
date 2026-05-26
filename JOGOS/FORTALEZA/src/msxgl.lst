@@ -1,0 +1,211 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ISO C Compiler
+                                      3 ; Version 4.5.0 #15242 (Linux)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module msxgl
+                                      6 	
+                                      7 	.optsdcc -mz80 sdcccall(1)
+                                      8 ;--------------------------------------------------------
+                                      9 ; Public variables in this module
+                                     10 ;--------------------------------------------------------
+                                     11 	.globl _VDP_WriteRegister
+                                     12 	.globl _VDP_ReadRegister
+                                     13 	.globl _VDP_SetMode
+                                     14 	.globl _VDP_ClearVRAM
+                                     15 	.globl _putchar
+                                     16 	.globl _getchar
+                                     17 	.globl _MSXgl_Init
+                                     18 ;--------------------------------------------------------
+                                     19 ; special function registers
+                                     20 ;--------------------------------------------------------
+                                     21 ;--------------------------------------------------------
+                                     22 ; ram data
+                                     23 ;--------------------------------------------------------
+                                     24 	.area _DATA
+                                     25 ;--------------------------------------------------------
+                                     26 ; ram data
+                                     27 ;--------------------------------------------------------
+                                     28 	.area _INITIALIZED
+    00000000                         29 _g_vdp_reg:
+    00000000                         30 	.ds 16
+    00000010                         31 _g_vdp_mode:
+    00000010                         32 	.ds 1
+                                     33 ;--------------------------------------------------------
+                                     34 ; absolute external ram data
+                                     35 ;--------------------------------------------------------
+                                     36 	.area _DABS (ABS)
+                                     37 ;--------------------------------------------------------
+                                     38 ; global & static initialisations
+                                     39 ;--------------------------------------------------------
+                                     40 	.area _HOME
+                                     41 	.area _GSINIT
+                                     42 	.area _GSFINAL
+                                     43 	.area _GSINIT
+                                     44 ;--------------------------------------------------------
+                                     45 ; Home
+                                     46 ;--------------------------------------------------------
+                                     47 	.area _HOME
+                                     48 	.area _HOME
+                                     49 ;--------------------------------------------------------
+                                     50 ; code
+                                     51 ;--------------------------------------------------------
+                                     52 	.area _CODE
+                                     53 ;src/msxgl.c:34: void VDP_WriteRegister(unsigned char reg, unsigned char value)
+                                     54 ;	---------------------------------
+                                     55 ; Function VDP_WriteRegister
+                                     56 ; ---------------------------------
+    00000000                         57 _VDP_WriteRegister::
+    00000000 4F               [ 4]   58 	ld	c, a
+    00000001 5D               [ 4]   59 	ld	e, l
+                                     60 ;src/msxgl.c:36: if(reg < 16) {
+    00000002 79               [ 4]   61 	ld	a, c
+    00000003 D6 10            [ 7]   62 	sub	a, #0x10
+    00000005 D0               [11]   63 	ret	NC
+                                     64 ;src/msxgl.c:37: g_vdp_reg[reg] = value;
+    00000006 21r00r00         [10]   65 	ld	hl, #_g_vdp_reg+0
+    00000009 06 00            [ 7]   66 	ld	b, #0x00
+    0000000B 09               [11]   67 	add	hl, bc
+    0000000C 73               [ 7]   68 	ld	(hl), e
+                                     69 ;src/msxgl.c:42: }
+    0000000D C9               [10]   70 	ret
+                                     71 ;src/msxgl.c:49: unsigned char VDP_ReadRegister(unsigned char reg)
+                                     72 ;	---------------------------------
+                                     73 ; Function VDP_ReadRegister
+                                     74 ; ---------------------------------
+    0000000E                         75 _VDP_ReadRegister::
+                                     76 ;src/msxgl.c:51: if(reg < 16) {
+    0000000E 5F               [ 4]   77 	ld	e, a
+    0000000F D6 10            [ 7]   78 	sub	a, #0x10
+    00000011 30 08            [12]   79 	jr	NC, 00102$
+                                     80 ;src/msxgl.c:52: return g_vdp_reg[reg];
+    00000013 21r00r00         [10]   81 	ld	hl, #_g_vdp_reg+0
+    00000016 16 00            [ 7]   82 	ld	d, #0x00
+    00000018 19               [11]   83 	add	hl, de
+    00000019 7E               [ 7]   84 	ld	a, (hl)
+    0000001A C9               [10]   85 	ret
+    0000001B                         86 00102$:
+                                     87 ;src/msxgl.c:54: return 0;
+    0000001B AF               [ 4]   88 	xor	a, a
+                                     89 ;src/msxgl.c:55: }
+    0000001C C9               [10]   90 	ret
+                                     91 ;src/msxgl.c:65: void VDP_SetMode(VDP_Mode_t mode)
+                                     92 ;	---------------------------------
+                                     93 ; Function VDP_SetMode
+                                     94 ; ---------------------------------
+    0000001D                         95 _VDP_SetMode::
+                                     96 ;src/msxgl.c:67: g_vdp_mode = mode;
+    0000001D 32r10r00         [13]   97 	ld	(_g_vdp_mode+0), a
+                                     98 ;src/msxgl.c:73: switch(mode) {
+    00000020 B7               [ 4]   99 	or	a, a
+    00000021 28 0A            [12]  100 	jr	Z, 00101$
+    00000023 FE 01            [ 7]  101 	cp	a, #0x01
+    00000025 28 12            [12]  102 	jr	Z, 00102$
+    00000027 D6 02            [ 7]  103 	sub	a, #0x02
+    00000029 28 1B            [12]  104 	jr	Z, 00103$
+    0000002B 18 25            [12]  105 	jr	00104$
+                                    106 ;src/msxgl.c:74: case VDP_MODE_TEXT1:
+    0000002D                        107 00101$:
+                                    108 ;src/msxgl.c:76: VDP_WriteRegister(0, 0x00);      // R#0
+    0000002D AF               [ 4]  109 	xor	a, a
+    0000002E 6F               [ 4]  110 	ld	l, a
+    0000002F CDr00r00         [17]  111 	call	_VDP_WriteRegister
+                                    112 ;src/msxgl.c:77: VDP_WriteRegister(1, 0xD0);      // R#1: Enable display, text mode
+    00000032 2E D0            [ 7]  113 	ld	l, #0xd0
+                                    114 ;src/msxgl.c:78: break;
+    00000034 3E 01            [ 7]  115 	ld	a, #0x01
+    00000036 C3r00r00         [10]  116 	jp	_VDP_WriteRegister
+                                    117 ;src/msxgl.c:80: case VDP_MODE_GRAPHIC1:
+    00000039                        118 00102$:
+                                    119 ;src/msxgl.c:82: VDP_WriteRegister(0, 0x02);      // R#0
+    00000039 2E 02            [ 7]  120 	ld	l, #0x02
+    0000003B AF               [ 4]  121 	xor	a, a
+    0000003C CDr00r00         [17]  122 	call	_VDP_WriteRegister
+                                    123 ;src/msxgl.c:83: VDP_WriteRegister(1, 0xC0);      // R#1: Enable display, graphics mode
+    0000003F 2E C0            [ 7]  124 	ld	l, #0xc0
+                                    125 ;src/msxgl.c:84: break;
+    00000041 3E 01            [ 7]  126 	ld	a, #0x01
+    00000043 C3r00r00         [10]  127 	jp	_VDP_WriteRegister
+                                    128 ;src/msxgl.c:86: case VDP_MODE_TEXT2:
+    00000046                        129 00103$:
+                                    130 ;src/msxgl.c:88: VDP_WriteRegister(0, 0x00);      // R#0
+    00000046 AF               [ 4]  131 	xor	a, a
+    00000047 6F               [ 4]  132 	ld	l, a
+    00000048 CDr00r00         [17]  133 	call	_VDP_WriteRegister
+                                    134 ;src/msxgl.c:89: VDP_WriteRegister(1, 0xF0);      // R#1: Enable display, text mode 2
+    0000004B 2E F0            [ 7]  135 	ld	l, #0xf0
+                                    136 ;src/msxgl.c:90: break;
+    0000004D 3E 01            [ 7]  137 	ld	a, #0x01
+    0000004F C3r00r00         [10]  138 	jp	_VDP_WriteRegister
+                                    139 ;src/msxgl.c:92: default:
+    00000052                        140 00104$:
+                                    141 ;src/msxgl.c:94: VDP_SetMode(VDP_MODE_TEXT1);
+    00000052 AF               [ 4]  142 	xor	a, a
+                                    143 ;src/msxgl.c:96: }
+                                    144 ;src/msxgl.c:97: }
+    00000053 18 C8            [12]  145 	jr	_VDP_SetMode
+                                    146 ;src/msxgl.c:103: void VDP_ClearVRAM(void)
+                                    147 ;	---------------------------------
+                                    148 ; Function VDP_ClearVRAM
+                                    149 ; ---------------------------------
+    00000055                        150 _VDP_ClearVRAM::
+                                    151 ;src/msxgl.c:111: }
+    00000055 C9               [10]  152 	ret
+                                    153 ;src/msxgl.c:122: int putchar(int c)
+                                    154 ;	---------------------------------
+                                    155 ; Function putchar
+                                    156 ; ---------------------------------
+    00000056                        157 _putchar::
+    00000056 EB               [ 4]  158 	ex	de, hl
+                                    159 ;src/msxgl.c:130: return c;
+                                    160 ;src/msxgl.c:131: }
+    00000057 C9               [10]  161 	ret
+                                    162 ;src/msxgl.c:137: int getchar(void)
+                                    163 ;	---------------------------------
+                                    164 ; Function getchar
+                                    165 ; ---------------------------------
+    00000058                        166 _getchar::
+                                    167 ;src/msxgl.c:144: return 0;
+    00000058 11 00 00         [10]  168 	ld	de, #0x0000
+                                    169 ;src/msxgl.c:145: }
+    0000005B C9               [10]  170 	ret
+                                    171 ;src/msxgl.c:155: void MSXgl_Init(void)
+                                    172 ;	---------------------------------
+                                    173 ; Function MSXgl_Init
+                                    174 ; ---------------------------------
+    0000005C                        175 _MSXgl_Init::
+                                    176 ;src/msxgl.c:158: VDP_SetMode(VDP_MODE_TEXT1);
+    0000005C AF               [ 4]  177 	xor	a, a
+    0000005D CDr1Dr00         [17]  178 	call	_VDP_SetMode
+                                    179 ;src/msxgl.c:161: VDP_ClearVRAM();
+    00000060 CDr55r00         [17]  180 	call	_VDP_ClearVRAM
+                                    181 ;src/msxgl.c:164: VDP_WriteRegister(1, VDP_ReadRegister(1) | 0x40);
+    00000063 3E 01            [ 7]  182 	ld	a, #0x01
+    00000065 CDr0Er00         [17]  183 	call	_VDP_ReadRegister
+    00000068 F6 40            [ 7]  184 	or	a, #0x40
+    0000006A 6F               [ 4]  185 	ld	l, a
+    0000006B 3E 01            [ 7]  186 	ld	a, #0x01
+                                    187 ;src/msxgl.c:165: }
+    0000006D C3r00r00         [10]  188 	jp	_VDP_WriteRegister
+                                    189 	.area _CODE
+                                    190 	.area _CODE
+                                    191 	.area _INITIALIZER
+    00000000                        192 __xinit__g_vdp_reg:
+    00000000 00                     193 	.db #0x00	; 0
+    00000001 00                     194 	.db 0x00
+    00000002 00                     195 	.db 0x00
+    00000003 00                     196 	.db 0x00
+    00000004 00                     197 	.db 0x00
+    00000005 00                     198 	.db 0x00
+    00000006 00                     199 	.db 0x00
+    00000007 00                     200 	.db 0x00
+    00000008 00                     201 	.db 0x00
+    00000009 00                     202 	.db 0x00
+    0000000A 00                     203 	.db 0x00
+    0000000B 00                     204 	.db 0x00
+    0000000C 00                     205 	.db 0x00
+    0000000D 00                     206 	.db 0x00
+    0000000E 00                     207 	.db 0x00
+    0000000F 00                     208 	.db 0x00
+    00000010                        209 __xinit__g_vdp_mode:
+    00000010 00                     210 	.db #0x00	; 0
+                                    211 	.area _CABS (ABS)

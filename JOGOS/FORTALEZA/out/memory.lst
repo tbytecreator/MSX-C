@@ -1,0 +1,400 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ANSI-C Compiler
+                                      3 ; Version 4.2.0 #13081 (Linux)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module memory
+                                      6 	.optsdcc -mz80
+                                      7 	
+                                      8 ;--------------------------------------------------------
+                                      9 ; Public variables in this module
+                                     10 ;--------------------------------------------------------
+                                     11 	.globl _Mem_DynamicMerge
+                                     12 	.globl _g_MemChunkRoot
+                                     13 	.globl _g_StackAddress
+                                     14 	.globl _Mem_GetStackAddress
+                                     15 	.globl _Mem_Set_16b
+                                     16 	.globl _Mem_DynamicInitialize
+                                     17 	.globl _Mem_DynamicAlloc
+                                     18 	.globl _Mem_DynamicFree
+                                     19 ;--------------------------------------------------------
+                                     20 ; special function registers
+                                     21 ;--------------------------------------------------------
+                                     22 ;--------------------------------------------------------
+                                     23 ; ram data
+                                     24 ;--------------------------------------------------------
+                                     25 	.area _DATA
+      000000                         26 _g_StackAddress::
+      000000                         27 	.ds 2
+                                     28 ;--------------------------------------------------------
+                                     29 ; ram data
+                                     30 ;--------------------------------------------------------
+                                     31 	.area _INITIALIZED
+      000000                         32 _g_MemChunkRoot::
+      000000                         33 	.ds 2
+                                     34 ;--------------------------------------------------------
+                                     35 ; absolute external ram data
+                                     36 ;--------------------------------------------------------
+                                     37 	.area _DABS (ABS)
+                                     38 ;--------------------------------------------------------
+                                     39 ; global & static initialisations
+                                     40 ;--------------------------------------------------------
+                                     41 	.area _HOME
+                                     42 	.area _GSINIT
+                                     43 	.area _GSFINAL
+                                     44 	.area _GSINIT
+                                     45 ;--------------------------------------------------------
+                                     46 ; Home
+                                     47 ;--------------------------------------------------------
+                                     48 	.area _HOME
+                                     49 	.area _HOME
+                                     50 ;--------------------------------------------------------
+                                     51 ; code
+                                     52 ;--------------------------------------------------------
+                                     53 	.area _CODE
+                                     54 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:29: u16 Mem_GetStackAddress() __NAKED
+                                     55 ;	---------------------------------
+                                     56 ; Function Mem_GetStackAddress
+                                     57 ; ---------------------------------
+      000000                         58 _Mem_GetStackAddress::
+                                     59 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:35: __endasm;
+      000000 ED 73r00r00      [20]   60 	ld	(_g_StackAddress), sp
+      000004 ED 5Br00r00      [20]   61 	ld	de, (_g_StackAddress)
+      000008 C9               [10]   62 	ret
+                                     63 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:36: }
+                                     64 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:150: void Mem_Set_16b(u16 val, void* dest, u16 size)
+                                     65 ;	---------------------------------
+                                     66 ; Function Mem_Set_16b
+                                     67 ; ---------------------------------
+      000009                         68 _Mem_Set_16b::
+                                     69 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:185: __endasm;
+      000009 D5               [11]   70 	push	de
+      00000A EB               [ 4]   71 	ex	de, hl
+      00000B 72               [ 7]   72 	ld	(hl), d
+      00000C 23               [ 6]   73 	inc	hl
+      00000D 73               [ 7]   74 	ld	(hl), e
+      00000E 23               [ 6]   75 	inc	hl
+      00000F EB               [ 4]   76 	ex	de, hl
+      000010 E1               [10]   77 	pop	hl
+      000011 FD E1            [14]   78 	pop	iy
+      000013 C1               [10]   79 	pop	bc
+      000014 0B               [ 6]   80 	dec	bc
+      000015 0B               [ 6]   81 	dec	bc
+      000016 ED B0            [21]   82 	ldir
+      000018                         83 	mem_fill16_end:
+      000018 FD E9            [ 8]   84 	jp	(iy)
+                                     85 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:186: }
+      00001A E1               [10]   86 	pop	hl
+      00001B F1               [10]   87 	pop	af
+      00001C E9               [ 4]   88 	jp	(hl)
+                                     89 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:258: void Mem_DynamicInitialize(void* base, u16 size)
+                                     90 ;	---------------------------------
+                                     91 ; Function Mem_DynamicInitialize
+                                     92 ; ---------------------------------
+      00001D                         93 _Mem_DynamicInitialize::
+                                     94 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:260: g_MemChunkRoot = (MemChunkHeader*)base;
+                                     95 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:261: g_MemChunkRoot->Size = (size - sizeof(MemChunkHeader)) | MEM_CHUNK_FREE;
+      00001D 22r00r00         [16]   96 	ld	(_g_MemChunkRoot), hl
+      000020 7B               [ 4]   97 	ld	a, e
+      000021 C6 FC            [ 7]   98 	add	a, #0xfc
+      000023 4F               [ 4]   99 	ld	c, a
+      000024 7A               [ 4]  100 	ld	a, d
+      000025 CE FF            [ 7]  101 	adc	a, #0xff
+      000027 47               [ 4]  102 	ld	b, a
+      000028 CB F8            [ 8]  103 	set	7, b
+      00002A 71               [ 7]  104 	ld	(hl), c
+      00002B 23               [ 6]  105 	inc	hl
+      00002C 70               [ 7]  106 	ld	(hl), b
+                                    107 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:262: g_MemChunkRoot->Next = NULL;
+      00002D 2Ar00r00         [16]  108 	ld	hl, (_g_MemChunkRoot)
+      000030 23               [ 6]  109 	inc	hl
+      000031 23               [ 6]  110 	inc	hl
+      000032 AF               [ 4]  111 	xor	a, a
+      000033 77               [ 7]  112 	ld	(hl), a
+      000034 23               [ 6]  113 	inc	hl
+      000035 77               [ 7]  114 	ld	(hl), a
+                                    115 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:263: }
+      000036 C9               [10]  116 	ret
+                                    117 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:267: void* Mem_DynamicAlloc(u16 size)
+                                    118 ;	---------------------------------
+                                    119 ; Function Mem_DynamicAlloc
+                                    120 ; ---------------------------------
+      000037                        121 _Mem_DynamicAlloc::
+      000037 DD E5            [15]  122 	push	ix
+      000039 DD 21 00 00      [14]  123 	ld	ix,#0
+      00003D DD 39            [15]  124 	add	ix,sp
+      00003F FD 21 F6 FF      [14]  125 	ld	iy, #-10
+      000043 FD 39            [15]  126 	add	iy, sp
+      000045 FD F9            [10]  127 	ld	sp, iy
+      000047 DD 75 FE         [19]  128 	ld	-2 (ix), l
+      00004A DD 74 FF         [19]  129 	ld	-1 (ix), h
+                                    130 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:274: MemChunkHeader* chunk = g_MemChunkRoot;
+      00004D ED 5Br00r00      [20]  131 	ld	de, (_g_MemChunkRoot)
+                                    132 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:275: while (chunk)
+      000051                        133 00107$:
+      000051 7A               [ 4]  134 	ld	a, d
+      000052 B3               [ 4]  135 	or	a, e
+      000053 CAr16r01         [10]  136 	jp	Z, 00109$
+                                    137 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:277: u16 chunkSize = chunk->Size;
+      000056 6B               [ 4]  138 	ld	l, e
+      000057 62               [ 4]  139 	ld	h, d
+      000058 4E               [ 7]  140 	ld	c, (hl)
+      000059 23               [ 6]  141 	inc	hl
+      00005A 46               [ 7]  142 	ld	b, (hl)
+      00005B 69               [ 4]  143 	ld	l, c
+                                    144 ;	spillPairReg hl
+                                    145 ;	spillPairReg hl
+      00005C 60               [ 4]  146 	ld	h, b
+                                    147 ;	spillPairReg hl
+                                    148 ;	spillPairReg hl
+                                    149 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:278: if (chunkSize & MEM_CHUNK_FREE) // Free chunk
+      00005D CB 7C            [ 8]  150 	bit	7, h
+      00005F CAr0Dr01         [10]  151 	jp	Z,00106$
+                                    152 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:280: chunkSize &= ~MEM_CHUNK_FREE;
+      000062 CB BC            [ 8]  153 	res	7, h
+      000064 DD 75 FC         [19]  154 	ld	-4 (ix), l
+      000067 DD 74 FD         [19]  155 	ld	-3 (ix), h
+                                    156 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:281: if (chunkSize == size) // Re-use chunk
+      00006A DD 7E FE         [19]  157 	ld	a, -2 (ix)
+      00006D DD 96 FC         [19]  158 	sub	a, -4 (ix)
+      000070 20 16            [12]  159 	jr	NZ, 00102$
+      000072 DD 7E FF         [19]  160 	ld	a, -1 (ix)
+      000075 DD 96 FD         [19]  161 	sub	a, -3 (ix)
+      000078 20 0E            [12]  162 	jr	NZ, 00102$
+                                    163 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:283: chunk->Size &= ~MEM_CHUNK_FREE;
+      00007A CB B8            [ 8]  164 	res	7, b
+      00007C 6B               [ 4]  165 	ld	l, e
+      00007D 62               [ 4]  166 	ld	h, d
+      00007E 71               [ 7]  167 	ld	(hl), c
+      00007F 23               [ 6]  168 	inc	hl
+      000080 70               [ 7]  169 	ld	(hl), b
+                                    170 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:284: return (void*)((u16)chunk + sizeof(MemChunkHeader));
+      000081 13               [ 6]  171 	inc	de
+      000082 13               [ 6]  172 	inc	de
+      000083 13               [ 6]  173 	inc	de
+      000084 13               [ 6]  174 	inc	de
+      000085 C3r19r01         [10]  175 	jp	00110$
+      000088                        176 00102$:
+                                    177 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:286: u16 needSize = size + sizeof(MemChunkHeader);
+      000088 DD 4E FE         [19]  178 	ld	c, -2 (ix)
+      00008B DD 46 FF         [19]  179 	ld	b, -1 (ix)
+      00008E 21 04 00         [10]  180 	ld	hl, #0x0004
+      000091 09               [11]  181 	add	hl, bc
+                                    182 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:287: if (chunkSize > needSize) // Create new sub-chunk
+      000092 7D               [ 4]  183 	ld	a, l
+      000093 DD 96 FC         [19]  184 	sub	a, -4 (ix)
+      000096 7C               [ 4]  185 	ld	a, h
+      000097 DD 9E FD         [19]  186 	sbc	a, -3 (ix)
+      00009A 30 71            [12]  187 	jr	NC, 00106$
+                                    188 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:289: MemChunkHeader* newChunk = (MemChunkHeader*)((u16)chunk + needSize); // New free sub-chunk
+      00009C 33               [ 6]  189 	inc	sp
+      00009D 33               [ 6]  190 	inc	sp
+      00009E D5               [11]  191 	push	de
+      00009F 7D               [ 4]  192 	ld	a, l
+      0000A0 DD 86 F6         [19]  193 	add	a, -10 (ix)
+      0000A3 4F               [ 4]  194 	ld	c, a
+      0000A4 7C               [ 4]  195 	ld	a, h
+      0000A5 DD 8E F7         [19]  196 	adc	a, -9 (ix)
+      0000A8 47               [ 4]  197 	ld	b, a
+                                    198 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:290: newChunk->Size = (chunkSize - needSize) | MEM_CHUNK_FREE;
+      0000A9 DD 7E FC         [19]  199 	ld	a, -4 (ix)
+      0000AC 95               [ 4]  200 	sub	a, l
+      0000AD 6F               [ 4]  201 	ld	l, a
+                                    202 ;	spillPairReg hl
+                                    203 ;	spillPairReg hl
+      0000AE DD 7E FD         [19]  204 	ld	a, -3 (ix)
+      0000B1 9C               [ 4]  205 	sbc	a, h
+      0000B2 67               [ 4]  206 	ld	h, a
+                                    207 ;	spillPairReg hl
+                                    208 ;	spillPairReg hl
+      0000B3 CB FC            [ 8]  209 	set	7, h
+      0000B5 DD 75 FC         [19]  210 	ld	-4 (ix), l
+      0000B8 DD 74 FD         [19]  211 	ld	-3 (ix), h
+      0000BB 69               [ 4]  212 	ld	l, c
+      0000BC 60               [ 4]  213 	ld	h, b
+      0000BD DD 7E FC         [19]  214 	ld	a, -4 (ix)
+      0000C0 77               [ 7]  215 	ld	(hl), a
+      0000C1 23               [ 6]  216 	inc	hl
+      0000C2 DD 7E FD         [19]  217 	ld	a, -3 (ix)
+      0000C5 77               [ 7]  218 	ld	(hl), a
+                                    219 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:291: newChunk->Next = chunk->Next;
+      0000C6 21 02 00         [10]  220 	ld	hl, #0x0002
+      0000C9 09               [11]  221 	add	hl, bc
+      0000CA DD 75 F8         [19]  222 	ld	-8 (ix), l
+      0000CD DD 74 F9         [19]  223 	ld	-7 (ix), h
+      0000D0 21 02 00         [10]  224 	ld	hl, #0x0002
+      0000D3 19               [11]  225 	add	hl, de
+      0000D4 DD 75 FA         [19]  226 	ld	-6 (ix), l
+      0000D7 DD 74 FB         [19]  227 	ld	-5 (ix), h
+      0000DA 7E               [ 7]  228 	ld	a, (hl)
+      0000DB DD 77 FC         [19]  229 	ld	-4 (ix), a
+      0000DE 23               [ 6]  230 	inc	hl
+      0000DF 7E               [ 7]  231 	ld	a, (hl)
+      0000E0 DD 77 FD         [19]  232 	ld	-3 (ix), a
+      0000E3 DD 6E F8         [19]  233 	ld	l, -8 (ix)
+      0000E6 DD 66 F9         [19]  234 	ld	h, -7 (ix)
+      0000E9 DD 7E FC         [19]  235 	ld	a, -4 (ix)
+      0000EC 77               [ 7]  236 	ld	(hl), a
+      0000ED 23               [ 6]  237 	inc	hl
+      0000EE DD 7E FD         [19]  238 	ld	a, -3 (ix)
+      0000F1 77               [ 7]  239 	ld	(hl), a
+                                    240 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:293: chunk->Size = size; // Allocated sub-chunk
+      0000F2 DD 7E FE         [19]  241 	ld	a, -2 (ix)
+      0000F5 12               [ 7]  242 	ld	(de), a
+      0000F6 13               [ 6]  243 	inc	de
+      0000F7 DD 7E FF         [19]  244 	ld	a, -1 (ix)
+      0000FA 12               [ 7]  245 	ld	(de), a
+                                    246 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:294: chunk->Next = newChunk;
+      0000FB DD 6E FA         [19]  247 	ld	l, -6 (ix)
+      0000FE DD 66 FB         [19]  248 	ld	h, -5 (ix)
+      000101 71               [ 7]  249 	ld	(hl), c
+      000102 23               [ 6]  250 	inc	hl
+      000103 70               [ 7]  251 	ld	(hl), b
+                                    252 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:296: return (void*)((u16)chunk + sizeof(MemChunkHeader));
+      000104 D1               [10]  253 	pop	de
+      000105 D5               [11]  254 	push	de
+      000106 13               [ 6]  255 	inc	de
+      000107 13               [ 6]  256 	inc	de
+      000108 13               [ 6]  257 	inc	de
+      000109 13               [ 6]  258 	inc	de
+      00010A C3r19r01         [10]  259 	jp	00110$
+      00010D                        260 00106$:
+                                    261 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:299: chunk = chunk->Next;
+      00010D EB               [ 4]  262 	ex	de, hl
+      00010E 23               [ 6]  263 	inc	hl
+      00010F 23               [ 6]  264 	inc	hl
+      000110 5E               [ 7]  265 	ld	e, (hl)
+      000111 23               [ 6]  266 	inc	hl
+      000112 56               [ 7]  267 	ld	d, (hl)
+      000113 C3r51r00         [10]  268 	jp	00107$
+      000116                        269 00109$:
+                                    270 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:301: return NULL;
+      000116 11 00 00         [10]  271 	ld	de, #0x0000
+      000119                        272 00110$:
+                                    273 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:302: }
+      000119 DD F9            [10]  274 	ld	sp, ix
+      00011B DD E1            [14]  275 	pop	ix
+      00011D C9               [10]  276 	ret
+                                    277 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:306: void Mem_DynamicMerge()
+                                    278 ;	---------------------------------
+                                    279 ; Function Mem_DynamicMerge
+                                    280 ; ---------------------------------
+      00011E                        281 _Mem_DynamicMerge::
+      00011E DD E5            [15]  282 	push	ix
+      000120 DD 21 00 00      [14]  283 	ld	ix,#0
+      000124 DD 39            [15]  284 	add	ix,sp
+      000126 F5               [11]  285 	push	af
+      000127 F5               [11]  286 	push	af
+                                    287 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:308: MemChunkHeader* chunk = g_MemChunkRoot;
+      000128 ED 4Br00r00      [20]  288 	ld	bc, (_g_MemChunkRoot)
+                                    289 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:309: while (chunk)
+      00012C                        290 00105$:
+      00012C 78               [ 4]  291 	ld	a, b
+      00012D B1               [ 4]  292 	or	a, c
+      00012E 28 4F            [12]  293 	jr	Z, 00108$
+                                    294 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:311: MemChunkHeader* nextChunk = chunk->Next;
+      000130 21 02 00         [10]  295 	ld	hl, #0x0002
+      000133 09               [11]  296 	add	hl, bc
+      000134 E3               [19]  297 	ex	(sp), hl
+      000135 E1               [10]  298 	pop	hl
+      000136 E5               [11]  299 	push	hl
+      000137 7E               [ 7]  300 	ld	a, (hl)
+      000138 DD 77 FE         [19]  301 	ld	-2 (ix), a
+      00013B 23               [ 6]  302 	inc	hl
+      00013C 7E               [ 7]  303 	ld	a, (hl)
+                                    304 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:312: if ((nextChunk != NULL) && (chunk->Size & MEM_CHUNK_FREE) && (nextChunk->Size & MEM_CHUNK_FREE))
+      00013D DD 77 FF         [19]  305 	ld	-1 (ix), a
+      000140 DD B6 FE         [19]  306 	or	a, -2 (ix)
+      000143 28 32            [12]  307 	jr	Z, 00102$
+      000145 69               [ 4]  308 	ld	l, c
+      000146 60               [ 4]  309 	ld	h, b
+      000147 5E               [ 7]  310 	ld	e, (hl)
+      000148 23               [ 6]  311 	inc	hl
+      000149 56               [ 7]  312 	ld	d, (hl)
+      00014A CB 7A            [ 8]  313 	bit	7, d
+      00014C 28 29            [12]  314 	jr	Z, 00102$
+      00014E DD 6E FE         [19]  315 	ld	l, -2 (ix)
+      000151 DD 66 FF         [19]  316 	ld	h, -1 (ix)
+      000154 7E               [ 7]  317 	ld	a, (hl)
+      000155 23               [ 6]  318 	inc	hl
+      000156 66               [ 7]  319 	ld	h, (hl)
+                                    320 ;	spillPairReg hl
+      000157 6F               [ 4]  321 	ld	l, a
+                                    322 ;	spillPairReg hl
+                                    323 ;	spillPairReg hl
+      000158 CB 7C            [ 8]  324 	bit	7, h
+      00015A 28 1B            [12]  325 	jr	Z, 00102$
+                                    326 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:314: chunk->Size += nextChunk->Size + sizeof(MemChunkHeader);
+      00015C 23               [ 6]  327 	inc	hl
+      00015D 23               [ 6]  328 	inc	hl
+      00015E 23               [ 6]  329 	inc	hl
+      00015F 23               [ 6]  330 	inc	hl
+      000160 19               [11]  331 	add	hl, de
+      000161 EB               [ 4]  332 	ex	de, hl
+      000162 7B               [ 4]  333 	ld	a, e
+      000163 02               [ 7]  334 	ld	(bc), a
+      000164 03               [ 6]  335 	inc	bc
+      000165 7A               [ 4]  336 	ld	a, d
+      000166 02               [ 7]  337 	ld	(bc), a
+                                    338 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:315: chunk->Next = nextChunk->Next;
+      000167 DD 6E FE         [19]  339 	ld	l, -2 (ix)
+                                    340 ;	spillPairReg hl
+                                    341 ;	spillPairReg hl
+      00016A DD 66 FF         [19]  342 	ld	h, -1 (ix)
+                                    343 ;	spillPairReg hl
+                                    344 ;	spillPairReg hl
+      00016D 23               [ 6]  345 	inc	hl
+      00016E 23               [ 6]  346 	inc	hl
+      00016F 4E               [ 7]  347 	ld	c, (hl)
+      000170 23               [ 6]  348 	inc	hl
+      000171 46               [ 7]  349 	ld	b, (hl)
+      000172 E1               [10]  350 	pop	hl
+      000173 E5               [11]  351 	push	hl
+      000174 71               [ 7]  352 	ld	(hl), c
+      000175 23               [ 6]  353 	inc	hl
+      000176 70               [ 7]  354 	ld	(hl), b
+      000177                        355 00102$:
+                                    356 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:317: chunk = chunk->Next;
+      000177 E1               [10]  357 	pop	hl
+      000178 E5               [11]  358 	push	hl
+      000179 4E               [ 7]  359 	ld	c, (hl)
+      00017A 23               [ 6]  360 	inc	hl
+      00017B 46               [ 7]  361 	ld	b, (hl)
+      00017C C3r2Cr01         [10]  362 	jp	00105$
+      00017F                        363 00108$:
+                                    364 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:319: }
+      00017F DD F9            [10]  365 	ld	sp, ix
+      000181 DD E1            [14]  366 	pop	ix
+      000183 C9               [10]  367 	ret
+                                    368 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:323: void Mem_DynamicFree(void* ptr)
+                                    369 ;	---------------------------------
+                                    370 ; Function Mem_DynamicFree
+                                    371 ; ---------------------------------
+      000184                        372 _Mem_DynamicFree::
+                                    373 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:325: MemChunkHeader* chunk = (MemChunkHeader*)((u16)ptr - sizeof(MemChunkHeader));
+      000184 7D               [ 4]  374 	ld	a, l
+      000185 C6 FC            [ 7]  375 	add	a, #0xfc
+      000187 6F               [ 4]  376 	ld	l, a
+                                    377 ;	spillPairReg hl
+                                    378 ;	spillPairReg hl
+      000188 7C               [ 4]  379 	ld	a, h
+      000189 CE FF            [ 7]  380 	adc	a, #0xff
+      00018B 67               [ 4]  381 	ld	h, a
+                                    382 ;	spillPairReg hl
+                                    383 ;	spillPairReg hl
+                                    384 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:326: chunk->Size |= MEM_CHUNK_FREE;
+      00018C 4E               [ 7]  385 	ld	c, (hl)
+      00018D 23               [ 6]  386 	inc	hl
+      00018E 46               [ 7]  387 	ld	b, (hl)
+      00018F 2B               [ 6]  388 	dec	hl
+      000190 CB F8            [ 8]  389 	set	7, b
+      000192 71               [ 7]  390 	ld	(hl), c
+      000193 23               [ 6]  391 	inc	hl
+      000194 70               [ 7]  392 	ld	(hl), b
+                                    393 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:327: Mem_DynamicMerge();
+                                    394 ;/home/tbytecreator/Dev/tbc/MSX-C/JOGOS/FORTALEZA/engine/src/memory.c:328: }
+      000195 C3r1Er01         [10]  395 	jp	_Mem_DynamicMerge
+                                    396 	.area _CODE
+                                    397 	.area _INITIALIZER
+      000000                        398 __xinit__g_MemChunkRoot:
+      000000 00 00                  399 	.dw #0x0000
+                                    400 	.area _CABS (ABS)
