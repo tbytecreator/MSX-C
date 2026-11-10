@@ -44,5 +44,3 @@ void ImprimeGlobalVar(void)
     PrintNumber(globalVar);
     Print("\n\r");
 }
-
-
