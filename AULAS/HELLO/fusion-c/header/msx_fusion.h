@@ -442,25 +442,25 @@ void                BitReset(char nbit, char *byte);                            
 
 /* --------------------------------------------------------- */
 /* Interrupt	functions										 */
-inline void     EnableInterrupt() 
+inline void     EnableInterrupt(void)
 { 
 __asm 
     ei
 __endasm; 
 }
-inline void     DisableInterrupt() \
+inline void     DisableInterrupt(void) \
 {
 __asm 
     di
 __endasm; 
 }
-inline void     Halt() 
+inline void     Halt(void)
 {
 __asm
     halt
 __endasm; 
 }
-inline void     Suspend() 
+inline void     Suspend(void)
 {
 __asm
     ei
